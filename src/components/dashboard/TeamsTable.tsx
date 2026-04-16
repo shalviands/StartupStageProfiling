@@ -6,6 +6,7 @@ import type { TeamProfile } from '@/types/team.types'
 import { cn } from '@/utils/cn'
 import { Search, Filter, ArrowUpRight, SearchX } from 'lucide-react'
 import { scoreColor, scoreBg } from '@/utils/scores'
+import { useUIStore } from '@/store/uiStore'
 
 interface Props {
   teams: TeamProfile[]
@@ -13,8 +14,15 @@ interface Props {
 }
 
 export default function TeamsTable({ teams, isLoading }: Props) {
+  const { setActiveTeamId, setSection } = useUIStore()
   const router = useRouter()
   const [searchTerm, setSearchTerm] = React.useState('')
+
+  const handleRowClick = (id: string) => {
+    setActiveTeamId(id)
+    setSection(0)
+    router.push('/profiler')
+  }
 
   const filtered = teams.filter(t => 
     t.startupName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -64,7 +72,7 @@ export default function TeamsTable({ teams, isLoading }: Props) {
               {filtered.length > 0 ? filtered.map((team) => (
                 <tr 
                   key={team.id}
-                  onClick={() => router.push(`/profiler/${team.id}`)}
+                  onClick={() => handleRowClick(team.id)}
                   className="hover:bg-smoke/30 transition-colors cursor-pointer group"
                 >
                   <td className="px-8 py-6">

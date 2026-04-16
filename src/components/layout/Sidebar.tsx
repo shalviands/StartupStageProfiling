@@ -155,79 +155,28 @@ export default function Sidebar() {
       </div>
 
       {/* User Footer Section */}
-      <div style={{
-        padding: '16px 12px',
-        background: '#F1F5F9',
-        borderTop: '1px solid #CBD5E1',
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          marginBottom: 12,
-          padding: '4px',
-        }}>
-          <div style={{
-            width: 36,
-            height: 36,
-            borderRadius: 10,
-            background: '#0F172A',
-            color: '#fff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}>
+      <div className="p-4 bg-slate-50 border-t border-slate-200 mt-auto">
+        <div className="flex items-center gap-3 p-2 group cursor-default">
+          <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
             <UserIcon size={18} />
           </div>
-          <div style={{ minWidth: 0 }}>
-            <div style={{
-              fontSize: 11,
-              fontWeight: 800,
-              color: '#000000',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              lineHeight: 1.2,
-            }}>
+          <div className="min-w-0">
+            <div className="text-[12px] font-black text-slate-900 truncate leading-none mb-1">
               {userDisplayName}
             </div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              fontSize: 9,
-              fontWeight: 700,
-              color: '#334155',
-              marginTop: 2,
-            }}>
-              <Shield size={10} className="text-amber-600" />
-              {userRole.toUpperCase()}
+            <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-500 uppercase tracking-widest">
+              <Shield size={10} className="text-amber-500" />
+              {userRole}
             </div>
           </div>
         </div>
         
         <button
           onClick={handleLogout}
-          className="btn-hover"
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            padding: '8px 0',
-            background: 'rgba(239, 68, 68, 0.05)',
-            color: '#EF4444',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
-            borderRadius: 8,
-            fontSize: 10,
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
+          className="w-full mt-3 flex items-center justify-center gap-2 py-3 bg-white border border-rose-100 rounded-xl text-rose-500 text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 hover:border-rose-200 active:scale-95 transition-all shadow-sm"
         >
           <LogOut size={12} />
-          SIGN OUT
+          Sign Out
         </button>
       </div>
     </aside>

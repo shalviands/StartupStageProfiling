@@ -14,15 +14,31 @@ export async function POST(
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const supabase = await createServerSupabaseClient()
-  const { data: team, error } = await supabase
-    .from('teams')
-    .select('*')
-    .eq('id', id)
-    .eq('user_id', user.id)
+  
+  // 1. Fetch user role
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
     .single()
 
+  const role = profile?.role
+
+  // 2. Fetch team with ownership check
+  let query = supabase.from('teams').select('*').eq('id', id)
+
+  if (role === 'startup') {
+    query = query.or(`user_id.eq.${user.id},startup_user_id.eq.${user.id}`)
+  } else if (role === 'admin' || role === 'programme_team') {
+    // Admins/Programme team can analyze any team
+  } else {
+    query = query.eq('user_id', user.id)
+  }
+
+  const { data: team, error } = await query.single()
+
   if (error || !team) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    return NextResponse.json({ error: 'Team not found or access denied' }, { status: 404 })
   }
 
   const analysis = await runAIAnalysis(team)

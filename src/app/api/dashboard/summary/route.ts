@@ -20,10 +20,31 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const supabase = await createServerSupabaseClient()
-  const { data: teams, error } = await supabase
-    .from('teams')
-    .select('*')
-    .eq('user_id', user.id)
+
+  // 1. Fetch user role
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  const role = profile?.role
+
+  // 2. Fetch teams with role-aware logic
+  let query = supabase.from('teams').select('*')
+
+  if (role === 'startup') {
+    // Startup sees their own (created or assigned)
+    query = query.or(`user_id.eq.${user.id},startup_user_id.eq.${user.id}`)
+  } else if (role === 'programme_team' || role === 'admin') {
+    // Admins and Programme Team see everything for the summary
+    // (No filter)
+  } else {
+    // Fallback security filter
+    query = query.eq('user_id', user.id)
+  }
+
+  const { data: teams, error } = await query
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

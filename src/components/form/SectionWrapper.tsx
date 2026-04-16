@@ -115,11 +115,11 @@ export default function SectionWrapper({
       )}
 
       {/* Observation Box */}
-      <div className="bg-navy rounded-[32px] p-10 text-white space-y-6 shadow-2xl relative overflow-hidden group">
+      <div className="bg-slate-900 rounded-[32px] p-10 text-white space-y-6 shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000" />
         <div className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-teal shadow-inner">
+            <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-emerald-400 shadow-inner">
               <ShieldCheck size={20} />
             </div>
             <div>
@@ -133,7 +133,7 @@ export default function SectionWrapper({
           value={(data as any)[`${parameterId}_observation`] || ''}
           onChange={(e) => onChange(`${parameterId}_observation`, e.target.value)}
           placeholder={`Enter strategic observations for ${title}...`}
-          className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-sm text-white placeholder:text-white/30 focus:bg-white/10 focus:border-white/30 focus:ring-4 focus:ring-white/5 outline-none min-h-[140px] resize-none transition-all font-medium leading-relaxed"
+          className="w-full bg-slate-800/50 border border-white/10 rounded-2xl p-6 text-sm text-white placeholder:text-white/20 focus:bg-slate-800 focus:border-white/30 focus:ring-4 focus:ring-slate-700/50 outline-none min-h-[140px] resize-none transition-all font-medium leading-relaxed"
         />
       </div>
     </div>
