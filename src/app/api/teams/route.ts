@@ -72,6 +72,8 @@ export async function POST(request: Request) {
       roles:        body.roles       ?? '',
       interviewer:  body.interviewer   ?? '',
       p8_team_members: body.p8_team_members ?? [],
+      submission_status: 'draft',
+      diagnosis_visible: false,
     }
 
     if (profile?.role === 'startup') {

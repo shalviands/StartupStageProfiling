@@ -15,7 +15,6 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'startup' as 'startup' | 'programme_team'
   })
   const [error, setError]   = useState('')
   const [loading, setLoading] = useState(false)
@@ -50,8 +49,8 @@ export default function RegisterPage() {
       options: {
         data: {
           full_name: form.fullName.trim(),
-          startup_name: form.role === 'startup' ? form.startupName.trim() : 'Programme Team',
-          role: form.role,
+          startup_name: form.startupName.trim(),
+          role: 'startup', // Default role for common signup
         },
       },
     })
@@ -69,57 +68,28 @@ export default function RegisterPage() {
     <div className="bg-white rounded-3xl p-10 w-full shadow-2xl border border-navy/5 animate-section-in">
       {/* Logo */}
       <div className="flex items-center gap-4 mb-8">
-        <div className="w-11 h-11 rounded-2xl bg-navy flex items-center justify-center font-extrabold text-sm text-gold shadow-md">
+        <div className="w-12 h-12 rounded-2xl bg-navy flex items-center justify-center font-extrabold text-sm text-gold shadow-md">
           IU
         </div>
         <div>
           <div className="font-extrabold text-navy text-sm tracking-tight">
-            Venture Lab
+            InUnity
           </div>
           <div className="text-silver text-[10px] font-bold uppercase tracking-widest">
-            InUnity Private Limited
+            Strategic Profiler
           </div>
         </div>
       </div>
 
       <h1 className="text-2xl font-bold text-navy mb-2 tracking-tight">
-        Create Account
+        Venture Registration
       </h1>
-      <p className="text-sm text-slate leading-relaxed font-medium mb-8">
-        Begin your strategic diagnosis and join the InUnity ecosystem.
+      <p className="text-sm text-slate leading-relaxed font-medium mb-10">
+        Enter your details to create an account and begin your diagnostic journey.
       </p>
 
       <form onSubmit={handleRegister} className="flex flex-col gap-6">
         
-        {/* Role Selector */}
-        <div className="space-y-3">
-           <label className="text-[10px] font-extrabold text-navy uppercase tracking-widest block pl-1">
-             Registering As
-           </label>
-           <div className="grid grid-cols-2 gap-2 bg-smoke p-1.5 rounded-xl border border-rule">
-              <button
-                type="button"
-                onClick={() => update('role', 'startup')}
-                className={cn(
-                  "py-2.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-all",
-                  form.role === 'startup' ? "bg-white text-navy shadow-sm" : "text-silver hover:text-slate"
-                )}
-              >
-                Startup Founder
-              </button>
-              <button
-                type="button"
-                onClick={() => update('role', 'programme_team')}
-                className={cn(
-                  "py-2.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-all",
-                  form.role === 'programme_team' ? "bg-white text-navy shadow-sm" : "text-silver hover:text-slate"
-                )}
-              >
-                Programme Team
-              </button>
-           </div>
-        </div>
-
         <div className="space-y-2">
            <label className="text-[10px] font-extrabold text-navy uppercase tracking-widest block pl-1">
              Full Name
@@ -134,31 +104,29 @@ export default function RegisterPage() {
            />
         </div>
 
-        {form.role === 'startup' && (
-          <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-             <label className="text-[10px] font-extrabold text-navy uppercase tracking-widest block pl-1">
-               Startup Name
-             </label>
-             <input
-               type="text"
-               value={form.startupName}
-               onChange={e => update('startupName', e.target.value)}
-               placeholder="Acme Inc"
-               required
-               className="w-full border border-rule rounded-xl px-4 py-3 text-sm text-navy bg-white outline-none focus:border-navy focus:ring-4 focus:ring-navy/5 placeholder:text-silver/60 transition-all font-medium"
-             />
-          </div>
-        )}
+        <div className="space-y-2">
+           <label className="text-[10px] font-extrabold text-navy uppercase tracking-widest block pl-1">
+             Venture / Organisation Name
+           </label>
+           <input
+             type="text"
+             value={form.startupName}
+             onChange={e => update('startupName', e.target.value)}
+             placeholder="Acme Ventures"
+             required
+             className="w-full border border-rule rounded-xl px-4 py-3 text-sm text-navy bg-white outline-none focus:border-navy focus:ring-4 focus:ring-navy/5 placeholder:text-silver/60 transition-all font-medium"
+           />
+        </div>
 
         <div className="space-y-2">
            <label className="text-[10px] font-extrabold text-navy uppercase tracking-widest block pl-1">
-             Email Address
+             Business Email
            </label>
            <input
              type="email"
              value={form.email}
              onChange={e => update('email', e.target.value)}
-             placeholder="you@startup.com"
+             placeholder="you@company.com"
              required
              className="w-full border border-rule rounded-xl px-4 py-3 text-sm text-navy bg-white outline-none focus:border-navy focus:ring-4 focus:ring-navy/5 placeholder:text-silver/60 transition-all font-medium"
            />
@@ -207,12 +175,12 @@ export default function RegisterPage() {
           {loading ? (
             <Loader2 className="animate-spin" size={16} />
           ) : (
-            'Complete Registration'
+            'Complete Registry'
           )}
         </button>
 
         <p className="text-xs text-slate text-center font-semibold mt-4">
-          Already have an account?{' '}
+          Already verified?{' '}
           <Link href="/login" className="text-navy font-extrabold underline decoration-navy/20 hover:decoration-navy transition-all">
             Sign in
           </Link>

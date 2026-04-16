@@ -157,7 +157,13 @@ CREATE TABLE IF NOT EXISTS teams (
   stage_override_flag         TEXT DEFAULT '',
   assigned_mentor_type        TEXT DEFAULT '',
   overall_weighted_score      FLOAT DEFAULT 0,
-  p9_bonus_active             BOOLEAN DEFAULT FALSE
+  p9_bonus_active             BOOLEAN DEFAULT FALSE,
+
+  -- 3-Role Extensions
+  startup_user_id             UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  submission_status           TEXT DEFAULT 'draft',
+  diagnosis_visible           BOOLEAN DEFAULT FALSE,
+  admin_notes                 TEXT DEFAULT ''
 );
 
 -- Step 3: Run migrations for new 9-Parameter Engine
@@ -292,6 +298,12 @@ ALTER TABLE teams ADD COLUMN IF NOT EXISTS assigned_mentor_type        TEXT DEFA
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS overall_weighted_score     FLOAT DEFAULT 0;
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS p9_bonus_active            BOOLEAN DEFAULT FALSE;
 
+-- New 3-Role Columns
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS startup_user_id             UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS submission_status           TEXT DEFAULT 'draft';
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS diagnosis_visible           BOOLEAN DEFAULT FALSE;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS admin_notes                 TEXT DEFAULT '';
+
 -- Cleanup legacy columns (optional, but requested for source-of-truth purity)
 ALTER TABLE teams DROP COLUMN IF EXISTS problem_statement;
 ALTER TABLE teams DROP COLUMN IF EXISTS problem_score;
@@ -334,20 +346,22 @@ DROP POLICY IF EXISTS "Users can insert own teams" ON teams;
 DROP POLICY IF EXISTS "Users can update own teams" ON teams;
 DROP POLICY IF EXISTS "Users can delete own teams" ON teams;
 
-CREATE POLICY "Users see own teams" ON teams
-  FOR SELECT USING (auth.uid() = user_id);
+-- Role-Aware Policies
+CREATE POLICY "Programme Team and assigned Startups see teams" ON teams
+  FOR SELECT USING (auth.uid() = user_id OR auth.uid() = startup_user_id);
 
-CREATE POLICY "Users can insert own teams" ON teams
+CREATE POLICY "Users can insert own sessions" ON teams
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update own teams" ON teams
-  FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Programme Team and assigned Startups can update" ON teams
+  FOR UPDATE USING (auth.uid() = user_id OR auth.uid() = startup_user_id);
 
-CREATE POLICY "Users can delete own teams" ON teams
+CREATE POLICY "Creators can delete sessions" ON teams
   FOR DELETE USING (auth.uid() = user_id);
 
 -- Step 6: Create index for performance
 CREATE INDEX IF NOT EXISTS teams_user_id_idx ON teams(user_id);
+CREATE INDEX IF NOT EXISTS teams_startup_user_id_idx ON teams(startup_user_id);
 CREATE INDEX IF NOT EXISTS teams_created_at_idx ON teams(created_at DESC);
 
 -- Step 7: Verify everything worked

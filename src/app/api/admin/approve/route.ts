@@ -31,20 +31,23 @@ export async function POST(req: Request) {
   }
 
   // 2. Perform Toggle
-  const { userId, status } = await req.json()
+  const { userId, status, role } = await req.json()
 
   if (!userId || !['pending', 'approved', 'rejected'].includes(status)) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
   }
 
+  const updateData: any = { status }
+  if (role) updateData.role = role
+
   const { error } = await supabase
     .from('profiles')
-    .update({ status })
+    .update(updateData)
     .eq('id', userId)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json({ success: true, status })
+  return NextResponse.json({ success: true, status, role: role || 'unchanged' })
 }
