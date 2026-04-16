@@ -36,7 +36,7 @@ export default function TopBar() {
         </div>
         <div>
           <div className="text-white font-extrabold text-sm tracking-tight leading-tight">
-            Startup Diagnosis Profiler
+            Startup Stage Profiler
           </div>
           <div className="text-slate-400 text-[10px] font-medium tracking-wide uppercase">
             InUnity Private Limited

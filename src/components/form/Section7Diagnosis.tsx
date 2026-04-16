@@ -11,7 +11,7 @@ interface Props {
   onScoreChange?: (field: keyof TeamProfile, value: number) => void
 }
 
-export default function Section7Diagnosis({ team, onChange }: Props) {
+export default function Section7StageProfile({ team, onChange }: Props) {
   const roadmap = team.roadmap || []
 
   const updateRoadmap = (index: number, updates: Partial<RoadmapItem>) => {
@@ -58,7 +58,7 @@ export default function Section7Diagnosis({ team, onChange }: Props) {
             <div className="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-gold">
               <Calendar size={18} />
             </div>
-            <h3 className="text-sm font-black text-navy uppercase tracking-widest">Individual Team Roadmap</h3>
+            <h3 className="text-sm font-black text-navy uppercase tracking-widest">Team Roadmap</h3>
           </div>
           <button 
             onClick={addRoadmapItem}

@@ -12,7 +12,7 @@ import Section3MarketValidation from '@/components/form/Section3MarketValidation
 import Section4BusinessModel from '@/components/form/Section4BusinessModel'
 import Section5Readiness from '@/components/form/Section5Readiness'
 import Section6Pitch from '@/components/form/Section6Pitch'
-import Section7Diagnosis from '@/components/form/Section7Diagnosis'
+import Section7StageProfile from '@/components/form/Section7Diagnosis'
 import LivePreview from '@/components/preview/LivePreview'
 import AIAnalysisPanel from '@/components/ai/AIAnalysisPanel'
 
@@ -23,7 +23,7 @@ const SECTIONS = [
   Section4BusinessModel,
   Section5Readiness,
   Section6Pitch,
-  Section7Diagnosis,
+  Section7StageProfile,
 ]
 
 export default function ProfilerPage() {

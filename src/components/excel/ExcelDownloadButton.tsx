@@ -12,7 +12,7 @@ export default function ExcelDownloadButton({ team }: { team: TeamProfile }) {
     const scores = calculateScores(team)
 
     const data = [
-      ['INUNITY STARTUP DIAGNOSIS REPORT', ''],
+      ['INUNITY STARTUP STAGE PROFILE', ''],
       ['Profile Name', team.teamName],
       ['Startup Name', team.startupName],
       ['Date Generated', new Date().toLocaleString()],
@@ -26,7 +26,7 @@ export default function ExcelDownloadButton({ team }: { team: TeamProfile }) {
       ['Interview Date', team.interviewDate],
       ['', ''],
 
-      ['SECTION 2: DIAGNOSTIC SCORES', ''],
+      ['SECTION 2: READINESS SCORE', ''],
       ['Value Proposition (Problem/Solution)', scores.problem || 'N/A'],
       ['Market Validation (Customers/Market)', scores.market || 'N/A'],
       ['Business Model (Revenue/Strategy)', scores.biz || 'N/A'],
@@ -40,19 +40,19 @@ export default function ExcelDownloadButton({ team }: { team: TeamProfile }) {
       ['Commercial Readiness Level (CRL)', team.crl],
       ['', ''],
 
-      ['SECTION 4: AI ANALYSIS & RECOMMENDATIONS', ''],
-      ['Strengths', team.strengths],
+      ['SECTION 4: AI ASSESSMENT SUMMARY', ''],
+      ['Key Strengths', team.strengths],
       ['Critical Gaps', team.gaps],
       ['Readiness Summary', team.readinessSummary],
       ['Key Recommendations', team.recommendations],
       ['', ''],
 
-      ['SECTION 5: ACTION ROADMAP', ''],
+      ['SECTION 5: TEAM ROADMAP', ''],
       ['Priority', 'Action Item', 'Support Required', 'Timeline'],
       ...(team.roadmap || []).map(r => [r.priority, r.action, r.supportFrom, r.byWhen]),
       ['', ''],
 
-      ['SECTION 6: MENTOR NOTES', ''],
+      ['SECTION 6: INTERNAL FEEDBACK / PROGRAMME NOTES', ''],
       ['Mentor Assigned', team.mentor],
       ['Next Check-in', team.nextCheckin],
       ['Additional Notes', team.notes],

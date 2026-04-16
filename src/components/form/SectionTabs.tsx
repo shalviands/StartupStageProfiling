@@ -20,7 +20,7 @@ const SECTIONS = [
   { id: 3, label: 'Model', icon: TrendingUp },
   { id: 4, label: 'Readiness', icon: Rocket },
   { id: 5, label: 'Pitch', icon: Presentation },
-  { id: 6, label: 'Diagnosis', icon: Stethoscope },
+  { id: 6, label: 'Stage Profile', icon: Stethoscope },
 ]
 
 export default function SectionTabs() {
