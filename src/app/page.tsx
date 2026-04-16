@@ -1,10 +1,17 @@
+import { redirect } from 'next/navigation'
+import { getUserProfile, getHomeRouteForRole } from '@/lib/roles'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export default function LandingPage() {
+export default async function RootPage() {
+  const profile = await getUserProfile()
+  if (profile) {
+    redirect(getHomeRouteForRole(profile.role, profile.status))
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] selection:bg-[#F59E0B]/30">
       {/* Navigation */}

@@ -15,14 +15,47 @@ export async function PUT(
 
     const body = await request.json()
     const supabase = await createServerSupabaseClient()
-    
+
+    // 1. Fetch user role
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const role = profile?.role
+
+    // 2. Fetch target team to check ownership
+    const { data: targetTeam, error: fetchError } = await supabase
+      .from('teams')
+      .select('*')
+      .eq('id', params.id)
+      .single()
+
+    if (fetchError || !targetTeam) {
+      return NextResponse.json({ error: 'Team not found' }, { status: 404 })
+    }
+
+    // 3. Security: Role-based check
+    if (role !== 'admin') {
+      if (role === 'startup') {
+        if (targetTeam.startup_user_id !== user.id) {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        }
+      } else {
+        // Programme team member
+        if (targetTeam.user_id !== user.id) {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        }
+      }
+    }
+
     const dbData = mapFrontendToDb(body)
 
     const { data, error } = await supabase
       .from('teams')
       .update(dbData)
       .eq('id', params.id)
-      .eq('user_id', user.id) // Security: Ensure user owns the record
       .select()
       .single()
 
@@ -46,11 +79,37 @@ export async function DELETE(
     }
 
     const supabase = await createServerSupabaseClient()
+
+    // 1. Fetch user role
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const role = profile?.role
+
+    // 2. Check ownership if not admin
+    if (role !== 'admin') {
+       const { data: targetTeam } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('id', params.id)
+        .single()
+
+      if (!targetTeam) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      
+      if (role === 'startup') {
+        if (targetTeam.startup_user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      } else {
+        if (targetTeam.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
+    }
+
     const { error } = await supabase
       .from('teams')
       .delete()
       .eq('id', params.id)
-      .eq('user_id', user.id)
 
     if (error) throw error
 

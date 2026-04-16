@@ -164,6 +164,12 @@ export const TeamBaseSchema = z.object({
   assigned_mentor_type:      z.string().default(''),
   overall_weighted_score:    z.number().nullable().default(null),
   p9_bonus_active:           z.boolean().default(false),
+
+  // 3-Role Architecture Extensions
+  startup_user_id:           z.string().nullable().default(null),
+  submission_status:         z.enum(['draft', 'submitted', 'locked', 'finalised']).default('draft'),
+  diagnosis_visible:         z.boolean().default(false),
+  admin_notes:               z.string().default(''),
 })
 
 export const TeamCreateSchema = TeamBaseSchema

@@ -11,11 +11,26 @@ export async function GET() {
     }
 
     const supabase = await createServerSupabaseClient()
-    const { data, error } = await supabase
+    
+    // Check role
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    let query = supabase
       .from('teams')
       .select('*')
-      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
+
+    if (profile?.role === 'startup') {
+      query = query.eq('startup_user_id', user.id)
+    } else {
+      query = query.eq('user_id', user.id)
+    }
+
+    const { data, error } = await query
 
     if (error) {
       console.error('[GET /api/teams] DB error:', error.message)
@@ -38,21 +53,34 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-
     const supabase = await createServerSupabaseClient()
+
+    // Check role
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const insertData: any = {
+      user_id:      user.id,
+      team_name:    body.teamName    ?? 'New Session',
+      startup_name: body.startupName ?? '',
+      sector:       body.sector      ?? '',
+      institution:  body.institution   ?? '',
+      team_size:    body.teamSize    ?? '',
+      roles:        body.roles       ?? '',
+      interviewer:  body.interviewer   ?? '',
+      p8_team_members: body.p8_team_members ?? [],
+    }
+
+    if (profile?.role === 'startup') {
+      insertData.startup_user_id = user.id
+    }
+
     const { data, error } = await supabase
       .from('teams')
-      .insert({
-        user_id:      user.id,
-        team_name:    body.teamName    ?? 'New Session',
-        startup_name: body.startupName ?? '',
-        sector:       body.sector      ?? '',
-        institution:  body.institution   ?? '',
-        team_size:    body.teamSize    ?? '',
-        roles:        body.roles       ?? '',
-        interviewer:  body.interviewer   ?? '',
-        p8_team_members: body.p8_team_members ?? [],
-      })
+      .insert(insertData)
       .select()
       .single()
 

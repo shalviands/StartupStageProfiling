@@ -51,8 +51,8 @@ export async function middleware(request: NextRequest) {
 
   // ── User is NOT logged in ────────────────────────────────────────
   if (!user) {
-    // Allow / and /login — they need to see the landing and login pages
-    if (pathname === '/' || pathname.startsWith('/login')) {
+    // Allow /, /login, and /register
+    if (pathname === '/' || pathname.startsWith('/login') || pathname.startsWith('/register')) {
       return response
     }
     // Anything else (/profiler, /dashboard, etc.) → /login
@@ -62,13 +62,62 @@ export async function middleware(request: NextRequest) {
 
   // ── User IS logged in ────────────────────────────────────────────
   if (user) {
-    // If they visit /login → send them to /profiler
-    if (pathname.startsWith('/login')) {
-      const profilerUrl = new URL('/profiler', request.url)
-      return NextResponse.redirect(profilerUrl)
+    // Check their profile to enforce role-based access
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, status')
+      .eq('id', user.id)
+      .single()
+
+    const role = profile?.role
+    const status = profile?.status
+
+    // 1. Startup Roles
+    if (role === 'startup') {
+      if (status === 'pending') {
+        if (!pathname.startsWith('/pending') && !pathname.startsWith('/api/')) {
+          return NextResponse.redirect(new URL('/pending', request.url))
+        }
+        return response
+      }
+
+      if (status === 'rejected') {
+        if (!pathname.startsWith('/login')) {
+          return NextResponse.redirect(new URL('/login?error=rejected', request.url))
+        }
+        return response
+      }
+
+      // Approved Startup
+      if (status === 'approved') {
+        if (pathname === '/' || pathname.startsWith('/login')) {
+           return NextResponse.redirect(new URL('/startup/profile', request.url))
+        }
+        if (!pathname.startsWith('/startup') && !pathname.startsWith('/api/')) {
+          return NextResponse.redirect(new URL('/startup/profile', request.url))
+        }
+        return response
+      }
     }
-    // Anywhere else (/, /profiler, /dashboard, etc.) → allow
-    return response
+
+    // 2. Programme Team Role
+    if (role === 'programme_team') {
+      if (pathname === '/' || pathname.startsWith('/login')) {
+        return NextResponse.redirect(new URL('/profiler', request.url))
+      }
+      if (pathname.startsWith('/admin') || pathname.startsWith('/startup')) {
+        return NextResponse.redirect(new URL('/profiler', request.url))
+      }
+      return response
+    }
+
+    // 3. Admin Role
+    if (role === 'admin') {
+      if (pathname === '/' || pathname.startsWith('/login')) {
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+      }
+      return response
+    }
   }
 
   return response

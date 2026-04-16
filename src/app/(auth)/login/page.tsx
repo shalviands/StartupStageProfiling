@@ -1,11 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
+import Link from 'next/link'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const rejectedError = searchParams.get('error') === 'rejected'
+  
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [error, setError]       = useState('')
@@ -16,14 +20,10 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    // Create client inline — avoids any import chain issues
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
-
-    console.log('[Login] Attempting login for:', email)
-    console.log('[Login] Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
 
     const { data, error: authError } = await supabase.auth.signInWithPassword({
       email: email.trim().toLowerCase(),
@@ -31,14 +31,12 @@ export default function LoginPage() {
     })
 
     if (authError) {
-      console.error('[Login] Error:', authError.message, authError.status)
       setError(authError.message)
       setLoading(false)
       return
     }
 
-    console.log('[Login] Success. User:', data.user?.email)
-    router.push('/profiler')
+    router.push('/')
     router.refresh()
   }
 
@@ -88,6 +86,17 @@ export default function LoginPage() {
             Please sign in to access the InUnity Startup profiling platform.
           </p>
         </div>
+
+        {rejectedError && (
+          <div style={{
+            background: '#FDECEA', border: '1px solid #F0997B',
+            borderRadius: 8, padding: '10px 14px', marginBottom: 16,
+            fontSize: 12, color: '#E84B3A',
+          }}>
+            Your registration was not approved. Please contact
+            the InUnity team for more information.
+          </div>
+        )}
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div>
@@ -163,11 +172,29 @@ export default function LoginPage() {
         </form>
 
         <div style={{ marginTop: 32, textAlign: 'center' }}>
-          <p style={{ fontSize: 12, color: '#94A3B8', fontWeight: 500 }}>
+          <p style={{ fontSize: 11, color: '#8A9BB0', textAlign: 'center', marginTop: 12 }}>
+            New startup?{' '}
+            <Link href="/register" style={{ color: '#0F2647', fontWeight: 600 }}>
+              Register here
+            </Link>
+          </p>
+          <p style={{ fontSize: 11, color: '#94A3B8', fontWeight: 500, marginTop: 12 }}>
             Protected by InUnity Security Protocol
           </p>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}>
+         <div style={{ color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Loading Session...</div>
+       </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
