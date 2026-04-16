@@ -3,83 +3,102 @@
 import React from 'react'
 import { FileSpreadsheet } from 'lucide-react'
 import type { TeamProfile } from '@/types/team.types'
-import { calculateScores } from '@/utils/scores'
+import { calculateOverallScore, classifyStage, getRoadmap } from '@/utils/scores'
+import { PARAMETERS_CONFIG } from '@/config/parameters'
 
 export default function ExcelDownloadButton({ team }: { team: TeamProfile }) {
   const handleExport = async () => {
     if (!team?.id) return
     const { utils, writeFile } = await import('xlsx')
-    const scores = calculateScores(team)
-
-    const data = [
-      ['INUNITY STARTUP STAGE PROFILE', ''],
-      ['Profile Name', team.teamName],
-      ['Startup Name', team.startupName],
-      ['Date Generated', new Date().toLocaleString()],
-      ['', ''],
-
-      ['SECTION 1: BASIC INFORMATION', ''],
-      ['Sector', team.sector],
-      ['Institution', team.institution],
-      ['Team Size', team.teamSize],
-      ['Interviewer', team.interviewer],
-      ['Interview Date', team.interviewDate],
-      ['', ''],
-
-      ['SECTION 2: READINESS SCORE', ''],
-      ['Value Proposition (Problem/Solution)', scores.problem || 'N/A'],
-      ['Market Validation (Customers/Market)', scores.market || 'N/A'],
-      ['Business Model (Revenue/Strategy)', scores.biz || 'N/A'],
-      ['Pitch & Presentation', scores.pitch || 'N/A'],
-      ['OVERALL SCORE', scores.overall || 'N/A'],
-      ['', ''],
-
-      ['SECTION 3: READINESS LEVELS', ''],
-      ['Technology Readiness Level (TRL)', team.trl],
-      ['Business Readiness Level (BRL)', team.brl],
-      ['Commercial Readiness Level (CRL)', team.crl],
-      ['', ''],
-
-      ['SECTION 4: AI ASSESSMENT SUMMARY', ''],
-      ['Key Strengths', team.strengths],
-      ['Critical Gaps', team.gaps],
-      ['Readiness Summary', team.readinessSummary],
-      ['Key Recommendations', team.recommendations],
-      ['', ''],
-
-      ['SECTION 5: TEAM ROADMAP', ''],
-      ['Priority', 'Action Item', 'Support Required', 'Timeline'],
-      ...(team.roadmap || []).map(r => [r.priority, r.action, r.supportFrom, r.byWhen]),
-      ['', ''],
-
-      ['SECTION 6: INTERNAL FEEDBACK / PROGRAMME NOTES', ''],
-      ['Mentor Assigned', team.mentor],
-      ['Next Check-in', team.nextCheckin],
-      ['Additional Notes', team.notes],
-    ]
-
-    const ws = utils.aoa_to_sheet(data)
-    
-    // Simple column widths for better structure
-    ws['!cols'] = [
-      { wch: 35 }, // Feature
-      { wch: 60 }, // Value
-      { wch: 25 }, // Support
-      { wch: 15 }, // Timeline
-    ]
+    const { overall, p1, p2, p3, p4, p5, p6, p7, p8, p9 } = calculateOverallScore(team)
+    const { stage, level, override } = classifyStage(team)
+    const roadmap = getRoadmap(team)
 
     const wb = utils.book_new()
-    utils.book_append_sheet(wb, ws, 'Diagnosis Report')
 
-    writeFile(wb, `${(team.startupName || 'Startup').replace(/[^a-zA-Z0-9]/g, '_')}-Full-Diagnosis.xlsx`)
+    // --- SHEET 1: DIAGNOSTIC SUMMARY ---
+    const summaryData = [
+      ['INUNITY STARTUP DIAGNOSIS - EXECUTIVE SUMMARY'],
+      [''],
+      ['STARTUP IDENTITY'],
+      ['Startup Name', team.startupName || 'N/A'],
+      ['Batch / Team ID', team.teamName || 'N/A'],
+      ['Primary Sector', team.sector || 'N/A'],
+      ['Institution', team.institution || 'N/A'],
+      ['Team Size', team.teamSize || 'N/A'],
+      [''],
+      ['DIAGNOSTIC OUTPUTS'],
+      ['DETECTED STAGE', stage],
+      ['CLASSIFICATION TIER', `Level ${level}`],
+      ['OVERALL WEIGHTED SCORE', overall.toFixed(2), 'out of 5.0'],
+      ['WEAKEST LINK OVERRIDE', override || 'None (Growth Uncapped)'],
+      ['ASSIGNED MENTOR TYPE', team.assigned_mentor_type || 'Discovery Coach'],
+      [''],
+      ['PARAMETER AVERAGES (1-5)'],
+      ['P1: Founder & Problem', p1.toFixed(1)],
+      ['P2: Customer Discovery', p2.toFixed(1)],
+      ['P3: Product & TRL', p3.toFixed(1)],
+      ['P4: Differentiation', p4.toFixed(1)],
+      ['P5: Market & ICP', p5.toFixed(1)],
+      ['P6: Business Model', p6.toFixed(1)],
+      ['P7: Traction & CRL', p7.toFixed(1)],
+      ['P8: Team Readiness', p8.toFixed(1)],
+      ['P9: Advantage & Moats', p9.toFixed(1)],
+      [''],
+      ['Report Generated:', new Date().toLocaleString()]
+    ]
+    const wsSummary = utils.aoa_to_sheet(summaryData)
+    wsSummary['!cols'] = [{ wch: 30 }, { wch: 40 }]
+    utils.book_append_sheet(wb, wsSummary, 'Summary')
+
+    // --- SHEET 2: DETAILED ANALYSIS ---
+    const detailedData: any[][] = [
+      ['PARAMETER', 'QUESTION / FIELD', 'VALUE / ENTRY', 'SCORE (1-5)']
+    ]
+
+    PARAMETERS_CONFIG.forEach(param => {
+      detailedData.push(['', '', '', ''])
+      detailedData.push([param.title.toUpperCase(), '', '', ''])
+      
+      const allQs = [...param.coreQs, ...param.deepDiveQs]
+      allQs.forEach(q => {
+        const fieldName = `${param.id}_${q.id}`
+        const val = (team as any)[fieldName] || ''
+        const score = (team as any)[`${fieldName}_score`] || 0
+        detailedData.push([param.id, q.label, val, score > 0 ? score : 'Unscored'])
+      })
+      
+      detailedData.push([param.id, 'MENTOR OBSERVATION', (team as any)[`${param.id}_observation`] || '', ''])
+    })
+
+    const wsDetailed = utils.aoa_to_sheet(detailedData)
+    wsDetailed['!cols'] = [{ wch: 20 }, { wch: 35 }, { wch: 60 }, { wch: 15 }]
+    utils.book_append_sheet(wb, wsDetailed, 'Parameter Breakdown')
+
+    // --- SHEET 3: STRATEGIC ROADMAP ---
+    const roadmapData = [
+      ['STRATEGIC 4-WEEK SPRINT ROADMAP'],
+      [''],
+      ['Target Stage:', stage],
+      ['Focus Tier:', `Level ${level}`],
+      [''],
+      ['PRIORITY', 'STRATEGIC ACTION ITEM', 'SUPPORT REQUIRED / BY', 'TIMELINE'],
+      ...roadmap.map(r => [r.priority, r.action, r.supportFrom, r.byWhen])
+    ]
+    const wsRoadmap = utils.aoa_to_sheet(roadmapData)
+    wsRoadmap['!cols'] = [{ wch: 15 }, { wch: 60 }, { wch: 30 }, { wch: 15 }]
+    utils.book_append_sheet(wb, wsRoadmap, 'Sprint Roadmap')
+
+    writeFile(wb, `${(team.startupName || 'Startup').replace(/[^a-zA-Z0-9]/g, '_')}-Evaluation.xlsx`)
   }
 
   return (
     <button
       onClick={handleExport}
-      className="bg-white/10 text-white hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2"
+      className="w-full border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 active:scale-95"
     >
-      <FileSpreadsheet size={14} /> Analysis
+      <FileSpreadsheet size={16} className="text-emerald-500" />
+      Download Analysis (XLSX)
     </button>
   )
 }

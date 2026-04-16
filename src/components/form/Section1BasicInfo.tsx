@@ -5,104 +5,110 @@ import type { TeamProfile } from '@/types/team.types'
 
 interface Props {
   team: TeamProfile
-  onChange: (field: keyof TeamProfile, value: any) => void
-  onScoreChange?: (field: keyof TeamProfile, value: number) => void
+  onChange: (field: string, value: any) => void
 }
 
 export default function Section1BasicInfo({ team, onChange }: Props) {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <label className="text-[10px] font-bold text-silver uppercase tracking-widest px-1">Startup Name</label>
-          <input 
-            type="text" value={team.startupName}
-            onChange={(e) => onChange('startupName', e.target.value)}
-            className="w-full bg-white border border-rule rounded-xl p-4 text-sm text-navy focus:ring-2 focus:ring-navy/10 focus:border-navy outline-none shadow-sm transition-all"
-            placeholder="e.g. AgriFlow Systems"
-          />
-        </div>
-        
-        <div className="space-y-4">
-          <label className="text-[10px] font-bold text-silver uppercase tracking-widest px-1">Team ID / Name</label>
-          <input 
-            type="text" value={team.teamName}
-            onChange={(e) => onChange('teamName', e.target.value)}
-            className="w-full bg-white border border-rule rounded-xl p-4 text-sm text-navy focus:ring-2 focus:ring-navy/10 focus:border-navy outline-none shadow-sm transition-all"
-            placeholder="e.g. Batch 04 - Team A"
-          />
+      {/* Session Hero */}
+      <div className="bg-slate-900 rounded-[32px] p-10 text-white relative overflow-hidden group shadow-2xl">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-700" />
+        <div className="relative z-10 space-y-6">
+          <div className="space-y-2">
+             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Diagnosis Identity</span>
+             <h1 className="text-4xl font-black tracking-tight leading-none text-white">Startup Profile</h1>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest px-1">Startup Name</label>
+              <input 
+                type="text" value={team.startupName}
+                onChange={(e) => onChange('startupName', e.target.value)}
+                className="w-full bg-white/10 border border-white/10 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/30 outline-none transition-all placeholder:text-white/20"
+                placeholder="e.g. AgriFlow Systems"
+              />
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest px-1">Diagnostic Batch / Team ID</label>
+              <input 
+                type="text" value={team.teamName}
+                onChange={(e) => onChange('teamName', e.target.value)}
+                className="w-full bg-white/10 border border-white/10 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/30 outline-none transition-all placeholder:text-white/20"
+                placeholder="e.g. Cohort 7 - Team Delta"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-1">
         <div className="space-y-4">
-          <label className="text-[10px] font-bold text-silver uppercase tracking-widest px-1">Primary Sector</label>
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
+            <div className="w-1 h-1 bg-slate-400 rounded-full" /> Primary Sector
+          </label>
           <div className="relative">
             <select 
               value={team.sector}
               onChange={(e) => onChange('sector', e.target.value)}
-              className="w-full bg-white border border-rule rounded-xl p-4 text-sm text-navy focus:ring-2 focus:ring-navy/10 focus:border-navy outline-none shadow-sm appearance-none transition-all"
+              className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm appearance-none transition-all"
             >
               <option value="">Select Sector...</option>
-              <option value="Agriculture">Agriculture</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="EdTech">EdTech</option>
-              <option value="FinTech">FinTech</option>
-              <option value="Sustainability">Sustainability</option>
-              <option value="Hardware">Hardware</option>
-              <option value="Other">Other (Please Specify)</option>
+              {['Agriculture', 'Healthcare', 'EdTech', 'FinTech', 'Sustainability', 'Hardware', 'SaaS', 'E-Commerce', 'CleanTech', 'Other'].map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
             </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-silver">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
             </div>
           </div>
-          {team.sector === 'Other' && (
-            <input 
-              type="text" value={team.productTypeOther || ''}
-              onChange={(e) => onChange('productTypeOther', e.target.value)}
-              className="mt-2 w-full bg-white border border-rule rounded-xl p-4 text-sm text-navy focus:ring-2 focus:ring-navy/10 focus:border-navy outline-none shadow-sm animate-in zoom-in-95 duration-200"
-              placeholder="Specify Sector..."
-            />
-          )}
         </div>
 
         <div className="space-y-4">
-          <label className="text-[10px] font-bold text-silver uppercase tracking-widest px-1">Institution</label>
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
+            <div className="w-1 h-1 bg-slate-400 rounded-full" /> Institution
+          </label>
           <input 
             type="text" value={team.institution}
             onChange={(e) => onChange('institution', e.target.value)}
-            className="w-full bg-white border border-rule rounded-xl p-4 text-sm text-navy focus:ring-2 focus:ring-navy/10 focus:border-navy outline-none shadow-sm transition-all"
+            className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm transition-all"
             placeholder="e.g. NIT Karnataka"
           />
         </div>
 
         <div className="space-y-4">
-          <label className="text-[10px] font-bold text-silver uppercase tracking-widest px-1">Team Size</label>
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
+            <div className="w-1 h-1 bg-slate-400 rounded-full" /> Team Size
+          </label>
           <input 
             type="text" value={team.teamSize}
             onChange={(e) => onChange('teamSize', e.target.value)}
-            className="w-full bg-white border border-rule rounded-xl p-4 text-sm text-navy focus:ring-2 focus:ring-navy/10 focus:border-navy outline-none shadow-sm transition-all"
-            placeholder="e.g. 3 Members"
+            className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm transition-all"
+            placeholder="e.g. 3 Cofounders"
           />
         </div>
       </div>
 
-      <div className="space-y-4">
-        <label className="text-[10px] font-bold text-silver uppercase tracking-widest px-1">Interview Log</label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="relative">
+      <div className="bg-slate-50 border border-slate-100 rounded-[32px] p-8 space-y-6">
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 block">Diagnostic Session Metadata</label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+             <label className="text-[10px] font-bold text-slate-500">Interview Date</label>
              <input 
               type="date" value={team.interviewDate}
               onChange={(e) => onChange('interviewDate', e.target.value)}
-              className="w-full bg-white border border-rule rounded-xl p-4 text-sm text-navy focus:ring-2 focus:ring-navy/10 focus:border-navy outline-none shadow-sm transition-all"
+              className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none transition-all"
             />
           </div>
-          <input 
-            type="text" value={team.interviewer}
-            onChange={(e) => onChange('interviewer', e.target.value)}
-            className="w-full bg-white border border-rule rounded-xl p-4 text-sm text-navy focus:ring-2 focus:ring-navy/10 focus:border-navy outline-none shadow-sm transition-all"
-            placeholder="Interviewer Name"
-          />
+          <div className="space-y-3">
+            <label className="text-[10px] font-bold text-slate-500">Principal Interviewer</label>
+            <input 
+              type="text" value={team.interviewer}
+              onChange={(e) => onChange('interviewer', e.target.value)}
+              className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none transition-all"
+              placeholder="Full Name"
+            />
+          </div>
         </div>
       </div>
     </div>

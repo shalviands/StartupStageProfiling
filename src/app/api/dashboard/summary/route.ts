@@ -2,19 +2,16 @@ import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { mapDbToFrontend } from '@/utils/mappers'
-import { calculateScores } from '@/utils/scores'
+import { calculateOverallScore } from '@/utils/scores'
 
 function deriveStatus(team: any): string {
-  const s = calculateScores(mapDbToFrontend(team))
-  if (
-    s.overall !== null &&
-    team.strengths?.trim() &&
-    team.gaps?.trim() &&
-    team.p0_need?.trim() &&
-    team.mentor?.trim()
-  ) return 'finalized'
-  if (s.problem && s.market && s.biz && s.pitch) return 'completed'
-  if (s.overall !== null) return 'in_progress'
+  const profile = mapDbToFrontend(team)
+  if (!profile) return 'new'
+  const { overall } = calculateOverallScore(profile)
+  
+  if (overall >= 4 && team.detected_stage) return 'finalized'
+  if (overall >= 2) return 'completed'
+  if (overall > 0) return 'in_progress'
   return 'new'
 }
 

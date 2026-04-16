@@ -1,52 +1,44 @@
 'use client'
 
 import React from 'react'
-import { useUIStore } from '@/store/uiStore'
 import { cn } from '@/utils/cn'
-import { 
-  User, 
-  Target, 
-  Users, 
-  TrendingUp, 
-  Rocket, 
-  Presentation, 
-  Stethoscope 
-} from 'lucide-react'
 
-const SECTIONS = [
-  { id: 0, label: 'Profile', icon: User },
-  { id: 1, label: 'Value', icon: Target },
-  { id: 2, label: 'Market', icon: Users },
-  { id: 3, label: 'Model', icon: TrendingUp },
-  { id: 4, label: 'Readiness', icon: Rocket },
-  { id: 5, label: 'Pitch', icon: Presentation },
-  { id: 6, label: 'Stage Profile', icon: Stethoscope },
+interface Props {
+  activeTab: number
+  setActiveTab: (tab: number) => void
+  overallScore?: number
+}
+
+const TABS = [
+  { id: 0, label: 'Profile' },
+  { id: 1, label: 'P1' },
+  { id: 2, label: 'P2' },
+  { id: 3, label: 'P3' },
+  { id: 4, label: 'P4' },
+  { id: 5, label: 'P5' },
+  { id: 6, label: 'P6' },
+  { id: 7, label: 'P7' },
+  { id: 8, label: 'P8' },
+  { id: 9, label: 'P9' },
 ]
 
-export default function SectionTabs() {
-  const { activeSection, setSection } = useUIStore()
-
+export default function SectionTabs({ activeTab, setActiveTab }: Props) {
   return (
-    <div className="flex border-b border-slate-200 bg-white overflow-x-auto scrollbar-hide px-6 pt-5 gap-3">
-      {SECTIONS.map((s) => {
-        const Icon = s.icon
-        const isActive = activeSection === s.id
-        return (
-          <button
-            key={s.id}
-            onClick={() => setSection(s.id)}
-            className={cn(
-              "flex items-center gap-2.5 px-6 py-3.5 rounded-t-2xl transition-all font-extrabold text-[11px] whitespace-nowrap relative border-b-2 btn-hover",
-              isActive 
-                ? "bg-slate-50 text-slate-900 border-slate-900 shadow-[0_-4px_12px_-4px_rgba(15,23,42,0.05)]" 
-                : "bg-white text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-50/50"
-            )}
-          >
-            <Icon size={14} className={isActive ? "text-slate-900" : "text-slate-300"} strokeWidth={isActive ? 2.5 : 2} />
-            {s.label.toUpperCase()}
-          </button>
-        )
-      })}
+    <div className="flex bg-slate-100/50 p-1.5 rounded-[20px] mb-8 overflow-x-auto scrollbar-hide border border-slate-100">
+      {TABS.map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => setActiveTab(tab.id)}
+          className={cn(
+            "flex-1 min-w-[80px] py-3 px-4 rounded-[14px] text-[10px] font-black uppercase tracking-widest transition-all duration-300",
+            activeTab === tab.id
+              ? "bg-white text-slate-900 shadow-sm border border-slate-200/50 scale-[1.02]"
+              : "text-slate-400 hover:text-slate-600 hover:bg-white/40"
+          )}
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
   )
 }

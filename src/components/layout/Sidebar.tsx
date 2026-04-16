@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { cn } from '@/utils/cn'
+import { calculateOverallScore, scoreBg, scoreColor } from '@/utils/scores'
 import { useTeams, useCreateTeam, useDeleteTeam } from '@/hooks/useTeams'
 import { useUIStore } from '@/store/uiStore'
-import { calculateScores, scoreBg, scoreColor } from '@/utils/scores'
 import { useRouter } from 'next/navigation'
 import { getSupabaseBrowser } from '@/lib/supabase/client'
 import { LogOut, User as UserIcon, Shield } from 'lucide-react'
@@ -31,28 +32,9 @@ export default function Sidebar() {
     router.refresh()
   }
 
-  async function handleAddTeam() {
-    if (createTeam.isPending) return
-    try {
-      const newTeam = await createTeam.mutateAsync({
-        teamName: 'New Team',
-        startupName: '',
-        roadmap: [
-          { priority: 'P0' as const, action: '', supportFrom: '', byWhen: '' },
-          { priority: 'P0' as const, action: '', supportFrom: '', byWhen: '' },
-          { priority: 'P1' as const, action: '', supportFrom: '', byWhen: '' },
-          { priority: 'P2' as const, action: '', supportFrom: '', byWhen: '' },
-        ],
-      })
-      setActiveTeamId(newTeam.id)
-    } catch (err) {
-      console.error('[Sidebar] Add team failed:', err)
-    }
-  }
-
   async function handleDelete(id: string, e: React.MouseEvent) {
     e.stopPropagation()
-    if (!confirm('Delete this team profile?')) return
+    if (!confirm('Permanently delete this diagnostic session?')) return
     try {
       if (activeTeamId === id) setActiveTeamId(null)
       await deleteTeam.mutateAsync(id)
@@ -61,148 +43,110 @@ export default function Sidebar() {
     }
   }
 
+  async function handleAddTeam() {
+    if (createTeam.isPending) return
+    try {
+      const newTeam = await createTeam.mutateAsync({
+        teamName: 'New Diagnostic Session',
+        startupName: '',
+        p8_team_members: [],
+        detected_stage: 'IDEA / CONCEPTION',
+        overall_weighted_score: 0,
+        p9_bonus_active: false
+      })
+      setActiveTeamId(newTeam.id)
+    } catch (err) {
+      console.error('[Sidebar] Add session failed:', err)
+    }
+  }
+
   const userDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
   const userRole = user?.user_metadata?.role || 'Administrator'
 
   return (
-    <aside style={{
-      width: 210,
-      background: '#fff',
-      borderRight: '1px solid #E2E8F0',
-      display: 'flex',
-      flexDirection: 'column',
-      flexShrink: 0,
-      overflow: 'hidden',
-    }}>
+    <aside className="w-[260px] bg-white border-r border-slate-200 flex flex-col flex-shrink-0 overflow-hidden shadow-[1px_0_10px_rgba(0,0,0,0.02)]">
       {/* Header with Add button */}
-      <div style={{ padding: '16px 12px', borderBottom: '1px solid #E2E8F0' }}>
+      <div className="p-6 border-b border-slate-100 bg-slate-50/50">
         <button
           onClick={handleAddTeam}
           disabled={createTeam.isPending}
-          className="btn-hover"
-          style={{
-            width: '100%',
-            padding: '10px 0',
-            background: createTeam.isPending ? '#94A3B8' : '#0F172A',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 10,
-            fontSize: 12,
-            fontWeight: 700,
-            cursor: createTeam.isPending ? 'wait' : 'pointer',
-            boxShadow: '0 4px 12px rgba(15, 23, 42, 0.1)',
-          }}
+          className={cn(
+            "w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-md active:scale-95",
+            createTeam.isPending ? "bg-slate-200 text-slate-400" : "bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200"
+          )}
         >
-          {createTeam.isPending ? 'Creating...' : '+ New Team'}
+          {createTeam.isPending ? 'Initializing...' : '+ New Session'}
         </button>
       </div>
 
       {/* Team list */}
-      <div className="custom-scrollbar" style={{ overflowY: 'auto', flex: 1, padding: 8 }}>
+      <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
         {isLoading ? (
-          <div style={{
-            padding: 24,
-            textAlign: 'center',
-            color: '#94A3B8',
-            fontSize: 11,
-            fontWeight: 500,
-          }}>
-            Loading profiles...
+          <div className="py-12 flex flex-col items-center gap-3 text-slate-300">
+            <div className="w-5 h-5 border-2 border-slate-200 border-t-slate-400 rounded-full animate-spin" />
+            <span className="text-[10px] font-bold uppercase tracking-widest">Syncing Records</span>
           </div>
         ) : teams.length === 0 ? (
-          <div style={{
-            padding: 24,
-            textAlign: 'center',
-            color: '#94A3B8',
-            fontSize: 11,
-            lineHeight: 1.6,
-          }}>
-            No startup profiles.<br />
-            Use <span style={{ fontWeight: 700, color: '#0F172A' }}>+ New Team</span> to begin.
+          <div className="py-12 text-center px-4">
+             <div className="text-2xl mb-2 opacity-20">📊</div>
+             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-loose">
+               No active sessions<br/>found on record
+             </p>
           </div>
         ) : (
           teams.map(team => {
-            const scores = calculateScores(team)
+            const { overall } = calculateOverallScore(team)
             const isActive = team.id === activeTeamId
-            const isHovered = hoveredId === team.id
 
             return (
               <div
                 key={team.id}
                 onClick={() => setActiveTeamId(team.id)}
-                onMouseEnter={() => setHoveredId(team.id)}
-                onMouseLeave={() => setHoveredId(null)}
-                className="btn-hover"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '10px 12px',
-                  borderRadius: 10,
-                  cursor: 'pointer',
-                  marginBottom: 4,
-                  background: isActive ? '#0F172A' : (isHovered ? '#F1F5F9' : 'transparent'),
-                  position: 'relative',
-                  border: isActive ? '1px solid #0F172A' : '1px solid transparent',
-                }}
+                className={cn(
+                  "p-4 rounded-2xl cursor-pointer relative group transition-all border",
+                  isActive 
+                    ? "bg-slate-900 border-slate-900 shadow-xl shadow-slate-200 translate-x-1" 
+                    : "bg-white border-slate-100 hover:border-slate-300 hover:bg-slate-50"
+                )}
               >
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{
-                    fontSize: 11,
-                    fontWeight: 800,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    color: isActive ? '#fff' : '#0F172A',
-                    letterSpacing: '-0.01em',
-                  }}>
-                    {team.teamName || 'Unnamed Team'}
+                <div className="flex flex-col gap-2 min-w-0 pr-4">
+                  <div className="flex justify-between items-start">
+                    <span className={cn(
+                      "text-[9px] font-black uppercase tracking-widest truncate",
+                      isActive ? "text-white/40" : "text-slate-400"
+                    )}>
+                      {team.teamName || 'Diagnostic Session'}
+                    </span>
+                    <span className={cn(
+                      "text-[10px] font-black tabular-nums transition-colors",
+                      isActive ? "text-white" : (overall >= 4 ? "text-emerald-600" : overall >= 3 ? "text-amber-500" : overall > 0 ? "text-rose-500" : "text-slate-200")
+                    )}>
+                      {overall > 0 ? overall.toFixed(1) : '--'}
+                    </span>
                   </div>
-                  <div style={{
-                    fontSize: 10,
-                    color: isActive ? '#94A3B8' : '#94A3B8',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    marginTop: 1,
-                  }}>
-                    {team.startupName || 'No startup name'}
+                  
+                  <h4 className={cn(
+                    "text-[13px] font-bold truncate",
+                    isActive ? "text-white" : "text-slate-900"
+                  )}>
+                    {team.startupName || 'Untitled Startup'}
+                  </h4>
+
+                  <div className="flex items-center gap-2">
+                    <div className={cn(
+                      "px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter transition-colors border",
+                      isActive ? "bg-white/10 border-white/10 text-white/60" : "bg-slate-50 border-slate-200 text-slate-400"
+                    )}>
+                      {team.detected_stage ? team.detected_stage.split(' / ')[0] : 'IDEA'}
+                    </div>
                   </div>
                 </div>
 
-                {scores.overall !== null && (
-                  <span style={{
-                    fontSize: 10,
-                    fontWeight: 800,
-                    padding: '3px 6px',
-                    borderRadius: 6,
-                    flexShrink: 0,
-                    background: scoreBg(scores.overall),
-                    color: scoreColor(scores.overall),
-                  }}>
-                    {scores.overall}
-                  </span>
-                )}
-
                 <button
                   onClick={e => handleDelete(team.id, e)}
-                  style={{
-                    position: 'absolute',
-                    right: 8,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    opacity: isHovered ? 1 : 0,
-                    color: '#EF4444',
-                    fontSize: 14,
-                    padding: '4px',
-                    borderRadius: 6,
-                    transition: 'all 0.2s',
-                  }}
+                  className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-rose-50 hover:text-rose-500 rounded-lg text-slate-400"
                 >
-                  ✕
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                 </button>
               </div>
             )

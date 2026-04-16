@@ -43,15 +43,15 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from('teams')
       .insert({
-        user_id:    user.id,
-        team_name:  body.teamName  ?? '',
+        user_id:      user.id,
+        team_name:    body.teamName    ?? 'New Session',
         startup_name: body.startupName ?? '',
-        sector:     body.sector    ?? '',
-        institution: body.institution ?? '',
-        team_size:  body.teamSize  ?? '',
-        roles:      body.roles     ?? '',
-        interviewer: body.interviewer ?? '',
-        roadmap:    body.roadmap   ?? [],
+        sector:       body.sector      ?? '',
+        institution:  body.institution   ?? '',
+        team_size:    body.teamSize    ?? '',
+        roles:        body.roles       ?? '',
+        interviewer:  body.interviewer   ?? '',
+        p8_team_members: body.p8_team_members ?? [],
       })
       .select()
       .single()
