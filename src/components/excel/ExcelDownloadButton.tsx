@@ -6,18 +6,7 @@ import type { TeamProfile } from '@/types/team.types'
 import { calculateScores } from '@/utils/scores'
 
 export default function ExcelDownloadButton({ team }: { team: TeamProfile }) {
-  const isComplete = !!(
-    team?.startupName?.trim() && 
-    team?.teamName?.trim() && 
-    team?.problemStatement?.trim() && 
-    team?.solutionDescription?.trim()
-  )
-
   const handleExport = async () => {
-    if (!isComplete) {
-      alert('⚠️ Required Information Missing\n\nPlease provide the Startup Name, Team Name, Problem Statement, and Solution details before exporting the sheet.')
-      return
-    }
     if (!team?.id) return
     const { utils, writeFile } = await import('xlsx')
     const scores = calculateScores(team)
@@ -80,21 +69,17 @@ export default function ExcelDownloadButton({ team }: { team: TeamProfile }) {
     ]
 
     const wb = utils.book_new()
-    utils.book_append_sheet(wb, ws, 'Stage Profile')
+    utils.book_append_sheet(wb, ws, 'Diagnosis Report')
 
-    writeFile(wb, `${(team.startupName || 'Startup').replace(/[^a-zA-Z0-9]/g, '_')}-Stage-Profile.xlsx`)
+    writeFile(wb, `${(team.startupName || 'Startup').replace(/[^a-zA-Z0-9]/g, '_')}-Full-Diagnosis.xlsx`)
   }
 
   return (
     <button
       onClick={handleExport}
-      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2
-                 ${!isComplete 
-                   ? 'bg-slate-800/40 text-slate-500 cursor-not-allowed opacity-60' 
-                   : 'bg-slate-800 text-white hover:bg-slate-700 active:scale-95'}`}
-      title={!isComplete ? 'Complete Startup Name, Team Name, Problem Statement, and Solution to enable export' : ''}
+      className="bg-white/10 text-white hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2"
     >
-      <FileSpreadsheet size={14} className={!isComplete ? 'text-slate-600' : 'text-amber-500'} /> Analysis
+      <FileSpreadsheet size={14} /> Analysis
     </button>
   )
 }
