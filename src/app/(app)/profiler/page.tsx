@@ -44,16 +44,31 @@ export default function ProfilerPage() {
     ? (teams.find(t => t.id === activeTeamId) ?? null)
     : null
 
+  // ── LOCAL STATE SYNC (Zero Lag) ───────────────────────────────────
+  const [localTeam, setLocalTeam] = useState<TeamProfile | null>(null)
+
+  // When switching teams, reset local state
+  useEffect(() => {
+    if (activeTeam) {
+      setLocalTeam(activeTeam)
+    } else {
+      setLocalTeam(null)
+    }
+  }, [activeTeamId, activeTeam])
+
   // Auto-save: debounced 600ms
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
   function scheduleUpdate(field: keyof TeamProfile, value: any) {
-    if (!activeTeamId || !activeTeam) return
+    if (!activeTeamId || !localTeam) return
     
-    // Optimistic local update check would go here if needed
+    // 1. Update UI instantly
+    const updated = { ...localTeam, [field]: value }
+    setLocalTeam(updated)
     
+    // 2. Schedule debounced server sync
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
       setSaving(true)
@@ -122,13 +137,13 @@ export default function ProfilerPage() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* Section tabs — only show when team selected */}
-        {activeTeam && (
+        {localTeam && (
           <SectionTabs />
         )}
 
         {/* Form content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
-          {!activeTeam ? (
+          {!localTeam ? (
             // No team selected state
             <div style={{
               display: 'flex',
@@ -168,7 +183,7 @@ export default function ProfilerPage() {
             // Active team form
             <div style={{ maxWidth: 800, margin: '0 auto', width: '100%' }}>
                <SectionComponent
-                team={activeTeam}
+                team={localTeam}
                 onChange={scheduleUpdate}
                 onScoreChange={handleScoreChange}
               />
@@ -177,7 +192,7 @@ export default function ProfilerPage() {
         </div>
 
         {/* Navigation footer — only show when team selected */}
-        {activeTeam && (
+        {localTeam && (
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -237,7 +252,7 @@ export default function ProfilerPage() {
       </div>
 
       {/* ── PREVIEW PANEL ── */}
-      {showPreview && activeTeam && (
+      {showPreview && localTeam && (
         <aside style={{
           width: 320,
           borderLeft: '1px solid #DDE3EC',
@@ -247,9 +262,9 @@ export default function ProfilerPage() {
           overflow: 'hidden',
           flexShrink: 0,
         }}>
-          <LivePreview team={activeTeam} />
+          <LivePreview team={localTeam} />
           <div style={{ flex: 1, overflowY: 'auto' }}>
-            <AIAnalysisPanel teamId={activeTeam.id} />
+            <AIAnalysisPanel teamId={localTeam.id} />
           </div>
         </aside>
       )}

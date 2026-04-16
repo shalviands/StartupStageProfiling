@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import React from 'react'
 import { renderToStream } from '@react-pdf/renderer'
+import { mapDbToFrontend } from '@/utils/mappers'
 import DiagnosticPDF from '@/components/pdf/DiagnosticPDF'
 
 export async function POST(
@@ -27,8 +28,10 @@ export async function POST(
     }
 
     // Generate PDF stream
-    const dataset = team as any; // Cast for simplicity in this specific route
-    const stream = await renderToStream(<DiagnosticPDF team={dataset} />)
+    const mappedTeam = mapDbToFrontend(team)
+    if (!mappedTeam) throw new Error('Failed to map team data')
+    
+    const stream = await renderToStream(<DiagnosticPDF team={mappedTeam} />)
     
     // Return the stream as a PDF response
     return new NextResponse(stream as any, {
