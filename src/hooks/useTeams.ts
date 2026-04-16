@@ -24,7 +24,9 @@ async function fetchTeams(): Promise<TeamProfile[]> {
     throw new Error(`Failed to fetch teams: ${res.status} ${body}`)
   }
   const data = await res.json()
-  return Array.isArray(data) ? data.map(mapDbToFrontend) : []
+  return Array.isArray(data) 
+    ? data.map(mapDbToFrontend).filter((t): t is TeamProfile => t !== null)
+    : []
 }
 
 // ── useTeams ───────────────────────────────────────────────────────
@@ -59,9 +61,12 @@ export function useCreateTeam() {
         throw new Error(body.error || `Create failed: ${res.status}`)
       }
       const data = await res.json()
-      return mapDbToFrontend(data)
+      const mapped = mapDbToFrontend(data)
+      if (!mapped) throw new Error('Failed to map created team')
+      return mapped
     },
-    onSuccess: () => {
+    onSuccess: (newTeam) => {
+      qc.setQueryData<TeamProfile[]>(TEAMS_KEY, (old) => [newTeam, ...(old || [])])
       qc.invalidateQueries({ queryKey: TEAMS_KEY })
     },
     onError: (error) => {
@@ -85,7 +90,10 @@ export function useUpdateTeam() {
         const body = await res.json().catch(() => ({ error: 'Unknown error' }))
         throw new Error(body.error || `Update failed: ${res.status}`)
       }
-      return mapDbToFrontend(await res.json())
+      const data = await res.json()
+      const mapped = mapDbToFrontend(data)
+      if (!mapped) throw new Error('Failed to map updated team')
+      return mapped
     },
     onMutate: async ({ id, updates }) => {
       await qc.cancelQueries({ queryKey: TEAMS_KEY })

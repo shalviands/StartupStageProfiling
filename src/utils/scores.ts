@@ -12,7 +12,10 @@ export interface TeamScores {
  * Calculates diagnostic scores based on the team profile.
  * Excludes zeros from average (unscored != 0).
  */
-export function calculateScores(team: TeamProfile): TeamScores {
+export function calculateScores(team: TeamProfile | null): TeamScores {
+  const nullScores = { problem: null, market: null, biz: null, pitch: null, overall: null }
+  if (!team) return nullScores
+
   const avg = (keys: (keyof TeamProfile)[]): number | null => {
     const values = keys
       .map(k => Number(team[k]) || 0)

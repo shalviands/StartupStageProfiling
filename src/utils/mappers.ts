@@ -1,6 +1,8 @@
 import type { TeamProfile } from '@/types/team.types'
 
-export function mapDbToFrontend(row: any): TeamProfile {
+export function mapDbToFrontend(row: any): TeamProfile | null {
+  if (!row) return null
+
   return {
     id:                         row.id,
     teamName:                   row.team_name                        ?? '',

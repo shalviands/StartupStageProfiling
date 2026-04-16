@@ -1,5 +1,6 @@
 'use client'
 
+import React, { useState } from 'react'
 import { useTeams, useCreateTeam, useDeleteTeam } from '@/hooks/useTeams'
 import { useUIStore } from '@/store/uiStore'
 import { calculateScores, scoreBg, scoreColor } from '@/utils/scores'
@@ -9,6 +10,7 @@ export default function Sidebar() {
   const createTeam = useCreateTeam()
   const deleteTeam = useDeleteTeam()
   const { activeTeamId, setActiveTeamId } = useUIStore()
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   async function handleAddTeam() {
     if (createTeam.isPending) return
@@ -96,11 +98,14 @@ export default function Sidebar() {
           teams.map(team => {
             const scores = calculateScores(team)
             const isActive = team.id === activeTeamId
+            const isHovered = hoveredId === team.id
 
             return (
               <div
                 key={team.id}
                 onClick={() => setActiveTeamId(team.id)}
+                onMouseEnter={() => setHoveredId(team.id)}
+                onMouseLeave={() => setHoveredId(null)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -109,23 +114,9 @@ export default function Sidebar() {
                   borderRadius: 7,
                   cursor: 'pointer',
                   marginBottom: 3,
-                  background: isActive ? '#0F2647' : 'transparent',
+                  background: isActive ? '#0F2647' : (isHovered ? '#F4F6F9' : 'transparent'),
                   transition: 'background 0.12s',
                   position: 'relative',
-                }}
-                onMouseEnter={e => {
-                  if (!isActive) {
-                    (e.currentTarget as HTMLElement).style.background = '#F4F6F9'
-                  }
-                  const btn = e.currentTarget.querySelector('[data-del]') as HTMLElement
-                  if (btn) btn.style.opacity = '1'
-                }}
-                onMouseLeave={e => {
-                  if (!isActive) {
-                    (e.currentTarget as HTMLElement).style.background = 'transparent'
-                  }
-                  const btn = e.currentTarget.querySelector('[data-del]') as HTMLElement
-                  if (btn) btn.style.opacity = '0'
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -165,7 +156,6 @@ export default function Sidebar() {
                 )}
 
                 <button
-                  data-del="true"
                   onClick={e => handleDelete(team.id, e)}
                   style={{
                     position: 'absolute',
@@ -175,7 +165,7 @@ export default function Sidebar() {
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
-                    opacity: 0,
+                    opacity: isHovered ? 1 : 0,
                     color: '#E84B3A',
                     fontSize: 13,
                     padding: '2px 3px',
