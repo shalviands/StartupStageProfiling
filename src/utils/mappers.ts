@@ -28,7 +28,7 @@ export function mapDbToFrontend(row: any): TeamProfile {
     customerInterviewScore:     Number(row.customer_interview_score) || 0,
     customerInterviewDetails:   row.customer_interview_details       ?? '',
     competitorScore:            Number(row.competitor_score)         || 0,
-    competitor_details:         row.competitor_details               ?? '',
+    competitorDetails:          row.competitor_details               ?? '',
     marketSizeScore:            Number(row.market_size_score)        || 0,
     marketSizeDetails:          row.market_size_details              ?? '',
     
