@@ -19,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${montserrat.className} antialiased bg-smoke text-navy`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${montserrat.className} antialiased bg-slate-50 text-slate-900 min-h-screen overflow-x-hidden transition-colors duration-300`}>
         <Providers>{children}</Providers>
       </body>
     </html>

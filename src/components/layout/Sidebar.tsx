@@ -26,10 +26,15 @@ export default function Sidebar() {
   }, [])
 
   async function handleLogout() {
-    const supabase = getSupabaseBrowser()
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
+    try {
+      const supabase = getSupabaseBrowser()
+      await supabase.auth.signOut()
+      // Hard redirect to clear all internal state/cache
+      window.location.href = '/login'
+    } catch (err) {
+      console.error('Logout failed:', err)
+      router.push('/login')
+    }
   }
 
   async function handleDelete(id: string, e: React.MouseEvent) {
