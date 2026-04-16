@@ -4,11 +4,11 @@
 
 :root {
   --background: #F8FAFC;
-  --foreground: #0F172A;
+  --foreground: #020617; /* Darker navy for high contrast */
   --primary: #0F172A;
   --accent: #F59E0B;
   --smoke: #F1F5F9;
-  --silver: #94A3B8;
+  --silver: #64748B; /* Darkened from #94A3B8 for WCAG 4.5:1 ratio */
   --rule: #E2E8F0;
 }
 
@@ -17,6 +17,10 @@ body {
   background: var(--background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.text-muted-dark {
+  color: #475569; /* Slate-600 */
 }
 
 /* Premium Shadows & Depth */

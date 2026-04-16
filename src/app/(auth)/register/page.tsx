@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import Link from 'next/link'
+import { cn } from '@/utils/cn'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -13,6 +14,7 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    role: 'startup' as 'startup' | 'programme_team'
   })
   const [error, setError]   = useState('')
   const [loading, setLoading] = useState(false)
@@ -47,8 +49,8 @@ export default function RegisterPage() {
       options: {
         data: {
           full_name: form.fullName.trim(),
-          startup_name: form.startupName.trim(),
-          role: 'startup',
+          startup_name: form.role === 'startup' ? form.startupName.trim() : 'Programme Team',
+          role: form.role,
         },
       },
     })
@@ -69,69 +71,160 @@ export default function RegisterPage() {
       fontFamily: 'system-ui, sans-serif', padding: 20,
     }}>
       <div style={{
-        background: '#fff', borderRadius: 16,
-        border: '1px solid #DDE3EC', padding: 32,
-        width: '100%', maxWidth: 400,
+        background: '#fff', borderRadius: 24,
+        border: '1px solid #CBD5E1', padding: 48,
+        width: '100%', maxWidth: 440,
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
       }}>
         {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 32 }}>
           <div style={{
-            width: 40, height: 40, borderRadius: 10, background: '#0F2647',
+            width: 44, height: 44, borderRadius: 12, background: '#0F172A',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: 800, fontSize: 13, color: '#E8A020',
+            fontWeight: 800, fontSize: 14, color: '#F59E0B',
+            boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
           }}>IU</div>
           <div>
-            <div style={{ fontWeight: 700, color: '#0F2647', fontSize: 13 }}>
-              Startup Diagnosis Profiler
+            <div style={{ fontWeight: 800, color: '#0F172A', fontSize: 14, letterSpacing: '-0.01em' }}>
+              Venture Lab
             </div>
-            <div style={{ color: '#8A9BB0', fontSize: 11 }}>InUnity Private Limited</div>
+            <div style={{ color: '#475569', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              InUnity Private Limited
+            </div>
           </div>
         </div>
 
-        <h1 style={{ fontSize: 18, fontWeight: 700, color: '#0F2647', marginBottom: 6 }}>
-          Register your startup
+        <h1 style={{ fontSize: 22, fontWeight: 800, color: '#020617', marginBottom: 8, letterSpacing: '-0.02em' }}>
+          Create Account
         </h1>
-        <p style={{ fontSize: 12, color: '#8A9BB0', marginBottom: 20 }}>
-          Your account will be reviewed by the InUnity team
-          before you can access the form.
+        <p style={{ fontSize: 14, color: '#475569', marginBottom: 32, fontWeight: 500, lineHeight: 1.5 }}>
+          Begin your strategic diagnosis and join the InUnity ecosystem.
         </p>
 
-        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {[
-            { key: 'fullName', label: 'Your Full Name', type: 'text', placeholder: 'Jane Doe' },
-            { key: 'startupName', label: 'Startup Name', type: 'text', placeholder: 'Acme Inc' },
-            { key: 'email', label: 'Email Address', type: 'email', placeholder: 'you@startup.com' },
-            { key: 'password', label: 'Password', type: 'password', placeholder: 'Min 8 characters' },
-            { key: 'confirmPassword', label: 'Confirm Password', type: 'password', placeholder: 'Repeat password' },
-          ].map(field => (
-            <div key={field.key}>
-              <label style={{
-                fontSize: 11, fontWeight: 600, color: '#3B5070',
-                display: 'block', marginBottom: 4,
-              }}>
-                {field.label}
-              </label>
-              <input
-                type={field.type}
-                value={(form as any)[field.key]}
-                onChange={e => update(field.key, e.target.value)}
-                placeholder={field.placeholder}
-                required
-                style={{
-                  width: '100%', padding: '8px 12px',
-                  border: '1px solid #DDE3EC', borderRadius: 8,
-                  fontSize: 13, color: '#0F2647', outline: 'none',
-                  boxSizing: 'border-box',
-                }}
-              />
+        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          
+          {/* Role Selector */}
+          <div style={{ marginBottom: 12 }}>
+             <label style={{ fontSize: 11, fontWeight: 800, color: '#0F172A', display: 'block', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+               Registering As
+             </label>
+             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, background: '#F1F5F9', padding: 4, borderRadius: 12 }}>
+                <button
+                  type="button"
+                  onClick={() => update('role', 'startup')}
+                  className={cn(
+                    "py-2.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all",
+                    form.role === 'startup' ? "bg-white text-[#0F172A] shadow-sm" : "text-slate-500 hover:text-slate-700"
+                  )}
+                >
+                  Startup Founder
+                </button>
+                <button
+                  type="button"
+                  onClick={() => update('role', 'programme_team')}
+                  className={cn(
+                    "py-2.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all",
+                    form.role === 'programme_team' ? "bg-white text-[#0F172A] shadow-sm" : "text-slate-500 hover:text-slate-700"
+                  )}
+                >
+                  Programme Team
+                </button>
+             </div>
+          </div>
+
+          <div>
+             <label style={{ fontSize: 11, fontWeight: 800, color: '#0F172A', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+               Full Name
+             </label>
+             <input
+               type="text"
+               value={form.fullName}
+               onChange={e => update('fullName', e.target.value)}
+               placeholder="Jane Doe"
+               required
+               style={{
+                 width: '100%', padding: '12px 16px', border: '1.5px solid #CBD5E1', borderRadius: 12,
+                 fontSize: 14, color: '#020617', outline: 'none', boxSizing: 'border-box', fontWeight: 500
+               }}
+             />
+          </div>
+
+          {form.role === 'startup' && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+               <label style={{ fontSize: 11, fontWeight: 800, color: '#0F172A', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                 Startup Name
+               </label>
+               <input
+                 type="text"
+                 value={form.startupName}
+                 onChange={e => update('startupName', e.target.value)}
+                 placeholder="Acme Inc"
+                 required
+                 style={{
+                   width: '100%', padding: '12px 16px', border: '1.5px solid #CBD5E1', borderRadius: 12,
+                   fontSize: 14, color: '#020617', outline: 'none', boxSizing: 'border-box', fontWeight: 500
+                 }}
+               />
             </div>
-          ))}
+          )}
+
+          <div>
+             <label style={{ fontSize: 11, fontWeight: 800, color: '#0F172A', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+               Email Address
+             </label>
+             <input
+               type="email"
+               value={form.email}
+               onChange={e => update('email', e.target.value)}
+               placeholder="you@startup.com"
+               required
+               style={{
+                 width: '100%', padding: '12px 16px', border: '1.5px solid #CBD5E1', borderRadius: 12,
+                 fontSize: 14, color: '#020617', outline: 'none', boxSizing: 'border-box', fontWeight: 500
+               }}
+             />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+             <div>
+                <label style={{ fontSize: 11, fontWeight: 800, color: '#0F172A', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={form.password}
+                  onChange={e => update('password', e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  style={{
+                    width: '100%', padding: '12px 16px', border: '1.5px solid #CBD5E1', borderRadius: 12,
+                    fontSize: 14, color: '#020617', outline: 'none', boxSizing: 'border-box', fontWeight: 500
+                  }}
+                />
+             </div>
+             <div>
+                <label style={{ fontSize: 11, fontWeight: 800, color: '#0F172A', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Verify
+                </label>
+                <input
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={e => update('confirmPassword', e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  style={{
+                    width: '100%', padding: '12px 16px', border: '1.5px solid #CBD5E1', borderRadius: 12,
+                    fontSize: 14, color: '#020617', outline: 'none', boxSizing: 'border-box', fontWeight: 500
+                  }}
+                />
+             </div>
+          </div>
 
           {error && (
             <div style={{
-              background: '#FDECEA', border: '1px solid #F0997B',
-              borderRadius: 8, padding: '8px 12px',
-              fontSize: 12, color: '#E84B3A',
+              background: '#FFF1F2', border: '1px solid #FDA4AF',
+              borderRadius: 12, padding: '12px 16px',
+              fontSize: 13, color: '#9F1239', fontWeight: 700,
             }}>
               {error}
             </div>
@@ -141,18 +234,20 @@ export default function RegisterPage() {
             type="submit"
             disabled={loading}
             style={{
-              background: loading ? '#8A9BB0' : '#0F2647',
-              color: '#fff', border: 'none', borderRadius: 8,
-              padding: '10px 0', fontSize: 13, fontWeight: 600,
-              cursor: loading ? 'not-allowed' : 'pointer', marginTop: 4,
+              background: loading ? '#94A3B8' : '#0F172A',
+              color: '#fff', border: 'none', borderRadius: 12,
+              padding: '14px 0', fontSize: 13, fontWeight: 800,
+              cursor: loading ? 'not-allowed' : 'pointer', marginTop: 8,
+              textTransform: 'uppercase', letterSpacing: '0.1em',
+              boxShadow: loading ? 'none' : '0 10px 15px -3px rgba(15, 23, 42, 0.2)',
             }}
           >
-            {loading ? 'Submitting...' : 'Register'}
+            {loading ? 'Processing...' : 'Complete Registration'}
           </button>
 
-          <p style={{ fontSize: 11, color: '#8A9BB0', textAlign: 'center' }}>
+          <p style={{ fontSize: 12, color: '#475569', textAlign: 'center', fontWeight: 600, marginTop: 12 }}>
             Already have an account?{' '}
-            <Link href="/login" style={{ color: '#0F2647', fontWeight: 600 }}>
+            <Link href="/login" style={{ color: '#0F172A', fontWeight: 800, textDecoration: 'underline' }}>
               Sign in
             </Link>
           </p>

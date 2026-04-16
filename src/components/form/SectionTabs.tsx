@@ -33,7 +33,7 @@ export default function SectionTabs({ activeTab, setActiveTab }: Props) {
             "flex-1 min-w-[84px] py-3.5 px-4 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all duration-300",
             activeTab === tab.id
               ? "bg-white text-slate-950 shadow-md border border-slate-200 scale-[1.02]"
-              : "text-slate-500 hover:text-slate-900 hover:bg-white/60"
+              : "text-slate-700 hover:text-slate-900 hover:bg-white/60"
           )}
         >
           {tab.label}

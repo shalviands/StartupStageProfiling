@@ -27,15 +27,23 @@ export default async function RootPage() {
             </div>
           </div>
           
-          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-            <a href="#features" className="hover:text-[#0F172A] transition-colors">Features</a>
-            <a href="#about" className="hover:text-[#0F172A] transition-colors">Methodology</a>
-            <Link 
-              href="/login" 
-              className="px-6 py-2.5 bg-[#0F172A] text-white rounded-full hover:bg-slate-800 transition-all shadow-xl shadow-navy-900/10 active:scale-95"
-            >
-              Get Started
-            </Link>
+          <div className="hidden md:flex items-center gap-8 text-sm font-semibold">
+            <a href="#features" className="text-slate-700 hover:text-[#0F172A] transition-colors">Features</a>
+            <a href="#about" className="text-slate-700 hover:text-[#0F172A] transition-colors">Methodology</a>
+            <div className="flex items-center gap-4 border-l border-slate-200 pl-8">
+              <Link 
+                href="/login" 
+                className="text-[#0F172A] hover:opacity-70 transition-all font-bold"
+              >
+                Log In
+              </Link>
+              <Link 
+                href="/register" 
+                className="px-6 py-2.5 border-2 border-[#0F172A] text-[#0F172A] rounded-full hover:bg-slate-50 transition-all font-bold active:scale-95"
+              >
+                Sign Up
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
@@ -45,15 +53,15 @@ export default async function RootPage() {
         <section className="pt-40 pb-24 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
             <div className="animate-section-in">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F59E0B]/10 border border-[#F59E0B]/20 text-[#B45309] text-[11px] font-bold uppercase tracking-wider mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F59E0B]/10 border border-[#F59E0B]/20 text-[#92400E] text-[11px] font-bold uppercase tracking-wider mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#F59E0B] animate-pulse" />
-                State-of-the-Art Profiling
+                Venture Strategy Engine
               </div>
               <h1 className="text-5xl md:text-7xl font-black text-[#0F172A] leading-[1.1] tracking-tight mb-8">
-                Diagnose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0F172A] to-[#64748B]">Startup's DNA</span>
+                Accelerate Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0F172A] to-[#475569]">Venture DNA</span>
               </h1>
-              <p className="text-lg text-slate-600 leading-relaxed mb-10 max-w-lg">
-                The comprehensive 9-parameter diagnostic framework designed for InUnity founders to benchmark progress, identify scaling bottlenecks, and unlock AI-powered strategic insights.
+              <p className="text-lg text-slate-700 leading-relaxed mb-10 max-w-lg font-medium">
+                The high-performance diagnostic framework used by InUnity founders and programme teams to benchmark readiness, identify bottlenecks, and unlock growth.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
@@ -61,17 +69,17 @@ export default async function RootPage() {
                   href="/login" 
                   className="px-8 py-4 bg-[#0F172A] text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-2xl shadow-navy-900/20 group active:scale-[0.98]"
                 >
-                  Get Started
+                  Member Login
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </Link>
-                <a 
-                  href="#features" 
-                  className="px-8 py-4 bg-white text-[#0F172A] border border-slate-200 rounded-2xl font-bold flex items-center justify-center hover:bg-slate-50 transition-all"
+                <Link 
+                  href="/register" 
+                  className="px-8 py-4 bg-white text-[#0F172A] border-2 border-[#0F172A] rounded-2xl font-extrabold flex items-center justify-center hover:bg-slate-50 transition-all active:scale-[0.98]"
                 >
-                  Explore Features
-                </a>
+                  Sign Up as Startup
+                </Link>
               </div>
             </div>
 

@@ -51,10 +51,10 @@ export default async function AdminDashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">System Overview</h1>
-          <p className="text-slate-500 font-medium tracking-tight">InUnity Intelligence — Diagnostic Performance Dashboard</p>
+          <p className="text-slate-700 font-semibold tracking-tight">InUnity Intelligence — Diagnostic Performance Dashboard</p>
         </div>
         <div className="flex items-center gap-3">
-           <button className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
+           <button className="px-5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 transition-all shadow-sm">
               Refresh Data
            </button>
            <button className="px-5 py-2.5 bg-[#0F172A] text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-black/10">
@@ -70,7 +70,7 @@ export default async function AdminDashboardPage() {
              <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-transform", s.bg, s.color)}>
                <s.icon size={22} />
              </div>
-             <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{s.label}</div>
+             <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{s.label}</div>
              <div className="text-2xl font-black text-slate-900">{s.val}</div>
           </div>
         ))}
@@ -86,7 +86,7 @@ export default async function AdminDashboardPage() {
               </div>
               <h3 className="font-black text-slate-900 tracking-tight">Venture Stage Distribution</h3>
             </div>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Real-time Benchmarks</span>
+            <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Real-time Benchmarks</span>
           </div>
 
           <div className="space-y-6">
@@ -98,7 +98,7 @@ export default async function AdminDashboardPage() {
               return (
                 <div key={st} className="space-y-2">
                   <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                    <span className="text-slate-500">{st}</span>
+                    <span className="text-slate-700">{st}</span>
                     <span className="text-slate-900">{count} Startups</span>
                   </div>
                   <div className="h-4 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100 p-0.5">
@@ -126,11 +126,11 @@ export default async function AdminDashboardPage() {
                 </div>
                 <div>
                   <h4 className="text-xl font-black tracking-tight leading-tight mb-2">Diagnostic Engine Active</h4>
-                  <p className="text-indigo-200 text-xs font-medium leading-relaxed">System is successfully reconciling diagnostic reports for the current cohort.</p>
+                  <p className="text-indigo-100 text-xs font-semibold leading-relaxed">System is successfully reconciling diagnostic reports for the current cohort.</p>
                 </div>
                 <Link 
                   href="/admin/approvals"
-                  className="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-50 transition-all group"
+                  className="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all group"
                 >
                   Review Pending Approvals
                   <ArrowUpRight size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -145,11 +145,11 @@ export default async function AdminDashboardPage() {
              </div>
              <div className="space-y-4">
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                   <div className="text-[10px] font-black text-slate-500 uppercase">Avg Problem Score</div>
+                   <div className="text-[10px] font-black text-slate-700 uppercase">Avg Problem Score</div>
                    <div className="text-sm font-black text-slate-900">4.2</div>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                   <div className="text-[10px] font-black text-slate-500 uppercase">Avg Moat Score</div>
+                   <div className="text-[10px] font-black text-slate-700 uppercase">Avg Moat Score</div>
                    <div className="text-sm font-black text-slate-900">2.1</div>
                 </div>
              </div>

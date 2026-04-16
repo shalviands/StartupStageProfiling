@@ -48,9 +48,9 @@ export default function ParameterSection({
     return (
       <div key={q.id} className="space-y-4 bg-white border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all group">
         <div className="flex justify-between items-start">
-          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+          <label className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
             {q.label}
-            <Info size={12} className="text-slate-400 cursor-help" />
+            <Info size={12} className="text-slate-500 cursor-help" />
           </label>
           
           {/* Score Dots */}
@@ -162,10 +162,10 @@ export default function ParameterSection({
           ))}
           <button 
             onClick={() => onChange('p8_team_members', [...members, { name: '', role: '', skill: '' }])}
-            className="border-2 border-dashed border-slate-200 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-slate-400 hover:text-slate-600 transition-all"
+            className="border-2 border-dashed border-slate-300 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 text-slate-600 hover:border-slate-500 hover:text-slate-900 transition-all font-bold"
           >
             <Plus size={20} />
-            <span className="text-[10px] font-bold uppercase tracking-widest">Add Founder/Core Member</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">Add Founder/Core Member</span>
           </button>
         </div>
       </div>
@@ -181,10 +181,10 @@ export default function ParameterSection({
              <h2 className="text-3xl font-black text-slate-900 tracking-tight">{title}</h2>
              <span className="bg-slate-950 text-white text-[10px] font-black px-2.5 py-1 rounded-full">{weight}</span>
           </div>
-          <p className="text-sm text-slate-600 font-semibold">{subtitle}</p>
+          <p className="text-sm text-slate-700 font-bold">{subtitle}</p>
         </div>
         <div className="text-right">
-          <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Param Score</div>
+          <div className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">Param Score</div>
           <div className={cn(
             "text-4xl font-black tabular-nums",
             avg >= 4 ? "text-emerald-600" : avg >= 3 ? "text-amber-500" : avg > 0 ? "text-rose-500" : "text-slate-200"
@@ -219,7 +219,7 @@ export default function ParameterSection({
             </span>
           </div>
           {!isDeepDiveUnlocked && (
-             <span className="text-[10px] font-bold text-slate-400 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm">
+             <span className="text-[10px] font-bold text-slate-700 bg-white px-3 py-1 rounded-full border border-slate-300 shadow-sm">
                Unlock at Validation Stage
              </span>
           )}
@@ -231,8 +231,8 @@ export default function ParameterSection({
           </div>
         ) : (
           <div className="py-8 text-center space-y-2">
-            <p className="text-xs font-bold text-slate-600">Section Locked</p>
-            <p className="text-[10px] text-slate-500 font-medium max-w-xs mx-auto">This section is for validated startups with evidence of Problem-Solution Fit.</p>
+            <p className="text-xs font-black text-slate-800">Section Locked</p>
+            <p className="text-[10px] text-slate-700 font-bold max-w-xs mx-auto">This section is for validated startups with evidence of Problem-Solution Fit.</p>
           </div>
         )}
       </div>

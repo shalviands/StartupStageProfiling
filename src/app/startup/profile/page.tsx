@@ -108,9 +108,9 @@ export default function StartupProfilePage() {
   }
 
   if (isLoading || !localTeam) return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
+    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-600">
       <Loader2 className="animate-spin" size={32} />
-      <span className="text-sm font-bold uppercase tracking-widest">Loading Your Profile...</span>
+      <span className="text-sm font-black uppercase tracking-widest">Initialising Your Session...</span>
     </div>
   )
 
@@ -120,16 +120,16 @@ export default function StartupProfilePage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Diagnosis Profile</h1>
-          <p className="text-slate-500 font-medium">Core 9-Parameter Venture Assessment</p>
+          <p className="text-slate-700 font-semibold">Core 9-Parameter Venture Assessment</p>
         </div>
         <div className="flex items-center gap-4">
           {saving && (
-            <div className="flex items-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest bg-white px-3 py-1.5 rounded-full border border-slate-100 shadow-sm animate-pulse">
-               <Save size={12} /> Saving...
+            <div className="flex items-center gap-2 text-slate-600 text-[10px] font-black uppercase tracking-widest bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm animate-pulse">
+               <Save size={12} /> Auto-Syncing...
             </div>
           )}
-          <div className="bg-white border border-slate-200 px-4 py-2 rounded-2xl flex flex-col items-end">
-             <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Draft Score</span>
+          <div className="bg-white border border-slate-300 px-4 py-2 rounded-2xl flex flex-col items-end">
+             <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">Draft Baseline</span>
              <span className="text-lg font-black text-slate-900">{(localTeam.overall_weighted_score || 0).toFixed(1)}</span>
           </div>
         </div>
@@ -161,9 +161,9 @@ export default function StartupProfilePage() {
         <button
           onClick={() => setActiveSection(Math.max(0, activeSection - 1))}
           disabled={activeSection === 0}
-          className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 disabled:opacity-20 transition-all group"
+          className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-700 hover:text-slate-900 disabled:opacity-20 transition-all group"
         >
-          <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-slate-50">←</div>
+          <div className="w-10 h-10 rounded-full border border-slate-300 flex items-center justify-center group-hover:bg-slate-50">←</div>
           <span>Previous</span>
         </button>
 
@@ -195,7 +195,7 @@ export default function StartupProfilePage() {
               <AlertCircle size={32} />
             </div>
             <h3 className="text-xl font-black text-slate-900 text-center mb-3">Submit Final Diagnosis?</h3>
-            <p className="text-slate-500 text-center text-sm leading-relaxed mb-8">
+            <p className="text-slate-700 text-center text-sm font-medium leading-relaxed mb-8">
               Once submitted, you will no longer be able to edit your profile. 
               The InUnity team will review your data to finalise your diagnosis.
             </p>
@@ -210,7 +210,7 @@ export default function StartupProfilePage() {
               <button
                 onClick={() => setShowConfirm(false)}
                 disabled={isSubmitting}
-                className="w-full bg-slate-100 text-slate-500 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                className="w-full bg-slate-100 text-slate-700 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
               >
                 Cancel
               </button>

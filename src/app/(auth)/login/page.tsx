@@ -79,11 +79,11 @@ function LoginForm() {
         </div>
 
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: '#0F172A', marginBottom: 8, letterSpacing: '-0.02em' }}>
-            Welcome Back
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: '#020617', marginBottom: 8, letterSpacing: '-0.02em' }}>
+            Venture Login
           </h1>
-          <p style={{ fontSize: 14, color: '#64748B', lineHeight: '1.5' }}>
-            Please sign in to access the InUnity Startup profiling platform.
+          <p style={{ fontSize: 14, color: '#475569', lineHeight: '1.5', fontWeight: 500 }}>
+            Sign in to access your strategic diagnostic dashboard and venture metrics.
           </p>
         </div>
 
@@ -91,7 +91,7 @@ function LoginForm() {
           <div style={{
             background: '#FDECEA', border: '1px solid #F0997B',
             borderRadius: 8, padding: '10px 14px', marginBottom: 16,
-            fontSize: 12, color: '#E84B3A',
+            fontSize: 12, color: '#991B1B', fontWeight: 600
           }}>
             Your registration was not approved. Please contact
             the InUnity team for more information.
@@ -100,8 +100,8 @@ function LoginForm() {
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Email Address
+            <label style={{ fontSize: 11, fontWeight: 800, color: '#0F172A', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              Identity / Email
             </label>
             <input
               type="email"
@@ -111,35 +111,37 @@ function LoginForm() {
               required
               style={{
                 width: '100%', padding: '12px 16px',
-                border: '1.5px solid #E2E8F0', borderRadius: 12,
-                fontSize: 14, color: '#0F172A',
+                border: '1.5px solid #CBD5E1', borderRadius: 12,
+                fontSize: 14, color: '#020617',
                 outline: 'none', boxSizing: 'border-box',
                 transition: 'all 0.2s',
+                fontWeight: 500
               }}
               onFocus={(e) => e.target.style.borderColor = '#0F172A'}
-              onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
+              onBlur={(e) => e.target.style.borderColor = '#CBD5E1'}
             />
           </div>
 
           <div>
-            <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Password
+            <label style={{ fontSize: 11, fontWeight: 800, color: '#0F172A', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              Security / Password
             </label>
             <input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="••••••••"
               required
               style={{
                 width: '100%', padding: '12px 16px',
-                border: '1.5px solid #E2E8F0', borderRadius: 12,
-                fontSize: 14, color: '#0F172A',
+                border: '1.5px solid #CBD5E1', borderRadius: 12,
+                fontSize: 14, color: '#020617',
                 outline: 'none', boxSizing: 'border-box',
                 transition: 'all 0.2s',
+                fontWeight: 500
               }}
               onFocus={(e) => e.target.style.borderColor = '#0F172A'}
-              onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
+              onBlur={(e) => e.target.style.borderColor = '#CBD5E1'}
             />
           </div>
 
@@ -147,8 +149,8 @@ function LoginForm() {
             <div style={{
               background: '#FFF1F2', border: '1px solid #FDA4AF',
               borderRadius: 12, padding: '12px 16px',
-              fontSize: 13, color: '#E11D48',
-              fontWeight: 500,
+              fontSize: 13, color: '#9F1239',
+              fontWeight: 700,
             }}>
               {error}
             </div>
@@ -160,10 +162,12 @@ function LoginForm() {
             style={{
               background: loading ? '#94A3B8' : '#0F172A',
               color: '#fff', border: 'none', borderRadius: 12,
-              padding: '14px 0', fontSize: 15, fontWeight: 700,
+              padding: '14px 0', fontSize: 13, fontWeight: 800,
               cursor: loading ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s ease',
               marginTop: 8,
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
               boxShadow: loading ? 'none' : '0 10px 15px -3px rgba(15, 23, 42, 0.2)',
             }}
           >
@@ -171,17 +175,33 @@ function LoginForm() {
           </button>
         </form>
 
-        <div style={{ marginTop: 32, textAlign: 'center' }}>
-          <p style={{ fontSize: 11, color: '#8A9BB0', textAlign: 'center', marginTop: 12 }}>
-            New startup?{' '}
-            <Link href="/register" style={{ color: '#0F2647', fontWeight: 600 }}>
-              Register here
-            </Link>
-          </p>
-          <p style={{ fontSize: 11, color: '#94A3B8', fontWeight: 500, marginTop: 12 }}>
-            Protected by InUnity Security Protocol
-          </p>
+        <div style={{ marginTop: 40, paddingTop: 32, borderTop: '1px solid #E2E8F0', textAlign: 'center' }}>
+           <p style={{ fontSize: 11, color: '#475569', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16 }}>
+             New to InUnity?
+           </p>
+           <Link 
+             href="/register" 
+             style={{ 
+               display: 'block',
+               padding: '12px 0',
+               borderRadius: 12,
+               border: '2px solid #0F172A',
+               color: '#0F172A',
+               fontSize: 13,
+               fontWeight: 800,
+               textTransform: 'uppercase',
+               letterSpacing: '0.05em',
+               transition: 'all 0.2s'
+             }}
+             onMouseOver={(e: any) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
+             onMouseOut={(e: any) => e.currentTarget.style.backgroundColor = 'transparent'}
+           >
+             Create Startup Account
+           </Link>
         </div>
+        <p style={{ fontSize: 11, color: '#94A3B8', fontWeight: 500, marginTop: 12 }}>
+          Protected by InUnity Security Protocol
+        </p>
       </div>
     </div>
   )
