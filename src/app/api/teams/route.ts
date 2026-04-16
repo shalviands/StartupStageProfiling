@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
-import { TeamBaseSchema } from '@/types/team.types'
-import { mapDbToFrontend, mapFrontendToDb } from '@/utils/mappers'
 
 export async function GET() {
   try {
     const user = await getUserFromRequest()
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -16,48 +15,55 @@ export async function GET() {
       .from('teams')
       .select('*')
       .eq('user_id', user.id)
-      .order('updated_at', { ascending: false })
+      .order('created_at', { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      console.error('[GET /api/teams] DB error:', error.message)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
 
-    return NextResponse.json(data || [])
-  } catch (error: any) {
-    console.error('[TEAMS_GET]', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(data ?? [])
+  } catch (err) {
+    console.error('[GET /api/teams] Unexpected error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
 export async function POST(request: Request) {
   try {
     const user = await getUserFromRequest()
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
-    const parsed = TeamBaseSchema.safeParse(body)
-    
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid data', details: parsed.error.format() }, { status: 400 })
-    }
 
     const supabase = await createServerSupabaseClient()
-    const dbData = {
-      ...mapFrontendToDb(parsed.data),
-      user_id: user.id
-    }
-
     const { data, error } = await supabase
       .from('teams')
-      .insert(dbData)
+      .insert({
+        user_id:    user.id,
+        team_name:  body.teamName  ?? '',
+        startup_name: body.startupName ?? '',
+        sector:     body.sector    ?? '',
+        institution: body.institution ?? '',
+        team_size:  body.teamSize  ?? '',
+        roles:      body.roles     ?? '',
+        interviewer: body.interviewer ?? '',
+        roadmap:    body.roadmap   ?? [],
+      })
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error('[POST /api/teams] DB error:', error.message)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
 
-    return NextResponse.json(data)
-  } catch (error: any) {
-    console.error('[TEAMS_POST]', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(data, { status: 201 })
+  } catch (err) {
+    console.error('[POST /api/teams] Unexpected error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

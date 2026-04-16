@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getSupabaseBrowser } from '@/lib/supabase/client'
-import { Loader2 } from 'lucide-react'
+import { createBrowserClient } from '@supabase/ssr'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -17,85 +16,118 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    const supabase = getSupabaseBrowser()
-    const { error } = await supabase.auth.signInWithPassword({
-      email, password
+    // Create client inline — avoids any import chain issues
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
+    console.log('[Login] Attempting login for:', email)
+    console.log('[Login] Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
     })
 
-    if (error) {
-      setError(error.message)
+    if (authError) {
+      console.error('[Login] Error:', authError.message, authError.status)
+      setError(authError.message)
       setLoading(false)
       return
     }
 
+    console.log('[Login] Success. User:', data.user?.email)
     router.push('/profiler')
     router.refresh()
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-smoke font-sans">
-      <div className="bg-white rounded-3xl border border-rule p-10
-                      w-full max-w-md shadow-xl shadow-navy/5">
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: '#F4F6F9',
+      fontFamily: 'system-ui, sans-serif',
+    }}>
+      <div style={{
+        background: '#fff',
+        borderRadius: 16,
+        border: '1px solid #DDE3EC',
+        padding: 32,
+        width: '100%',
+        maxWidth: 360,
+      }}>
         {/* Logo */}
-        <div className="flex items-center gap-4 mb-10">
-          <div className="w-12 h-12 rounded-2xl bg-navy flex items-center
-                          justify-center shadow-lg shadow-navy/20">
-            <span className="text-gold font-black text-xl italic tracking-tighter">IU</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 10,
+            background: '#0F2647',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontWeight: 800, fontSize: 13, color: '#E8A020',
+          }}>
+            IU
           </div>
           <div>
-            <div className="font-bold text-navy text-lg leading-tight">
+            <div style={{ fontWeight: 700, color: '#0F2647', fontSize: 13 }}>
               Startup Diagnosis Profiler
             </div>
-            <div className="text-silver text-xs font-medium uppercase tracking-widest">
+            <div style={{ color: '#8A9BB0', fontSize: 11 }}>
               InUnity Private Limited
             </div>
           </div>
         </div>
 
-        <div className="mb-8">
-          <h1 className="text-2xl font-black text-navy mb-2">Sign in</h1>
-          <p className="text-silver text-sm">Enter your credentials to access the profiler</p>
-        </div>
+        <h1 style={{ fontSize: 18, fontWeight: 700, color: '#0F2647', marginBottom: 20 }}>
+          Sign in
+        </h1>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-6">
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate uppercase tracking-wider block ml-1">
-              Email Address
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 600, color: '#3B5070', display: 'block', marginBottom: 4 }}>
+              Email
             </label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="name@inunity.co"
-              className="w-full border border-rule rounded-xl px-4 py-3
-                         text-sm text-navy outline-none
-                         focus:border-navy focus:ring-4
-                         focus:ring-navy/5 transition-all
-                         placeholder:text-silver/50"
+              placeholder="you@example.com"
               required
+              style={{
+                width: '100%', padding: '8px 12px',
+                border: '1px solid #DDE3EC', borderRadius: 8,
+                fontSize: 13, color: '#0F2647',
+                outline: 'none', boxSizing: 'border-box',
+              }}
             />
           </div>
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate uppercase tracking-wider block ml-1">
+
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 600, color: '#3B5070', display: 'block', marginBottom: 4 }}>
               Password
             </label>
             <input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full border border-rule rounded-xl px-4 py-3
-                         text-sm text-navy outline-none
-                         focus:border-navy focus:ring-4
-                         focus:ring-navy/5 transition-all
-                         placeholder:text-silver/50"
+              placeholder="Your password"
               required
+              style={{
+                width: '100%', padding: '8px 12px',
+                border: '1px solid #DDE3EC', borderRadius: 8,
+                fontSize: 13, color: '#0F2647',
+                outline: 'none', boxSizing: 'border-box',
+              }}
             />
           </div>
-          
+
           {error && (
-            <div className="text-xs text-coral font-bold bg-coral-lt rounded-xl px-4 py-3 border border-coral/20 flex items-center gap-2">
-              <div className="w-1 h-1 rounded-full bg-coral animate-pulse" />
+            <div style={{
+              background: '#FDECEA', border: '1px solid #F0997B',
+              borderRadius: 8, padding: '8px 12px',
+              fontSize: 12, color: '#E84B3A',
+            }}>
               {error}
             </div>
           )}
@@ -103,25 +135,25 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-navy text-white rounded-xl py-4
-                       text-sm font-bold hover:shadow-lg hover:shadow-navy/20
-                       active:scale-[0.98] transition-all
-                       disabled:opacity-50 flex items-center justify-center gap-2"
+            style={{
+              background: loading ? '#8A9BB0' : '#0F2647',
+              color: '#fff', border: 'none', borderRadius: 8,
+              padding: '10px 0', fontSize: 13, fontWeight: 600,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'background 0.15s',
+            }}
           >
-            {loading ? (
-              <>
-                <Loader2 size={18} className="animate-spin text-gold" />
-                Signing in...
-              </>
-            ) : 'Access Dashboard'}
+            {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 
-        <div className="mt-10 pt-6 border-t border-smoke flex flex-col items-center gap-4">
-          <div className="text-[10px] text-silver font-medium text-center uppercase tracking-widest max-w-[240px]">
-            Enterprise internal tool protected by InUnity Security Protocols
+        {/* Debug info in development */}
+        {process.env.NODE_ENV === 'development' && (
+          <div style={{ marginTop: 16, fontSize: 10, color: '#8A9BB0', wordBreak: 'break-all' }}>
+            URL: {process.env.NEXT_PUBLIC_SUPABASE_URL || 'NOT SET'}<br/>
+            Key: {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✓ Set' : '✗ NOT SET'}
           </div>
-        </div>
+        )}
       </div>
     </div>
   )
