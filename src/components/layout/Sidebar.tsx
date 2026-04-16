@@ -113,7 +113,7 @@ export default function Sidebar() {
                   <div className="flex justify-between items-start">
                     <span className={cn(
                       "text-[9px] font-black uppercase tracking-widest truncate",
-                      isActive ? "text-white/40" : "text-slate-400"
+                      isActive ? "text-white/60" : "text-slate-500"
                     )}>
                       {team.teamName || 'Diagnostic Session'}
                     </span>
@@ -135,7 +135,7 @@ export default function Sidebar() {
                   <div className="flex items-center gap-2">
                     <div className={cn(
                       "px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter transition-colors border",
-                      isActive ? "bg-white/10 border-white/10 text-white/60" : "bg-slate-50 border-slate-200 text-slate-400"
+                      isActive ? "bg-white/10 border-white/20 text-white/70" : "bg-slate-100 border-slate-200 text-slate-500"
                     )}>
                       {team.detected_stage ? team.detected_stage.split(' / ')[0] : 'IDEA'}
                     </div>
@@ -157,8 +157,8 @@ export default function Sidebar() {
       {/* User Footer Section */}
       <div style={{
         padding: '16px 12px',
-        background: '#F8FAFC',
-        borderTop: '1px solid #E2E8F0',
+        background: '#F1F5F9',
+        borderTop: '1px solid #CBD5E1',
       }}>
         <div style={{
           display: 'flex',
@@ -184,7 +184,7 @@ export default function Sidebar() {
             <div style={{
               fontSize: 11,
               fontWeight: 800,
-              color: '#0F172A',
+              color: '#000000',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -197,11 +197,11 @@ export default function Sidebar() {
               alignItems: 'center',
               gap: 4,
               fontSize: 9,
-              fontWeight: 600,
-              color: '#64748B',
+              fontWeight: 700,
+              color: '#334155',
               marginTop: 2,
             }}>
-              <Shield size={10} className="text-amber-500" />
+              <Shield size={10} className="text-amber-600" />
               {userRole.toUpperCase()}
             </div>
           </div>

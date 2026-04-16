@@ -14,8 +14,7 @@ import { useTeams, useUpdateTeam, useCreateTeam, useDeleteTeam } from '@/hooks/u
 import { useUIStore } from '@/store/uiStore'
 import { useDebounce } from '@/hooks/useDebounce'
 import dynamic from 'next/dynamic'
-
-const DiagnosticPDF = dynamic(() => import('@/components/pdf/DiagnosticPDF'), { ssr: false })
+import PDFDownloadButton from '@/components/pdf/PDFDownloadButton'
 const ExcelDownloadButton = dynamic(() => import('@/components/excel/ExcelDownloadButton'), { ssr: false })
 
 // --- Stage Detection Banner ---
@@ -27,7 +26,7 @@ function StageBanner({ team, saving }: { team: TeamProfile, saving: boolean }) {
     <div className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm backdrop-blur-md bg-white/90">
       <div className="flex items-center gap-6">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Detected Stage</span>
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Detected Stage</span>
           <div className="flex items-center gap-3">
             <div className={cn(
               "p-1.5 rounded-lg",
@@ -36,7 +35,7 @@ function StageBanner({ team, saving }: { team: TeamProfile, saving: boolean }) {
               {level >= 4 ? <Zap size={18} /> : level >= 2 ? <TrendingUp size={18} /> : <AlertCircle size={18} />}
             </div>
             <h3 className="text-xl font-black text-slate-900 tracking-tight">{stage}</h3>
-            <span className="bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-200 uppercase">Tier {level}</span>
+            <span className="bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-300 uppercase">Tier {level}</span>
           </div>
         </div>
 
@@ -78,7 +77,7 @@ function StageBanner({ team, saving }: { team: TeamProfile, saving: boolean }) {
            <div className="h-10 w-px bg-slate-100 mx-1" />
            <div className="flex items-center gap-2">
              <ExcelDownloadButton team={team} />
-             <DiagnosticPDF team={team} />
+             <PDFDownloadButton team={team} />
            </div>
         </div>
       </div>

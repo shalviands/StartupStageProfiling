@@ -48,9 +48,9 @@ export default function ParameterSection({
     return (
       <div key={q.id} className="space-y-4 bg-white border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all group">
         <div className="flex justify-between items-start">
-          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
             {q.label}
-            <Info size={12} className="text-slate-300 cursor-help" />
+            <Info size={12} className="text-slate-400 cursor-help" />
           </label>
           
           {/* Score Dots */}
@@ -62,8 +62,8 @@ export default function ParameterSection({
                 className={cn(
                   "w-6 h-6 rounded-full text-[10px] font-bold transition-all border",
                   scoreVal === s 
-                    ? "bg-slate-900 border-slate-900 text-white scale-110" 
-                    : "bg-white border-slate-200 text-slate-400 hover:border-slate-400"
+                    ? "bg-slate-950 border-slate-950 text-white scale-110 shadow-sm" 
+                    : "bg-white border-slate-300 text-slate-600 hover:border-slate-500"
                 )}
               >
                 {s}
@@ -138,7 +138,7 @@ export default function ParameterSection({
               />
               <div className="flex gap-4">
                 <input 
-                  className="flex-1 text-xs text-slate-500 font-medium focus:outline-none" 
+                  className="flex-1 text-xs text-slate-700 font-semibold focus:outline-none" 
                   placeholder="Role (e.g. CEO)" 
                   value={m.role}
                   onChange={(e) => {
@@ -148,7 +148,7 @@ export default function ParameterSection({
                   }}
                 />
                 <input 
-                  className="flex-1 text-xs text-slate-400 focus:outline-none italic" 
+                  className="flex-1 text-xs text-slate-500 focus:outline-none italic" 
                   placeholder="Prior Experience/Skill" 
                   value={m.skill}
                   onChange={(e) => {
@@ -179,12 +179,12 @@ export default function ParameterSection({
         <div className="space-y-1">
           <div className="flex items-center gap-3">
              <h2 className="text-3xl font-black text-slate-900 tracking-tight">{title}</h2>
-             <span className="bg-slate-900 text-white text-[10px] font-black px-2.5 py-1 rounded-full">{weight}</span>
+             <span className="bg-slate-950 text-white text-[10px] font-black px-2.5 py-1 rounded-full">{weight}</span>
           </div>
-          <p className="text-sm text-slate-500 font-medium">{subtitle}</p>
+          <p className="text-sm text-slate-600 font-semibold">{subtitle}</p>
         </div>
         <div className="text-right">
-          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Param Score</div>
+          <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Param Score</div>
           <div className={cn(
             "text-4xl font-black tabular-nums",
             avg >= 4 ? "text-emerald-600" : avg >= 3 ? "text-amber-500" : avg > 0 ? "text-rose-500" : "text-slate-200"
@@ -196,7 +196,7 @@ export default function ParameterSection({
 
       {/* Core Questions */}
       <div className="space-y-6">
-        <div className="flex items-center gap-2 text-slate-400">
+        <div className="flex items-center gap-2 text-slate-500">
           <ChevronRight size={16} />
           <span className="text-[11px] font-black uppercase tracking-widest">Core Diagnostics</span>
         </div>
@@ -213,8 +213,8 @@ export default function ParameterSection({
       )}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-indigo-900">
-            {isDeepDiveUnlocked ? <Zap size={16} className="text-indigo-600" /> : <Lock size={16} className="text-slate-400" />}
-            <span className={cn("text-[11px] font-black uppercase tracking-widest", isDeepDiveUnlocked ? "text-indigo-900" : "text-slate-500")}>
+            {isDeepDiveUnlocked ? <Zap size={16} className="text-indigo-600" /> : <Lock size={16} className="text-slate-500" />}
+            <span className={cn("text-[11px] font-black uppercase tracking-widest", isDeepDiveUnlocked ? "text-indigo-950" : "text-slate-600")}>
               Deep Dive Analysis
             </span>
           </div>
@@ -231,8 +231,8 @@ export default function ParameterSection({
           </div>
         ) : (
           <div className="py-8 text-center space-y-2">
-            <p className="text-xs font-bold text-slate-400">Section Locked</p>
-            <p className="text-[10px] text-slate-400 max-w-xs mx-auto">This section is for validated startups with evidence of Problem-Solution Fit.</p>
+            <p className="text-xs font-bold text-slate-600">Section Locked</p>
+            <p className="text-[10px] text-slate-500 font-medium max-w-xs mx-auto">This section is for validated startups with evidence of Problem-Solution Fit.</p>
           </div>
         )}
       </div>
@@ -245,14 +245,14 @@ export default function ParameterSection({
           </div>
           <div>
             <h4 className="text-sm font-bold">Diagnostic Observation</h4>
-            <p className="text-[10px] text-white/50 font-medium">Summarize key evidence or risks for this parameter</p>
+            <p className="text-[10px] text-white/70 font-medium">Summarize key evidence or risks for this parameter</p>
           </div>
         </div>
         <textarea
           value={(data as any)[`${parameterId}_observation`] || ''}
           onChange={(e) => onChange(`${parameterId}_observation`, e.target.value)}
           placeholder={`Enter mentor observations for ${title}...`}
-          className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-sm text-white placeholder:text-white/20 focus:ring-1 focus:ring-white/20 min-h-[120px] resize-none"
+          className="w-full bg-white/5 border border-white/20 rounded-2xl p-6 text-sm text-white placeholder:text-white/40 focus:ring-1 focus:ring-white/30 min-h-[120px] resize-none"
         />
       </div>
     </div>

@@ -21,11 +21,11 @@ export default function AIAnalysisPanel({ teamId }: Props) {
           </div>
           <div>
             <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none">AI Strategic Logic</h3>
-            <p className="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">Powered by Llama 3.1 Neural Engine</p>
+            <p className="text-[9px] font-bold text-slate-600 mt-1 uppercase tracking-tighter">Powered by Llama 3.1 Neural Engine</p>
           </div>
         </div>
         {data?.model_used && (
-          <span className="text-[8px] font-black text-slate-500 uppercase bg-white border border-slate-200 px-3 py-1.5 rounded-full shadow-sm">
+          <span className="text-[8px] font-black text-slate-600 uppercase bg-white border border-slate-300 px-3 py-1.5 rounded-full shadow-sm">
             {data.model_used.split('/')[1]?.split(':')[0] || 'Neural Core'}
           </span>
         )}
@@ -38,7 +38,7 @@ export default function AIAnalysisPanel({ teamId }: Props) {
           </div>
           <div className="space-y-2">
             <p className="text-xs font-black text-slate-900 uppercase tracking-widest">Diagnostic Intelligence</p>
-            <p className="text-[10px] font-bold text-slate-400 max-w-[200px] leading-relaxed">
+            <p className="text-[10px] font-bold text-slate-500 max-w-[200px] leading-relaxed">
               Run neural analysis to identify growth moats and weakest-link bottlenecks.
             </p>
           </div>
@@ -62,7 +62,7 @@ export default function AIAnalysisPanel({ teamId }: Props) {
             <span className="text-[10px] font-black text-slate-900 uppercase tracking-[0.3em] inline-flex">
               Processing Engine
             </span>
-            <span className="text-[9px] font-bold text-slate-400 uppercase">Analysing 9 parameters...</span>
+            <span className="text-[9px] font-bold text-slate-600 uppercase">Analysing 9 parameters...</span>
           </div>
         </div>
       )}
@@ -85,9 +85,9 @@ export default function AIAnalysisPanel({ teamId }: Props) {
           <div className="bg-slate-900 rounded-[32px] p-6 text-white shadow-2xl shadow-slate-200">
              <div className="flex items-center gap-2 mb-4">
                 <Target size={14} className="text-violet-400" />
-                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/50">Executive Verdict</span>
+                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70">Executive Verdict</span>
              </div>
-             <p className="text-[13px] font-bold leading-relaxed">{data.executive_summary}</p>
+             <p className="text-[13px] font-black leading-relaxed">{data.executive_summary}</p>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
@@ -97,7 +97,7 @@ export default function AIAnalysisPanel({ teamId }: Props) {
                 <CheckCircle2 size={14} />
                 Strategic Moats
               </div>
-              <div className="text-[11px] text-slate-600 leading-relaxed font-bold whitespace-pre-wrap pl-1">
+              <div className="text-[11px] text-slate-700 leading-relaxed font-bold whitespace-pre-wrap pl-1">
                 {data.strategic_strengths}
               </div>
             </div>
@@ -108,7 +108,7 @@ export default function AIAnalysisPanel({ teamId }: Props) {
                  <AlertCircle size={14} />
                  Growth Inhibitors
               </div>
-              <div className="text-[11px] text-slate-600 leading-relaxed font-bold whitespace-pre-wrap pl-1">
+              <div className="text-[11px] text-slate-700 leading-relaxed font-bold whitespace-pre-wrap pl-1">
                 {data.critical_gaps}
               </div>
             </div>

@@ -16,25 +16,25 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-700" />
         <div className="relative z-10 space-y-6">
           <div className="space-y-2">
-             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Diagnosis Identity</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70">Diagnosis Identity</span>
              <h1 className="text-4xl font-black tracking-tight leading-none text-white">Startup Profile</h1>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest px-1">Startup Name</label>
+              <label className="text-[10px] font-bold text-white/70 uppercase tracking-widest px-1">Startup Name</label>
               <input 
                 type="text" value={team.startupName}
                 onChange={(e) => onChange('startupName', e.target.value)}
-                className="w-full bg-white/10 border border-white/10 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/30 outline-none transition-all placeholder:text-white/20"
+                className="w-full bg-white/10 border border-white/20 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/30 outline-none transition-all placeholder:text-white/40"
                 placeholder="e.g. AgriFlow Systems"
               />
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest px-1">Diagnostic Batch / Team ID</label>
+              <label className="text-[10px] font-bold text-white/70 uppercase tracking-widest px-1">Diagnostic Batch / Team ID</label>
               <input 
                 type="text" value={team.teamName}
                 onChange={(e) => onChange('teamName', e.target.value)}
-                className="w-full bg-white/10 border border-white/10 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/30 outline-none transition-all placeholder:text-white/20"
+                className="w-full bg-white/10 border border-white/20 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/30 outline-none transition-all placeholder:text-white/40"
                 placeholder="e.g. Cohort 7 - Team Delta"
               />
             </div>
@@ -44,8 +44,8 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-1">
         <div className="space-y-4">
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
-            <div className="w-1 h-1 bg-slate-400 rounded-full" /> Primary Sector
+          <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest px-1 flex items-center gap-2">
+            <div className="w-1 h-1 bg-slate-900 rounded-full" /> Primary Sector
           </label>
           <div className="relative">
             <select 
@@ -65,8 +65,8 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
         </div>
 
         <div className="space-y-4">
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
-            <div className="w-1 h-1 bg-slate-400 rounded-full" /> Institution
+          <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest px-1 flex items-center gap-2">
+            <div className="w-1 h-1 bg-slate-900 rounded-full" /> Institution
           </label>
           <input 
             type="text" value={team.institution}
@@ -77,8 +77,8 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
         </div>
 
         <div className="space-y-4">
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
-            <div className="w-1 h-1 bg-slate-400 rounded-full" /> Team Size
+          <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest px-1 flex items-center gap-2">
+            <div className="w-1 h-1 bg-slate-900 rounded-full" /> Team Size
           </label>
           <input 
             type="text" value={team.teamSize}
@@ -89,11 +89,11 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
         </div>
       </div>
 
-      <div className="bg-slate-50 border border-slate-100 rounded-[32px] p-8 space-y-6">
-        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 block">Diagnostic Session Metadata</label>
+      <div className="bg-slate-50/50 border border-slate-200 rounded-[32px] p-8 space-y-6">
+        <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] px-1 block">Diagnostic Session Metadata</label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
-             <label className="text-[10px] font-bold text-slate-500">Interview Date</label>
+             <label className="text-[10px] font-bold text-slate-700">Interview Date</label>
              <input 
               type="date" value={team.interviewDate}
               onChange={(e) => onChange('interviewDate', e.target.value)}
@@ -101,7 +101,7 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
             />
           </div>
           <div className="space-y-3">
-            <label className="text-[10px] font-bold text-slate-500">Principal Interviewer</label>
+            <label className="text-[10px] font-bold text-slate-700">Principal Interviewer</label>
             <input 
               type="text" value={team.interviewer}
               onChange={(e) => onChange('interviewer', e.target.value)}
