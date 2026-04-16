@@ -28,21 +28,17 @@ export async function middleware(request: NextRequest) {
   // IMPORTANT: always call getUser() to refresh the session token
   const { data: { user } } = await supabase.auth.getUser()
   const path = request.nextUrl.pathname
+  const isLoginPage = path.startsWith('/login')
+  const isPublicPath = isLoginPage || path.startsWith('/api/') || path.startsWith('/_next') || path.startsWith('/favicon')
 
-  // These paths are always accessible
-  if (
-    path.startsWith('/login') ||
-    path.startsWith('/api/') ||
-    path.startsWith('/_next') ||
-    path.startsWith('/favicon')
-  ) {
-    return response
+  // 1. If logged in and trying to access login page -> redirect to dashboard
+  if (user && isLoginPage) {
+    return NextResponse.redirect(new URL('/profiler', request.url))
   }
 
-  // Redirect to login if not authenticated
-  if (!user) {
-    const loginUrl = new URL('/login', request.url)
-    return NextResponse.redirect(loginUrl)
+  // 2. If not logged in and trying to access protected path -> redirect to login
+  if (!user && !isPublicPath) {
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
   return response
