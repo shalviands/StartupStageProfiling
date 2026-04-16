@@ -8,6 +8,7 @@ import { cn } from '@/utils/cn'
 interface Props {
   team: TeamProfile
   onChange: (field: keyof TeamProfile, value: any) => void
+  onScoreChange?: (field: keyof TeamProfile, value: number) => void
 }
 
 export default function Section7Diagnosis({ team, onChange }: Props) {

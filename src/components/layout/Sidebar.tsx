@@ -1,128 +1,194 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Plus, Trash2, Search, Loader2 } from 'lucide-react'
-import { useUIStore } from '@/store/uiStore'
 import { useTeams, useCreateTeam, useDeleteTeam } from '@/hooks/useTeams'
-import { cn } from '@/utils/cn'
+import { useUIStore } from '@/store/uiStore'
+import { calculateScores, scoreBg, scoreColor } from '@/utils/scores'
 
 export default function Sidebar() {
-  const { activeTeamId, setActiveTeamId } = useUIStore()
   const { data: teams = [], isLoading } = useTeams()
-  const { mutate: createTeam, isPending: isCreating } = useCreateTeam()
-  const { mutate: deleteTeam } = useDeleteTeam()
-  const [search, setSearch] = useState('')
+  const createTeam = useCreateTeam()
+  const deleteTeam = useDeleteTeam()
+  const { activeTeamId, setActiveTeamId } = useUIStore()
 
-  const filteredTeams = teams.filter(t => 
-    (t.startupName || '').toLowerCase().includes(search.toLowerCase()) ||
-    (t.teamName || '').toLowerCase().includes(search.toLowerCase())
-  )
-
-  const handleCreate = () => {
-    createTeam({ startupName: 'New Startup' }, {
-      onSuccess: (newTeam) => {
-        setActiveTeamId(newTeam.id)
-      }
-    })
+  async function handleAddTeam() {
+    if (createTeam.isPending) return
+    try {
+      const newTeam = await createTeam.mutateAsync({
+        teamName: 'New Team',
+        startupName: '',
+        roadmap: [
+          { priority: 'P0' as const, action: '', supportFrom: '', byWhen: '' },
+          { priority: 'P0' as const, action: '', supportFrom: '', byWhen: '' },
+          { priority: 'P1' as const, action: '', supportFrom: '', byWhen: '' },
+          { priority: 'P2' as const, action: '', supportFrom: '', byWhen: '' },
+        ],
+      })
+      setActiveTeamId(newTeam.id)
+    } catch (err) {
+      console.error('[Sidebar] Add team failed:', err)
+    }
   }
 
-  const handleDelete = (e: React.MouseEvent, id: string, name: string) => {
+  async function handleDelete(id: string, e: React.MouseEvent) {
     e.stopPropagation()
-    if (confirm(`Delete ${name || 'this team'}?`)) {
-      deleteTeam(id, {
-        onSuccess: () => {
-          if (activeTeamId === id) setActiveTeamId(null)
-        }
-      })
+    if (!confirm('Delete this team profile?')) return
+    try {
+      if (activeTeamId === id) setActiveTeamId(null)
+      await deleteTeam.mutateAsync(id)
+    } catch (err) {
+      console.error('[Sidebar] Delete failed:', err)
     }
   }
 
   return (
-    <aside className="w-[260px] bg-white border-r border-rule flex flex-col h-full overflow-hidden shrink-0">
-      {/* Search & Actions */}
-      <div className="p-4 border-b border-rule space-y-3">
-        <button 
-          onClick={handleCreate}
-          disabled={isCreating}
-          className="w-full bg-gold hover:bg-gold/90 text-navy font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-sm disabled:opacity-50"
+    <aside style={{
+      width: 200,
+      background: '#fff',
+      borderRight: '1px solid #DDE3EC',
+      display: 'flex',
+      flexDirection: 'column',
+      flexShrink: 0,
+      overflow: 'hidden',
+    }}>
+      {/* Header with Add button */}
+      <div style={{ padding: 9, borderBottom: '1px solid #DDE3EC' }}>
+        <button
+          onClick={handleAddTeam}
+          disabled={createTeam.isPending}
+          style={{
+            width: '100%',
+            padding: '7px 0',
+            background: createTeam.isPending ? '#8A9BB0' : '#0F2647',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 7,
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: createTeam.isPending ? 'wait' : 'pointer',
+            transition: 'background 0.15s',
+          }}
         >
-          {isCreating ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-          New Profile
+          {createTeam.isPending ? 'Creating...' : '+ New Team'}
         </button>
-
-        <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-silver" />
-          <input 
-            type="text" 
-            placeholder="Search teams..." 
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full bg-smoke border border-rule rounded-lg py-2 pl-9 pr-3 text-xs focus:ring-2 focus:ring-navy/10 focus:border-navy outline-none transition-all placeholder:text-silver"
-          />
-        </div>
       </div>
 
-      {/* Team List */}
-      <div className="flex-1 overflow-y-auto p-2 pb-20 space-y-1 custom-scrollbar">
+      {/* Team list */}
+      <div style={{ overflowY: 'auto', flex: 1, padding: 7 }}>
         {isLoading ? (
-          <div className="flex items-center justify-center p-8">
-            <Loader2 className="animate-spin text-silver" size={20} />
+          <div style={{
+            padding: 16,
+            textAlign: 'center',
+            color: '#8A9BB0',
+            fontSize: 11,
+          }}>
+            Loading...
           </div>
-        ) : filteredTeams.length === 0 ? (
-          <div className="p-8 text-center text-silver text-xs">
-            {search ? 'No matches found.' : 'No team profiles yet.'}
+        ) : teams.length === 0 ? (
+          <div style={{
+            padding: 20,
+            textAlign: 'center',
+            color: '#8A9BB0',
+            fontSize: 11,
+          }}>
+            No teams yet.<br />Click + New Team to start.
           </div>
         ) : (
-          filteredTeams.map(team => (
-            <button
-              key={team.id}
-              onClick={() => setActiveTeamId(team.id)}
-              className={cn(
-                "w-full text-left p-3 rounded-xl transition-all group relative border border-transparent",
-                activeTeamId === team.id 
-                  ? "bg-navy text-white shadow-md shadow-navy/20 border-navy" 
-                  : "hover:bg-smoke text-slate hover:border-rule"
-              )}
-            >
-              <div className="font-bold text-xs truncate pr-6">
-                {team.startupName || 'Untitled Startup'}
-              </div>
-              <div className={cn(
-                "text-[10px] mt-0.5 truncate",
-                activeTeamId === team.id ? "text-silver" : "text-silver"
-              )}>
-                {team.sector || 'Uncategorized'} · {team.institution || 'No Inst.'}
-              </div>
-              
-              <div 
-                onClick={(e) => handleDelete(e, team.id, team.startupName)}
-                className={cn(
-                  "absolute top-2.5 right-2.5 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all transform scale-90 group-hover:scale-100",
-                  activeTeamId === team.id ? "hover:bg-white/10" : "hover:bg-white border border-rule shadow-sm"
-                )}
+          teams.map(team => {
+            const scores = calculateScores(team)
+            const isActive = team.id === activeTeamId
+
+            return (
+              <div
+                key={team.id}
+                onClick={() => setActiveTeamId(team.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 7,
+                  padding: '7px 9px',
+                  borderRadius: 7,
+                  cursor: 'pointer',
+                  marginBottom: 3,
+                  background: isActive ? '#0F2647' : 'transparent',
+                  transition: 'background 0.12s',
+                  position: 'relative',
+                }}
+                onMouseEnter={e => {
+                  if (!isActive) {
+                    (e.currentTarget as HTMLElement).style.background = '#F4F6F9'
+                  }
+                  const btn = e.currentTarget.querySelector('[data-del]') as HTMLElement
+                  if (btn) btn.style.opacity = '1'
+                }}
+                onMouseLeave={e => {
+                  if (!isActive) {
+                    (e.currentTarget as HTMLElement).style.background = 'transparent'
+                  }
+                  const btn = e.currentTarget.querySelector('[data-del]') as HTMLElement
+                  if (btn) btn.style.opacity = '0'
+                }}
               >
-                <Trash2 size={12} className={activeTeamId === team.id ? "text-white" : "text-coral"} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    color: isActive ? '#fff' : '#0F2647',
+                  }}>
+                    {team.teamName || 'Unnamed Team'}
+                  </div>
+                  <div style={{
+                    fontSize: 9,
+                    color: '#8A9BB0',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {team.startupName || 'No startup name'}
+                  </div>
+                </div>
+
+                {scores.overall !== null && (
+                  <span style={{
+                    fontSize: 9,
+                    fontWeight: 700,
+                    padding: '2px 5px',
+                    borderRadius: 4,
+                    flexShrink: 0,
+                    background: scoreBg(scores.overall),
+                    color: scoreColor(scores.overall),
+                  }}>
+                    {scores.overall}
+                  </span>
+                )}
+
+                <button
+                  data-del="true"
+                  onClick={e => handleDelete(team.id, e)}
+                  style={{
+                    position: 'absolute',
+                    right: 6,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    opacity: 0,
+                    color: '#E84B3A',
+                    fontSize: 13,
+                    padding: '2px 3px',
+                    borderRadius: 4,
+                    transition: 'opacity 0.12s',
+                  }}
+                >
+                  ✕
+                </button>
               </div>
-
-              {activeTeamId === team.id && (
-                <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-gold rounded-r" />
-              )}
-            </button>
-          ))
+            )
+          })
         )}
-      </div>
-
-      {/* Footer / Context */}
-      <div className="p-4 border-t border-rule bg-smoke/50 mt-auto">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-navy text-gold flex items-center justify-center font-bold text-[10px]">
-            IU
-          </div>
-          <div className="text-[10px] text-slate leading-tight">
-            <div className="font-bold">Incubation Centre</div>
-            <div className="text-silver uppercase tracking-wider font-semibold mt-0.5">InUnity Hub</div>
-          </div>
-        </div>
       </div>
     </aside>
   )

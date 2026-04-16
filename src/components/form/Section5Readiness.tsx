@@ -5,7 +5,8 @@ import type { TeamProfile } from '@/types/team.types'
 
 interface Props {
   team: TeamProfile
-  onChange: (field: keyof TeamProfile, value: string) => void
+  onChange: (field: keyof TeamProfile, value: any) => void
+  onScoreChange?: (field: keyof TeamProfile, value: number) => void
 }
 
 export default function Section5Readiness({ team, onChange }: Props) {

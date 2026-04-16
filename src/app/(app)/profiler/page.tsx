@@ -1,8 +1,10 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTeams, useCreateTeam, useUpdateTeam, useDeleteTeam }
+  from '@/hooks/useTeams'
 import { useUIStore } from '@/store/uiStore'
-import { useTeams, useUpdateTeam } from '@/hooks/useTeams'
+import type { TeamProfile } from '@/types/team.types'
 import SectionTabs from '@/components/form/SectionTabs'
 import Section1BasicInfo from '@/components/form/Section1BasicInfo'
 import Section2ProblemSolution from '@/components/form/Section2ProblemSolution'
@@ -13,146 +15,245 @@ import Section6Pitch from '@/components/form/Section6Pitch'
 import Section7Diagnosis from '@/components/form/Section7Diagnosis'
 import LivePreview from '@/components/preview/LivePreview'
 import AIAnalysisPanel from '@/components/ai/AIAnalysisPanel'
-import { Loader2, ChevronRight, ChevronLeft, Save } from 'lucide-react'
-import type { TeamProfile } from '@/types/team.types'
+
+const SECTIONS = [
+  Section1BasicInfo,
+  Section2ProblemSolution,
+  Section3MarketValidation,
+  Section4BusinessModel,
+  Section5Readiness,
+  Section6Pitch,
+  Section7Diagnosis,
+]
 
 export default function ProfilerPage() {
-  const { activeTeamId, activeSection, setSection, showPreview } = useUIStore()
   const { data: teams = [], isLoading } = useTeams()
-  const { mutate: updateTeam } = useUpdateTeam()
-  
-  const activeTeam = teams.find(t => t.id === activeTeamId) ?? null
+  const createTeam  = useCreateTeam()
+  const updateTeam  = useUpdateTeam()
+  const deleteTeam  = useDeleteTeam()
+  const {
+    activeTeamId,
+    activeSection,
+    showPreview,
+    setActiveTeamId,
+    setSection,
+  } = useUIStore()
 
-  const [localTeam, setLocalTeam] = useState<TeamProfile | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
+  // SAFE: always check before using
+  const activeTeam: TeamProfile | null = activeTeamId
+    ? (teams.find(t => t.id === activeTeamId) ?? null)
+    : null
 
-  // Sync local state when active team changes
-  useEffect(() => {
-    if (activeTeam) {
-      setLocalTeam(activeTeam)
-    } else {
-      setLocalTeam(null)
-    }
-  }, [activeTeamId, teams]) // Careful with dependencies to avoid loops
+  // Auto-save: debounced 600ms
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
-  // Debounced Auto-save
-  useEffect(() => {
-    if (!localTeam || !activeTeamId) return
+  function scheduleUpdate(field: keyof TeamProfile, value: any) {
+    if (!activeTeamId || !activeTeam) return
     
-    // Check if anything actually changed using a simple ID + timestamp or value check
-    const original = teams.find(t => t.id === activeTeamId)
-    if (!original) return
-
-    // Shallow compare relevant fields to see if we need a save
-    const hasChanged = Object.keys(localTeam).some(key => {
-      const k = key as keyof TeamProfile
-      return JSON.stringify(localTeam[k]) !== JSON.stringify(original[k])
-    })
-
-    if (!hasChanged) return
-
-    const timer = setTimeout(() => {
-      setIsSaving(true)
-      updateTeam({ id: activeTeamId, updates: localTeam }, {
-        onSettled: () => {
-          setIsSaving(false)
-        }
-      })
-    }, 1500) // Increased debounce for better UX and less DB load
-
-    return () => clearTimeout(timer)
-  }, [localTeam, activeTeamId, teams])
-
-  const handleChange = useCallback((field: keyof TeamProfile, value: any) => {
-    setLocalTeam(prev => prev ? ({ ...prev, [field]: value }) : null)
-  }, [])
-
-  const handleScoreChange = useCallback((field: keyof TeamProfile, value: number) => {
-    setLocalTeam(prev => prev ? ({ ...prev, [field]: value }) : null)
-  }, [])
-
-  if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-smoke">
-        <Loader2 className="animate-spin text-navy" size={40} />
-      </div>
-    )
+    // Optimistic local update check would go here if needed
+    
+    if (saveTimer.current) clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(async () => {
+      setSaving(true)
+      setSaveError('')
+      try {
+        const updates = { [field]: value }
+        await updateTeam.mutateAsync({ id: activeTeamId, updates })
+      } catch (err) {
+        setSaveError('Save failed')
+        console.error('[AutoSave]', err)
+      } finally {
+        setSaving(false)
+      }
+    }, 600)
   }
 
-  if (!activeTeamId || !localTeam) {
+  function handleScoreChange(field: keyof TeamProfile, value: number) {
+    scheduleUpdate(field, value)
+  }
+
+  // Add team handler — safe with loading guard
+  async function handleAddTeam() {
+    try {
+      const newTeam = await createTeam.mutateAsync({
+        teamName: 'New Team',
+        startupName: '',
+        sector: '',
+        roadmap: [
+          { priority: 'P0' as const, action: '', supportFrom: '', byWhen: '' },
+          { priority: 'P0' as const, action: '', supportFrom: '', byWhen: '' },
+          { priority: 'P1' as const, action: '', supportFrom: '', byWhen: '' },
+          { priority: 'P2' as const, action: '', supportFrom: '', byWhen: '' },
+        ],
+      })
+      // Set active ONLY after the team is confirmed created
+      setActiveTeamId(newTeam.id)
+    } catch (err) {
+      console.error('[handleAddTeam]', err)
+      alert('Failed to create profile. Please try again.')
+    }
+  }
+
+  const SectionComponent = SECTIONS[activeSection] ?? SECTIONS[0]
+
+  // Show loading while initial data loads
+  if (isLoading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-smoke p-8 text-center">
-        <div className="w-20 h-20 bg-white rounded-3xl border border-rule flex items-center justify-center mb-6 shadow-xl shadow-navy/5">
-           <Save size={32} className="text-silver" />
-        </div>
-        <h2 className="text-xl font-black text-navy mb-2">No Profile Selected</h2>
-        <p className="text-silver text-sm max-w-xs leading-relaxed">
-          Select an existing startup profile from the sidebar or create a new one to begin diagnosis.
-        </p>
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#8A9BB0',
+        fontSize: 14,
+        background: '#F4F6F9',
+      }}>
+        Loading...
       </div>
     )
   }
 
   return (
-    <div className="flex flex-1 overflow-hidden bg-smoke font-sans">
-      {/* LEFT: Form Flow */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <SectionTabs />
-        
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
-          {isSaving && (
-             <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-navy text-gold px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
-                <Loader2 size={12} className="animate-spin" />
-                Syncing Changes...
-             </div>
+    <div style={{ display: 'flex', flex: 1, overflow: 'hidden', background: '#F4F6F9' }}>
+
+      {/* ── FORM AREA ── */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+        {/* Section tabs — only show when team selected */}
+        {activeTeam && (
+          <SectionTabs />
+        )}
+
+        {/* Form content */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
+          {!activeTeam ? (
+            // No team selected state
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              gap: 12,
+              color: '#8A9BB0',
+            }}>
+              <div style={{ fontSize: 48 }}>📋</div>
+              <h2 style={{ color: '#0F2647', fontSize: 18, fontWeight: 700 }}>
+                No profile selected
+              </h2>
+              <p style={{ fontSize: 13 }}>
+                Select a startup profile from the sidebar or create a new one
+              </p>
+              <button
+                onClick={handleAddTeam}
+                disabled={createTeam.isPending}
+                style={{
+                  marginTop: 8,
+                  padding: '8px 20px',
+                  background: '#0F2647',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: createTeam.isPending ? 'wait' : 'pointer',
+                }}
+              >
+                {createTeam.isPending ? 'Creating...' : '+ Add Profile'}
+              </button>
+            </div>
+          ) : (
+            // Active team form
+            <div style={{ maxWidth: 800, margin: '0 auto', width: '100%' }}>
+               <SectionComponent
+                team={activeTeam}
+                onChange={scheduleUpdate}
+                onScoreChange={handleScoreChange}
+              />
+            </div>
           )}
+        </div>
 
-          <div className="max-w-4xl mx-auto">
-            {activeSection === 0 && <Section1BasicInfo team={localTeam} onChange={handleChange} />}
-            {activeSection === 1 && <Section2ProblemSolution team={localTeam} onChange={handleChange} onScoreChange={handleScoreChange} />}
-            {activeSection === 2 && <Section3MarketValidation team={localTeam} onChange={handleChange} onScoreChange={handleScoreChange} />}
-            {activeSection === 3 && <Section4BusinessModel team={localTeam} onChange={handleChange} onScoreChange={handleScoreChange} />}
-            {activeSection === 4 && <Section5Readiness team={localTeam} onChange={handleChange} />}
-            {activeSection === 5 && <Section6Pitch team={localTeam} onChange={handleChange} onScoreChange={handleScoreChange} />}
-            {activeSection === 6 && <Section7Diagnosis team={localTeam} onChange={handleChange} />}
+        {/* Navigation footer — only show when team selected */}
+        {activeTeam && (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '12px 24px',
+            background: '#fff',
+            borderTop: '1px solid #DDE3EC',
+            flexShrink: 0,
+          }}>
+            <button
+              onClick={() => setSection(activeSection - 1)}
+              disabled={activeSection === 0}
+              style={{
+                padding: '8px 16px',
+                border: '1px solid #DDE3EC',
+                borderRadius: 8,
+                background: '#fff',
+                color: '#0F2647',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: activeSection === 0 ? 'not-allowed' : 'pointer',
+                opacity: activeSection === 0 ? 0.4 : 1,
+              }}
+            >
+              Previous
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {saving && (
+                <span style={{ fontSize: 11, color: '#8A9BB0' }}>Saving...</span>
+              )}
+              {saveError && (
+                <span style={{ fontSize: 11, color: '#E84B3A' }}>⚠ {saveError}</span>
+              )}
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#0F2647' }}>
+                {activeSection + 1} / {SECTIONS.length}
+              </span>
+            </div>
+            <button
+              onClick={() => setSection(activeSection + 1)}
+              disabled={activeSection === SECTIONS.length - 1}
+              style={{
+                padding: '8px 16px',
+                border: '1px solid #DDE3EC',
+                borderRadius: 8,
+                background: '#fff',
+                color: '#0F2647',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: activeSection === SECTIONS.length - 1 ? 'not-allowed' : 'pointer',
+                opacity: activeSection === SECTIONS.length - 1 ? 0.4 : 1,
+              }}
+            >
+              Next
+            </button>
           </div>
-        </div>
-
-        {/* Form Navigation Bar */}
-        <div className="p-4 bg-white border-t border-rule flex justify-between items-center sm:px-8">
-           <button 
-             disabled={activeSection === 0}
-             onClick={() => setSection(activeSection - 1)}
-             className="flex items-center gap-2 text-[10px] font-black text-silver uppercase tracking-widest hover:text-navy disabled:opacity-0 transition-all font-sans"
-           >
-             <ChevronLeft size={16} /> Back
-           </button>
-           
-           <div className="flex items-center gap-1.5">
-              {[0,1,2,3,4,5,6].map(i => (
-                <div key={i} className={`h-1 rounded-full transition-all ${activeSection === i ? 'w-8 bg-navy' : 'w-2 bg-smoke'}`} />
-              ))}
-           </div>
-
-           <button 
-             disabled={activeSection === 6}
-             onClick={() => setSection(activeSection + 1)}
-             className="flex items-center gap-2 text-[10px] font-black text-navy uppercase tracking-widest hover:text-gold disabled:opacity-0 transition-all font-sans"
-           >
-             Next Section <ChevronRight size={16} />
-           </button>
-        </div>
+        )}
       </div>
 
-      {/* RIGHT: Live Preview Panel */}
-      {showPreview && (
-        <aside className="w-[320px] border-l border-rule bg-white flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
-          <LivePreview team={localTeam} />
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
-            <AIAnalysisPanel teamId={activeTeamId} />
+      {/* ── PREVIEW PANEL ── */}
+      {showPreview && activeTeam && (
+        <aside style={{
+          width: 320,
+          borderLeft: '1px solid #DDE3EC',
+          background: '#fff',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          flexShrink: 0,
+        }}>
+          <LivePreview team={activeTeam} />
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            <AIAnalysisPanel teamId={activeTeam.id} />
           </div>
         </aside>
       )}
+
     </div>
   )
 }
