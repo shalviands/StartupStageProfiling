@@ -13,7 +13,10 @@ export const TEAMS_KEY = ['teams'] as const
 async function fetchTeams(): Promise<TeamProfile[]> {
   const res = await fetch('/api/teams')
   if (res.status === 401) throw new Error('Unauthorized')
-  if (!res.ok) throw new Error('Failed to fetch teams')
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.error || 'Failed to fetch teams')
+  }
   const data = await res.json()
   return (data as any[]).map(mapDbToFrontend)
 }
@@ -22,7 +25,8 @@ export function useTeams() {
   return useQuery<TeamProfile[]>({
     queryKey: TEAMS_KEY,
     queryFn: fetchTeams,
-    staleTime: 30_000,
+    staleTime: 60_000,
+    retry: 1,
   })
 }
 
@@ -35,10 +39,16 @@ export function useCreateTeam() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(team),
       })
-      if (!res.ok) throw new Error('Failed to create team')
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Failed to create team')
+      }
       return mapDbToFrontend(await res.json())
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: TEAMS_KEY }),
+    onSuccess: (newTeam) => {
+      qc.setQueryData<TeamProfile[]>(TEAMS_KEY, (old) => [newTeam, ...(old || [])])
+      qc.invalidateQueries({ queryKey: TEAMS_KEY })
+    },
   })
 }
 
@@ -57,11 +67,13 @@ export function useUpdateTeam() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
       })
-      if (!res.ok) throw new Error('Failed to update team')
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Failed to update team')
+      }
       return mapDbToFrontend(await res.json())
     },
     onMutate: async ({ id, updates }) => {
-      // Optimistic update
       await qc.cancelQueries({ queryKey: TEAMS_KEY })
       const prev = qc.getQueryData<TeamProfile[]>(TEAMS_KEY)
       qc.setQueryData<TeamProfile[]>(TEAMS_KEY, old =>
@@ -81,8 +93,16 @@ export function useDeleteTeam() {
   return useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/teams/${id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to delete team')
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Failed to delete team')
+      }
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: TEAMS_KEY }),
+    onSuccess: (_, deletedId) => {
+      qc.setQueryData<TeamProfile[]>(TEAMS_KEY, (old) => 
+        (old || []).filter(t => t.id !== deletedId)
+      )
+      qc.invalidateQueries({ queryKey: TEAMS_KEY })
+    },
   })
 }

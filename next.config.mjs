@@ -6,7 +6,6 @@ const nextConfig = {
       ...config.resolve.alias,
       canvas: false,
       encoding: false,
-      '@react-pdf/renderer': '@react-pdf/renderer/lib/react-pdf.browser.es.js',
     }
     return config
   },

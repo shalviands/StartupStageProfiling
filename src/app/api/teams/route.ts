@@ -1,56 +1,63 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
-import { TeamCreateSchema } from '@/types/team.types'
-import { mapFrontendToDb, mapDbToFrontend } from '@/utils/mappers'
+import { TeamBaseSchema } from '@/types/team.types'
+import { mapDbToFrontend, mapFrontendToDb } from '@/utils/mappers'
 
 export async function GET() {
-  const user = await getUserFromRequest()
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  try {
+    const user = await getUserFromRequest()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
-  const supabase = await createServerSupabaseClient()
-  const { data, error } = await supabase
-    .from('teams')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
+    const supabase = await createServerSupabaseClient()
+    const { data, error } = await supabase
+      .from('teams')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
 
-  if (error) {
-    console.error('[GET /api/teams]', error)
+    if (error) throw error
+
+    return NextResponse.json(data || [])
+  } catch (error: any) {
+    console.error('[TEAMS_GET]', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
-
-  return NextResponse.json(data ?? [])
 }
 
-export async function POST(request: NextRequest) {
-  const user = await getUserFromRequest()
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+export async function POST(request: Request) {
+  try {
+    const user = await getUserFromRequest()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
-  const body = await request.json()
-  const parsed = TeamCreateSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Validation failed', details: parsed.error.flatten() },
-      { status: 422 }
-    )
-  }
+    const body = await request.json()
+    const parsed = TeamBaseSchema.safeParse(body)
+    
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid data', details: parsed.error.format() }, { status: 400 })
+    }
 
-  const supabase = await createServerSupabaseClient()
-  const { data, error } = await supabase
-    .from('teams')
-    .insert({ ...mapFrontendToDb(parsed.data), user_id: user.id })
-    .select()
-    .single()
+    const supabase = await createServerSupabaseClient()
+    const dbData = {
+      ...mapFrontendToDb(parsed.data),
+      user_id: user.id
+    }
 
-  if (error) {
-    console.error('[POST /api/teams]', error)
+    const { data, error } = await supabase
+      .from('teams')
+      .insert(dbData)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    return NextResponse.json(data)
+  } catch (error: any) {
+    console.error('[TEAMS_POST]', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
-
-  return NextResponse.json(data, { status: 201 })
 }

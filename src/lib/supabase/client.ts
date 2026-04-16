@@ -7,10 +7,9 @@ export function createClient() {
   )
 }
 
-// Singleton for use in hooks and client components
-let client: ReturnType<typeof createClient> | null = null
-
 export function getSupabaseBrowser() {
-  if (!client) client = createClient()
-  return client
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 }

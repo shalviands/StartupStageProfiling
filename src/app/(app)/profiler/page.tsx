@@ -39,19 +39,29 @@ export default function ProfilerPage() {
   useEffect(() => {
     if (!localTeam || !activeTeamId) return
     
-    // Check if anything actually changed
+    // Check if anything actually changed using a simple ID + timestamp or value check
     const original = teams.find(t => t.id === activeTeamId)
-    if (!original || JSON.stringify(original) === JSON.stringify(localTeam)) return
+    if (!original) return
+
+    // Shallow compare relevant fields to see if we need a save
+    const hasChanged = Object.keys(localTeam).some(key => {
+      const k = key as keyof TeamProfile
+      return JSON.stringify(localTeam[k]) !== JSON.stringify(original[k])
+    })
+
+    if (!hasChanged) return
 
     const timer = setTimeout(() => {
       setIsSaving(true)
       updateTeam({ id: activeTeamId, updates: localTeam }, {
-        onSettled: () => setIsSaving(false)
+        onSettled: () => {
+          setIsSaving(false)
+        }
       })
-    }, 800)
+    }, 1500) // Increased debounce for better UX and less DB load
 
     return () => clearTimeout(timer)
-  }, [localTeam])
+  }, [localTeam, activeTeamId, teams])
 
   const handleChange = useCallback((field: keyof TeamProfile, value: any) => {
     setLocalTeam(prev => prev ? ({ ...prev, [field]: value }) : null)
