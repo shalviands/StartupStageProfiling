@@ -15,13 +15,6 @@ export default function TopBar() {
   const { data: teams = [] } = useTeams()
   const activeTeam = teams.find(t => t.id === activeTeamId) ?? null
 
-  async function handleLogout() {
-    const supabase = getSupabaseBrowser()
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
-  }
-
   return (
     <header className="px-6 py-4 flex-shrink-0 z-20 flex items-center justify-between premium-shadow" style={{
       background: '#0F172A',
@@ -64,13 +57,6 @@ export default function TopBar() {
             <PDFDownloadButton team={activeTeam} />
           </>
         )}
-        <button
-          onClick={handleLogout}
-          className="bg-slate-800/50 text-slate-300 hover:text-white hover:bg-slate-800 
-                     px-4 py-2 rounded-lg text-[11px] font-bold transition-all active:scale-95"
-        >
-          Sign out
-        </button>
       </div>
     </header>
   )

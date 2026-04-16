@@ -1,16 +1,35 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTeams, useCreateTeam, useDeleteTeam } from '@/hooks/useTeams'
 import { useUIStore } from '@/store/uiStore'
 import { calculateScores, scoreBg, scoreColor } from '@/utils/scores'
+import { useRouter } from 'next/navigation'
+import { getSupabaseBrowser } from '@/lib/supabase/client'
+import { LogOut, User as UserIcon, Shield } from 'lucide-react'
 
 export default function Sidebar() {
+  const router = useRouter()
   const { data: teams = [], isLoading } = useTeams()
   const createTeam = useCreateTeam()
   const deleteTeam = useDeleteTeam()
   const { activeTeamId, setActiveTeamId } = useUIStore()
   const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const supabase = getSupabaseBrowser()
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user)
+    })
+  }, [])
+
+  async function handleLogout() {
+    const supabase = getSupabaseBrowser()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   async function handleAddTeam() {
     if (createTeam.isPending) return
@@ -42,8 +61,11 @@ export default function Sidebar() {
     }
   }
 
+  const userDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
+  const userRole = user?.user_metadata?.role || 'Administrator'
+
   return (
-    <aside className="custom-scrollbar" style={{
+    <aside style={{
       width: 210,
       background: '#fff',
       borderRight: '1px solid #E2E8F0',
@@ -76,7 +98,7 @@ export default function Sidebar() {
       </div>
 
       {/* Team list */}
-      <div style={{ overflowY: 'auto', flex: 1, padding: 8 }}>
+      <div className="custom-scrollbar" style={{ overflowY: 'auto', flex: 1, padding: 8 }}>
         {isLoading ? (
           <div style={{
             padding: 24,
@@ -186,6 +208,83 @@ export default function Sidebar() {
             )
           })
         )}
+      </div>
+
+      {/* User Footer Section */}
+      <div style={{
+        padding: '16px 12px',
+        background: '#F8FAFC',
+        borderTop: '1px solid #E2E8F0',
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          marginBottom: 12,
+          padding: '4px',
+        }}>
+          <div style={{
+            width: 36,
+            height: 36,
+            borderRadius: 10,
+            background: '#0F172A',
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <UserIcon size={18} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{
+              fontSize: 11,
+              fontWeight: 800,
+              color: '#0F172A',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              lineHeight: 1.2,
+            }}>
+              {userDisplayName}
+            </div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              fontSize: 9,
+              fontWeight: 600,
+              color: '#64748B',
+              marginTop: 2,
+            }}>
+              <Shield size={10} className="text-amber-500" />
+              {userRole.toUpperCase()}
+            </div>
+          </div>
+        </div>
+        
+        <button
+          onClick={handleLogout}
+          className="btn-hover"
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            padding: '8px 0',
+            background: 'rgba(239, 68, 68, 0.05)',
+            color: '#EF4444',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            borderRadius: 8,
+            fontSize: 10,
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          <LogOut size={12} />
+          SIGN OUT
+        </button>
       </div>
     </aside>
   )
