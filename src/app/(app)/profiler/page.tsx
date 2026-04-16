@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect, useRef } from 'react'
 import { PARAMETERS_CONFIG } from '@/config/parameters'
 import { calculateOverallScore, classifyStage, getMentorType, getRoadmap } from '@/utils/scores'
