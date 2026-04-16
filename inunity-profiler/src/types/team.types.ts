@@ -1,0 +1,72 @@
+import { z } from 'zod'
+
+export const RoadmapItemSchema = z.object({
+  priority:    z.enum(['P0', 'P1', 'P2']),
+  action:      z.string().max(500).default(''),
+  supportFrom: z.string().max(200).default(''),
+  byWhen:      z.string().max(100).default(''),
+})
+
+export const TeamBaseSchema = z.object({
+  teamName:                  z.string().max(200).default(''),
+  startupName:               z.string().max(200).default(''),
+  sector:                    z.string().max(200).default(''),
+  institution:               z.string().max(200).default(''),
+  teamSize:                  z.string().max(100).default(''),
+  roles:                     z.string().max(500).default(''),
+  interviewDate:             z.string().default(''),
+  interviewer:               z.string().max(200).default(''),
+  problemStatement:          z.string().max(2000).default(''),
+  problemScore:              z.number().int().min(0).max(5).default(0),
+  solutionDescription:       z.string().max(2000).default(''),
+  solutionScore:             z.number().int().min(0).max(5).default(0),
+  productType:               z.string().max(100).default(''),
+  productTypeOther:          z.string().max(200).default(''),
+  uniqueValue:               z.string().max(2000).default(''),
+  uniqueValueScore:          z.number().int().min(0).max(5).default(0),
+  usersTested:               z.number().int().min(0).default(0),
+  testingDetails:            z.string().max(2000).default(''),
+  stakeholdersInteracted:    z.number().int().min(0).default(0),
+  stakeholderTypes:          z.string().max(500).default(''),
+  customerInterviewDetails:  z.string().max(2000).default(''),
+  customerInterviewScore:    z.number().int().min(0).max(5).default(0),
+  competitorDetails:         z.string().max(2000).default(''),
+  competitorScore:           z.number().int().min(0).max(5).default(0),
+  marketSizeDetails:         z.string().max(2000).default(''),
+  marketSizeScore:           z.number().int().min(0).max(5).default(0),
+  revenueModelDetails:       z.string().max(2000).default(''),
+  revenueModelScore:         z.number().int().min(0).max(5).default(0),
+  bmcDetails:                z.string().max(2000).default(''),
+  bmcScore:                  z.number().int().min(0).max(5).default(0),
+  revenueStage:              z.string().max(100).default(''),
+  businessModelType:         z.string().max(100).default(''),
+  bmcDone:                   z.string().max(100).default(''),
+  trl:                       z.string().max(2).default(''),
+  brl:                       z.string().max(2).default(''),
+  crl:                       z.string().max(2).default(''),
+  pitchDeckDetails:          z.string().max(2000).default(''),
+  pitchDeckScore:            z.number().int().min(0).max(5).default(0),
+  elevatorDetails:           z.string().max(2000).default(''),
+  elevatorScore:             z.number().int().min(0).max(5).default(0),
+  investorAskDetails:        z.string().max(2000).default(''),
+  investorAskScore:          z.number().int().min(0).max(5).default(0),
+  strengths:                 z.string().max(2000).default(''),
+  gaps:                      z.string().max(2000).default(''),
+  readinessSummary:          z.string().max(3000).default(''),
+  recommendations:           z.string().max(3000).default(''),
+  modules:                   z.string().max(2000).default(''),
+  p0:                        z.string().max(500).default(''),
+  p1:                        z.string().max(500).default(''),
+  p2:                        z.string().max(500).default(''),
+  barriers:                  z.string().max(500).default(''),
+  mentor:                    z.string().max(200).default(''),
+  nextCheckin:               z.string().default(''),
+  notes:                     z.string().max(3000).default(''),
+  roadmap:                   z.array(RoadmapItemSchema).default([]),
+})
+
+export const TeamCreateSchema = TeamBaseSchema
+export const TeamUpdateSchema = TeamBaseSchema.partial()
+
+export type TeamProfile = z.infer<typeof TeamBaseSchema> & { id: string }
+export type RoadmapItem = z.infer<typeof RoadmapItemSchema>

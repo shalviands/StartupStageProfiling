@@ -1,0 +1,43 @@
+{
+  "name": "inunity-profiler",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "14.2.x",
+    "react": "^18.3.x",
+    "react-dom": "^18.3.x",
+    "@supabase/ssr": "^0.5.x",
+    "@supabase/supabase-js": "^2.x.x",
+    "@tanstack/react-query": "^5.x.x",
+    "@tanstack/react-query-devtools": "^5.x.x",
+    "zustand": "^4.x.x",
+    "react-hook-form": "^7.x.x",
+    "@hookform/resolvers": "^3.x.x",
+    "zod": "^3.x.x",
+    "@react-pdf/renderer": "^3.4.x",
+    "xlsx": "^0.18.x",
+    "clsx": "^2.x.x",
+    "tailwind-merge": "^2.x.x",
+    "lucide-react": "^0.x.x",
+    "date-fns": "^3.x.x",
+    "geist": "^1.x.x"
+  },
+  "devDependencies": {
+    "typescript": "^5.x.x",
+    "@types/node": "^20.x.x",
+    "@types/react": "^18.x.x",
+    "@types/react-dom": "^18.x.x",
+    "tailwindcss": "^3.x.x",
+    "postcss": "^8.x.x",
+    "autoprefixer": "^10.x.x",
+    "eslint": "^8.x.x",
+    "eslint-config-next": "14.2.x"
+  }
+}
