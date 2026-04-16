@@ -10,7 +10,7 @@ interface Props {
 }
 
 const TABS = [
-  { id: 0, label: 'Profile' },
+  { id: 0, label: 'Metadata' },
   { id: 1, label: 'P1' },
   { id: 2, label: 'P2' },
   { id: 3, label: 'P3' },
@@ -24,16 +24,16 @@ const TABS = [
 
 export default function SectionTabs({ activeTab, setActiveTab }: Props) {
   return (
-    <div className="flex bg-slate-100/80 p-1.5 rounded-[22px] mb-8 overflow-x-auto scrollbar-hide border border-slate-200/50 shadow-inner">
+    <div className="flex bg-smoke p-1.5 rounded-[22px] mb-8 overflow-x-auto scrollbar-hide border border-rule shadow-inner">
       {TABS.map((tab) => (
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
           className={cn(
-            "flex-1 min-w-[84px] py-3.5 px-4 rounded-[16px] text-[10px] font-black uppercase tracking-widest transition-all duration-300",
+            "flex-1 min-w-[90px] py-4 px-4 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all duration-300",
             activeTab === tab.id
-              ? "bg-white text-slate-950 shadow-md border border-slate-200 scale-[1.02]"
-              : "text-slate-700 hover:text-slate-900 hover:bg-white/60"
+              ? "bg-navy text-white shadow-lg shadow-navy/20 active:scale-95"
+              : "text-silver hover:text-navy hover:bg-white/60"
           )}
         >
           {tab.label}

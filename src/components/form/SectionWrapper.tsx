@@ -1,0 +1,141 @@
+'use client'
+
+import React from 'react'
+import { cn } from '@/utils/cn'
+import { ChevronRight, MessageSquare, Lock, Zap, ShieldCheck } from 'lucide-react'
+import { calculateParameterAverage, classifyStage } from '@/utils/scores'
+import type { TeamProfile } from '@/types/team.types'
+
+interface SectionWrapperProps {
+  parameterId: string
+  title: string
+  subtitle: string
+  weight: string
+  data: TeamProfile
+  onChange: (field: string, value: any) => void
+  children: React.ReactNode
+  deepDive?: React.ReactNode
+}
+
+export default function SectionWrapper({
+  parameterId,
+  title,
+  subtitle,
+  weight,
+  data,
+  onChange,
+  children,
+  deepDive,
+}: SectionWrapperProps) {
+  const { level } = classifyStage(data)
+  const isDeepDiveUnlocked = level >= 3
+  const avg = calculateParameterAverage(data, parameterId)
+
+  return (
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Parameter Header */}
+      <div className="flex justify-between items-end border-b border-rule pb-8">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+             <h2 className="text-3xl font-black text-navy tracking-tight leading-none">{title}</h2>
+             <span className="bg-navy text-gold text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm">
+               {weight} WEIGHT
+             </span>
+          </div>
+          <p className="text-sm text-slate font-semibold max-w-xl">{subtitle}</p>
+        </div>
+        <div className="text-right">
+          <div className="text-[10px] font-black text-silver uppercase tracking-widest mb-1.5">Parameter Score</div>
+          <div className={cn(
+            "text-5xl font-black tabular-nums transition-colors duration-500",
+            avg >= 4 ? "text-teal" : avg >= 3 ? "text-gold" : avg > 0 ? "text-coral" : "text-smoke"
+          )}>
+            {avg > 0 ? avg.toFixed(1) : '--'}
+          </div>
+        </div>
+      </div>
+
+      {/* Core Diagnostics */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-2 text-silver">
+          <ChevronRight size={16} />
+          <span className="text-[11px] font-black uppercase tracking-widest">Core Diagnostic Evidence</span>
+        </div>
+        <div className="grid grid-cols-1 gap-6">
+          {children}
+        </div>
+      </div>
+
+      {/* Deep Dive Section */}
+      {deepDive && (
+        <div className={cn(
+          "space-y-6 transition-all duration-700 rounded-[32px] p-10 border",
+          isDeepDiveUnlocked 
+            ? "bg-purple-lt border-purple/10" 
+            : "bg-smoke border-rule/50 opacity-70"
+        )}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={cn(
+                "w-10 h-10 rounded-2xl flex items-center justify-center transition-colors shadow-sm",
+                isDeepDiveUnlocked ? "bg-purple text-white" : "bg-white text-silver"
+              )}>
+                {isDeepDiveUnlocked ? <Zap size={18} fill="currentColor" /> : <Lock size={18} />}
+              </div>
+              <div>
+                <span className={cn(
+                  "text-xs font-black uppercase tracking-widest block",
+                  isDeepDiveUnlocked ? "text-purple" : "text-silver"
+                )}>
+                  Strategic Deep Dive
+                </span>
+                <span className="text-[10px] font-bold text-slate/60 block">Advanced risk & moat analysis</span>
+              </div>
+            </div>
+            {!isDeepDiveUnlocked && (
+               <div className="bg-white border border-rule px-4 py-2 rounded-2xl shadow-sm text-[10px] font-black text-navy uppercase tracking-wider flex items-center gap-2">
+                 <Lock size={12} className="text-coral" /> Unlock at Validation Stage
+               </div>
+            )}
+          </div>
+
+          <div className={cn(
+            "grid grid-cols-1 gap-6 transition-all duration-500",
+            !isDeepDiveUnlocked && "blur-[2px] pointer-events-none select-none"
+          )}>
+            {deepDive}
+          </div>
+          
+          {!isDeepDiveUnlocked && (
+            <p className="text-center text-[11px] font-bold text-silver mt-4 italic">
+              Evidence of Problem-Solution Fit required for deep-dive diagnostics.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Observation Box */}
+      <div className="bg-navy rounded-[32px] p-10 text-white space-y-6 shadow-2xl relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000" />
+        <div className="flex items-center justify-between relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-teal shadow-inner">
+              <ShieldCheck size={20} />
+            </div>
+            <div>
+              <h4 className="text-sm font-black uppercase tracking-tight">Mentor / Analyst Observations</h4>
+              <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Internal high-density evidence summary</p>
+            </div>
+          </div>
+          <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">P{parameterId.slice(1)} LOG</div>
+        </div>
+        <textarea
+          value={(data as any)[`${parameterId}_observation`] || ''}
+          onChange={(e) => onChange(`${parameterId}_observation`, e.target.value)}
+          placeholder={`Enter strategic observations for ${title}...`}
+          className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-sm text-white placeholder:text-white/30 focus:bg-white/10 focus:border-white/30 focus:ring-4 focus:ring-white/5 outline-none min-h-[140px] resize-none transition-all font-medium leading-relaxed"
+        />
+      </div>
+    </div>
+  )
+}

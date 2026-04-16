@@ -5,12 +5,19 @@ import { PARAMETERS_CONFIG } from '@/config/parameters'
 import { calculateOverallScore, classifyStage } from '@/utils/scores'
 import SectionTabs from '@/components/form/SectionTabs'
 import Section1BasicInfo from '@/components/form/Section1BasicInfo'
-import ParameterSection from '@/components/form/ParameterSection'
+import Section1Character from '@/components/form/Section1Character'
+import Section2CustomerDiscovery from '@/components/form/Section2CustomerDiscovery'
+import Section3ProductTRL from '@/components/form/Section3ProductTRL'
+import Section4Differentiation from '@/components/form/Section4Differentiation'
+import Section5Market from '@/components/form/Section5Market'
+import Section6BusinessModel from '@/components/form/Section6BusinessModel'
+import Section7Traction from '@/components/form/Section7Traction'
+import Section8Team from '@/components/form/Section8Team'
+import Section9Moats from '@/components/form/Section9Moats'
 import { TeamProfile } from '@/types/team.types'
 import { cn } from '@/utils/cn'
-import { AlertCircle, CheckCircle2, Loader2, Save, Send } from 'lucide-react'
+import { AlertCircle, Loader2, Save, Send, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTeams, useUpdateTeam, useCreateTeam } from '@/hooks/useTeams'
-import { useDebounce } from '@/hooks/useDebounce'
 import ProgressTracker from '@/components/startup/ProgressTracker'
 import { useRouter } from 'next/navigation'
 
@@ -20,28 +27,25 @@ export default function StartupProfilePage() {
   const createTeam = useCreateTeam()
   const updateTeam = useUpdateTeam()
   
-  const [activeSection, setActiveSection] = useState(0)
+  const [activeTab, setActiveTab] = useState(0)
   const [localTeam, setLocalTeam] = useState<TeamProfile | null>(null)
   const [saving, setSaving] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
-  // 1. Initialise or fetch the startup's single team
   useEffect(() => {
     if (isLoading) return
 
     if (teams.length > 0) {
       const team = teams[0]
-      // If already submitted/finalised, send to submitted page
       if (team.submission_status !== 'draft') {
         router.push('/startup/submitted')
         return
       }
       setLocalTeam(team)
     } else {
-      // Create the team if it doesn't exist
       createTeam.mutateAsync({
-        teamName: 'Startup Profile',
+        teamName: 'Baseline Diagnosis',
         startupName: '',
         sector: '',
         submission_status: 'draft'
@@ -53,7 +57,7 @@ export default function StartupProfilePage() {
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  function scheduleUpdate(field: string, value: any) {
+  function handleDataChange(field: string, value: any) {
     if (!localTeam) return
     
     const nextTeam = { ...localTeam, [field]: value }
@@ -87,7 +91,7 @@ export default function StartupProfilePage() {
       } finally {
         setSaving(false)
       }
-    }, 600)
+    }, 800)
   }
 
   async function handleSubmit() {
@@ -101,84 +105,90 @@ export default function StartupProfilePage() {
       router.push('/startup/submitted')
     } catch (err) {
       console.error('[StartupProfile] Submit failed:', err)
-      alert('Submission failed. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
   if (isLoading || !localTeam) return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-600">
+    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-silver">
       <Loader2 className="animate-spin" size={32} />
-      <span className="text-sm font-black uppercase tracking-widest">Initialising Your Session...</span>
+      <span className="text-[10px] font-black uppercase tracking-widest">Initialising Session...</span>
     </div>
   )
 
+  const renderActiveSection = () => {
+    switch (activeTab) {
+      case 0: return <Section1BasicInfo team={localTeam} onChange={handleDataChange} />
+      case 1: return <Section1Character data={localTeam} onChange={handleDataChange} />
+      case 2: return <Section2CustomerDiscovery data={localTeam} onChange={handleDataChange} />
+      case 3: return <Section3ProductTRL data={localTeam} onChange={handleDataChange} />
+      case 4: return <Section4Differentiation data={localTeam} onChange={handleDataChange} />
+      case 5: return <Section5Market data={localTeam} onChange={handleDataChange} />
+      case 6: return <Section6BusinessModel data={localTeam} onChange={handleDataChange} />
+      case 7: return <Section7Traction data={localTeam} onChange={handleDataChange} />
+      case 8: return <Section8Team data={localTeam} onChange={handleDataChange} />
+      case 9: return <Section9Moats data={localTeam} onChange={handleDataChange} />
+      default: return <Section1BasicInfo team={localTeam} onChange={handleDataChange} />
+    }
+  }
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto px-6 py-10 pb-32">
       {/* Header Stat & Title */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-12">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Diagnosis Profile</h1>
-          <p className="text-slate-700 font-semibold">Core 9-Parameter Venture Assessment</p>
+          <h1 className="text-3xl font-black text-navy tracking-tight mb-2">Diagnosis Profile</h1>
+          <p className="text-slate font-bold uppercase text-[10px] tracking-widest opacity-60">Strategic 9-Parameter Venture Assessment</p>
         </div>
         <div className="flex items-center gap-4">
           {saving && (
-            <div className="flex items-center gap-2 text-slate-600 text-[10px] font-black uppercase tracking-widest bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm animate-pulse">
-               <Save size={12} /> Auto-Syncing...
+            <div className="flex items-center gap-2 text-silver text-[9px] font-black uppercase tracking-wider bg-white px-4 py-2 rounded-full border border-rule shadow-sm animate-pulse">
+               <Save size={12} className="text-teal" /> Cloud Syncing...
             </div>
           )}
-          <div className="bg-white border border-slate-300 px-4 py-2 rounded-2xl flex flex-col items-end">
-             <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">Draft Baseline</span>
-             <span className="text-lg font-black text-slate-900">{(localTeam.overall_weighted_score || 0).toFixed(1)}</span>
+          <div className="bg-white border border-rule px-5 py-2.5 rounded-2xl flex flex-col items-end shadow-sm">
+             <span className="text-[9px] font-black text-silver uppercase tracking-wider">Draft Baseline</span>
+             <span className="text-xl font-black text-navy">{(localTeam.overall_weighted_score || 0).toFixed(1)}</span>
           </div>
         </div>
       </div>
 
-      <ProgressTracker team={localTeam} activeSection={activeSection} />
+      <ProgressTracker team={localTeam} activeSection={activeTab} />
 
-      <SectionTabs activeTab={activeSection} setActiveTab={setActiveSection} />
+      <SectionTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="bg-white rounded-[32px] border border-slate-200 p-8 md:p-12 mb-8 shadow-sm">
-        {activeSection === 0 ? (
-          <Section1BasicInfo team={localTeam} onChange={scheduleUpdate} />
-        ) : (
-          <ParameterSection
-            parameterId={PARAMETERS_CONFIG[activeSection - 1].id}
-            title={PARAMETERS_CONFIG[activeSection - 1].title}
-            subtitle={PARAMETERS_CONFIG[activeSection - 1].subtitle}
-            weight={PARAMETERS_CONFIG[activeSection - 1].weight}
-            coreQs={PARAMETERS_CONFIG[activeSection - 1].coreQs}
-            deepDiveQs={PARAMETERS_CONFIG[activeSection - 1].deepDiveQs}
-            data={localTeam}
-            onChange={scheduleUpdate}
-          />
-        )}
+      <div className="bg-white rounded-[40px] border border-rule p-8 md:p-14 mb-10 shadow-xl shadow-navy/5 min-h-[600px] transition-all duration-500">
+        {renderActiveSection()}
       </div>
 
       {/* Navigation Footer */}
-      <div className="flex items-center justify-between py-6">
+      <div className="flex items-center justify-between mt-12 bg-smoke/50 backdrop-blur-md p-6 rounded-3xl border border-rule/50">
         <button
-          onClick={() => setActiveSection(Math.max(0, activeSection - 1))}
-          disabled={activeSection === 0}
-          className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-700 hover:text-slate-900 disabled:opacity-20 transition-all group"
+          onClick={() => setActiveTab(Math.max(0, activeTab - 1))}
+          disabled={activeTab === 0}
+          className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-silver hover:text-navy disabled:opacity-20 transition-all group px-4 py-2"
         >
-          <div className="w-10 h-10 rounded-full border border-slate-300 flex items-center justify-center group-hover:bg-slate-50">←</div>
-          <span>Previous</span>
+          <div className="w-12 h-12 rounded-2xl border border-rule flex items-center justify-center bg-white group-hover:bg-navy group-hover:text-white group-hover:border-navy transition-all shadow-sm">
+            <ChevronLeft size={18} />
+          </div>
+          <span>Previous Phase</span>
         </button>
 
-        {activeSection < 9 ? (
+        {activeTab < 9 ? (
           <button
-            onClick={() => setActiveSection(activeSection + 1)}
-            className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-900 hover:tracking-[0.2em] transition-all group"
+            onClick={() => setActiveTab(activeTab + 1)}
+            className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-navy hover:tracking-[0.3em] transition-all group px-4 py-2"
           >
-            <span>Continue To P{activeSection + 1}</span>
-            <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-slate-200 font-normal">→</div>
+            <span>Process P{activeTab + 1}</span>
+            <div className="w-12 h-12 rounded-2xl bg-navy text-gold flex items-center justify-center group-hover:scale-110 transition-all shadow-lg shadow-navy/20">
+              <ChevronRight size={18} />
+            </div>
           </button>
         ) : (
           <button
             onClick={() => setShowConfirm(true)}
-            className="flex items-center gap-3 bg-emerald-600 text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-100 group active:scale-95"
+            className="flex items-center gap-4 bg-teal text-white px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-teal/90 transition-all shadow-xl shadow-teal/20 group animate-pulse hover:animate-none"
           >
             <Send size={16} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
             Submit Final Profile
@@ -189,30 +199,30 @@ export default function StartupProfilePage() {
       {/* Confirmation Dialog */}
       {showConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-0">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowConfirm(false)} />
-          <div className="relative bg-white w-full max-w-md rounded-[32px] p-8 shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 mb-6 mx-auto">
-              <AlertCircle size={32} />
+          <div className="absolute inset-0 bg-navy/60 backdrop-blur-md" onClick={() => setShowConfirm(false)} />
+          <div className="relative bg-white w-full max-w-md rounded-[40px] p-10 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-gold-lt rounded-3xl flex items-center justify-center text-gold mb-8 mx-auto shadow-inner">
+              <AlertCircle size={40} />
             </div>
-            <h3 className="text-xl font-black text-slate-900 text-center mb-3">Submit Final Diagnosis?</h3>
-            <p className="text-slate-700 text-center text-sm font-medium leading-relaxed mb-8">
-              Once submitted, you will no longer be able to edit your profile. 
-              The InUnity team will review your data to finalise your diagnosis.
+            <h3 className="text-2xl font-black text-navy text-center mb-4 tracking-tight">Finalise Diagnosis?</h3>
+            <p className="text-slate text-center text-sm font-semibold leading-relaxed mb-10">
+              Once submitted, your baseline profile will be locked for review. 
+              The InUnity team will finalise your strategic diagnosis based on this evidence.
             </p>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="w-full bg-slate-900 text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                className="w-full bg-navy text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-lg shadow-navy/20"
               >
-                {isSubmitting ? <Loader2 className="animate-spin" size={14} /> : 'Confirm & Submit'}
+                {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : 'Lock & Confirm Submission'}
               </button>
               <button
                 onClick={() => setShowConfirm(false)}
                 disabled={isSubmitting}
-                className="w-full bg-slate-100 text-slate-700 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                className="w-full bg-smoke text-silver py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rule transition-all"
               >
-                Cancel
+                Back to Editing
               </button>
             </div>
           </div>
