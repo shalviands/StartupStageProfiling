@@ -43,31 +43,32 @@ export default function Sidebar() {
   }
 
   return (
-    <aside style={{
-      width: 200,
+    <aside className="custom-scrollbar" style={{
+      width: 210,
       background: '#fff',
-      borderRight: '1px solid #DDE3EC',
+      borderRight: '1px solid #E2E8F0',
       display: 'flex',
       flexDirection: 'column',
       flexShrink: 0,
       overflow: 'hidden',
     }}>
       {/* Header with Add button */}
-      <div style={{ padding: 9, borderBottom: '1px solid #DDE3EC' }}>
+      <div style={{ padding: '16px 12px', borderBottom: '1px solid #E2E8F0' }}>
         <button
           onClick={handleAddTeam}
           disabled={createTeam.isPending}
+          className="btn-hover"
           style={{
             width: '100%',
-            padding: '7px 0',
-            background: createTeam.isPending ? '#8A9BB0' : '#0F2647',
+            padding: '10px 0',
+            background: createTeam.isPending ? '#94A3B8' : '#0F172A',
             color: '#fff',
             border: 'none',
-            borderRadius: 7,
+            borderRadius: 10,
             fontSize: 12,
-            fontWeight: 600,
+            fontWeight: 700,
             cursor: createTeam.isPending ? 'wait' : 'pointer',
-            transition: 'background 0.15s',
+            boxShadow: '0 4px 12px rgba(15, 23, 42, 0.1)',
           }}
         >
           {createTeam.isPending ? 'Creating...' : '+ New Team'}
@@ -75,24 +76,27 @@ export default function Sidebar() {
       </div>
 
       {/* Team list */}
-      <div style={{ overflowY: 'auto', flex: 1, padding: 7 }}>
+      <div style={{ overflowY: 'auto', flex: 1, padding: 8 }}>
         {isLoading ? (
           <div style={{
-            padding: 16,
+            padding: 24,
             textAlign: 'center',
-            color: '#8A9BB0',
+            color: '#94A3B8',
             fontSize: 11,
+            fontWeight: 500,
           }}>
-            Loading...
+            Loading profiles...
           </div>
         ) : teams.length === 0 ? (
           <div style={{
-            padding: 20,
+            padding: 24,
             textAlign: 'center',
-            color: '#8A9BB0',
+            color: '#94A3B8',
             fontSize: 11,
+            lineHeight: 1.6,
           }}>
-            No teams yet.<br />Click + New Team to start.
+            No startup profiles.<br />
+            Use <span style={{ fontWeight: 700, color: '#0F172A' }}>+ New Team</span> to begin.
           </div>
         ) : (
           teams.map(team => {
@@ -106,36 +110,39 @@ export default function Sidebar() {
                 onClick={() => setActiveTeamId(team.id)}
                 onMouseEnter={() => setHoveredId(team.id)}
                 onMouseLeave={() => setHoveredId(null)}
+                className="btn-hover"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 7,
-                  padding: '7px 9px',
-                  borderRadius: 7,
+                  gap: 8,
+                  padding: '10px 12px',
+                  borderRadius: 10,
                   cursor: 'pointer',
-                  marginBottom: 3,
-                  background: isActive ? '#0F2647' : (isHovered ? '#F4F6F9' : 'transparent'),
-                  transition: 'background 0.12s',
+                  marginBottom: 4,
+                  background: isActive ? '#0F172A' : (isHovered ? '#F1F5F9' : 'transparent'),
                   position: 'relative',
+                  border: isActive ? '1px solid #0F172A' : '1px solid transparent',
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
                     fontSize: 11,
-                    fontWeight: 700,
+                    fontWeight: 800,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    color: isActive ? '#fff' : '#0F2647',
+                    color: isActive ? '#fff' : '#0F172A',
+                    letterSpacing: '-0.01em',
                   }}>
                     {team.teamName || 'Unnamed Team'}
                   </div>
                   <div style={{
-                    fontSize: 9,
-                    color: '#8A9BB0',
+                    fontSize: 10,
+                    color: isActive ? '#94A3B8' : '#94A3B8',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
+                    marginTop: 1,
                   }}>
                     {team.startupName || 'No startup name'}
                   </div>
@@ -143,10 +150,10 @@ export default function Sidebar() {
 
                 {scores.overall !== null && (
                   <span style={{
-                    fontSize: 9,
-                    fontWeight: 700,
-                    padding: '2px 5px',
-                    borderRadius: 4,
+                    fontSize: 10,
+                    fontWeight: 800,
+                    padding: '3px 6px',
+                    borderRadius: 6,
                     flexShrink: 0,
                     background: scoreBg(scores.overall),
                     color: scoreColor(scores.overall),
@@ -159,18 +166,18 @@ export default function Sidebar() {
                   onClick={e => handleDelete(team.id, e)}
                   style={{
                     position: 'absolute',
-                    right: 6,
+                    right: 8,
                     top: '50%',
                     transform: 'translateY(-50%)',
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
                     opacity: isHovered ? 1 : 0,
-                    color: '#E84B3A',
-                    fontSize: 13,
-                    padding: '2px 3px',
-                    borderRadius: 4,
-                    transition: 'opacity 0.12s',
+                    color: '#EF4444',
+                    fontSize: 14,
+                    padding: '4px',
+                    borderRadius: 6,
+                    transition: 'all 0.2s',
                   }}
                 >
                   ✕

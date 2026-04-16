@@ -13,47 +13,65 @@ export default function ExcelDownloadButton({ team }: { team: TeamProfile }) {
 
     const data = [
       ['INUNITY STARTUP DIAGNOSIS REPORT', ''],
-      ['GENERATED', new Date().toLocaleString()],
-      ['', ''],
-      ['FIELD', 'VALUE'],
+      ['Profile Name', team.teamName],
       ['Startup Name', team.startupName],
-      ['Team ID', team.teamName],
-      ['Interview Date', team.interviewDate],
-      ['Interviewer', team.interviewer],
+      ['Date Generated', new Date().toLocaleString()],
+      ['', ''],
+
+      ['SECTION 1: BASIC INFORMATION', ''],
       ['Sector', team.sector],
       ['Institution', team.institution],
       ['Team Size', team.teamSize],
-      ['TRL', team.trl],
-      ['BRL', team.brl],
-      ['CRL', team.crl],
+      ['Interviewer', team.interviewer],
+      ['Interview Date', team.interviewDate],
       ['', ''],
-      ['SCORES', ''],
-      ['Value Proposition', scores.problem || 'N/A'],
-      ['Market Validation', scores.market || 'N/A'],
-      ['Business Model', scores.biz || 'N/A'],
-      ['Pitch & Deck', scores.pitch || 'N/A'],
-      ['OVERALL DIAGNOSTIC', scores.overall || 'N/A'],
+
+      ['SECTION 2: DIAGNOSTIC SCORES', ''],
+      ['Value Proposition (Problem/Solution)', scores.problem || 'N/A'],
+      ['Market Validation (Customers/Market)', scores.market || 'N/A'],
+      ['Business Model (Revenue/Strategy)', scores.biz || 'N/A'],
+      ['Pitch & Presentation', scores.pitch || 'N/A'],
+      ['OVERALL SCORE', scores.overall || 'N/A'],
       ['', ''],
-      ['AI ANALYSIS', ''],
+
+      ['SECTION 3: READINESS LEVELS', ''],
+      ['Technology Readiness Level (TRL)', team.trl],
+      ['Business Readiness Level (BRL)', team.brl],
+      ['Commercial Readiness Level (CRL)', team.crl],
+      ['', ''],
+
+      ['SECTION 4: AI ANALYSIS & RECOMMENDATIONS', ''],
+      ['Strengths', team.strengths],
+      ['Critical Gaps', team.gaps],
       ['Readiness Summary', team.readinessSummary],
-      ['Recommendations', team.recommendations],
+      ['Key Recommendations', team.recommendations],
       ['', ''],
-      ['ROADMAP', ''],
-      ['PRIORITY', 'ACTION', 'SUPPORT', 'BY WHEN', 'STATUS'],
+
+      ['SECTION 5: ACTION ROADMAP', ''],
+      ['Priority', 'Action Item', 'Support Required', 'Timeline'],
       ...(team.roadmap || []).map(r => [r.priority, r.action, r.supportFrom, r.byWhen]),
       ['', ''],
-      ['GENERAL NOTES', ''],
-      ['Strengths', team.strengths],
-      ['Gaps', team.gaps],
-      ['Mentor', team.mentor],
-      ['Final Notes', team.notes],
+
+      ['SECTION 6: MENTOR NOTES', ''],
+      ['Mentor Assigned', team.mentor],
+      ['Next Check-in', team.nextCheckin],
+      ['Additional Notes', team.notes],
     ]
 
     const ws = utils.aoa_to_sheet(data)
-    const wb = utils.book_new()
-    utils.book_append_sheet(wb, ws, 'Diagnosis')
+    
+    // Simple column widths for better structure
+    ws['!cols'] = [
+      { wch: 35 }, // Feature
+      { wch: 60 }, // Value
+      { wch: 25 }, // Support
+      { wch: 15 }, // Timeline
+    ]
 
-    writeFile(wb, `${team.startupName || 'Startup'}-Analysis.xlsx`)
+    const wb = utils.book_new()
+    utils.book_append_sheet(wb, ws, 'Diagnosis Report')
+
+    writeFile(wb, `${(team.startupName || 'Startup').replace(/[^a-zA-Z0-9]/g, '_')}-Full-Diagnosis.xlsx`)
   }
 
   return (

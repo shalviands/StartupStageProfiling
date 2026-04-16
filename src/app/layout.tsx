@@ -1,9 +1,11 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Montserrat } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/layout/Providers'
 
-const inter = Inter({ subsets: ['latin'] })
+const montserrat = Montserrat({ 
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900']
+})
 
 export const metadata: Metadata = {
   title: 'Startup Diagnosis Profiler — InUnity',
@@ -17,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased bg-smoke text-navy`}>
+      <body className={`${montserrat.className} antialiased bg-smoke text-navy`}>
         <Providers>{children}</Providers>
       </body>
     </html>

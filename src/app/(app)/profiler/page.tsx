@@ -155,29 +155,12 @@ export default function ProfilerPage() {
               color: '#8A9BB0',
             }}>
               <div style={{ fontSize: 48 }}>📋</div>
-              <h2 style={{ color: '#0F2647', fontSize: 18, fontWeight: 700 }}>
+              <h2 style={{ color: '#0F172A', fontSize: 18, fontWeight: 700 }}>
                 No profile selected
               </h2>
               <p style={{ fontSize: 13 }}>
-                Select a startup profile from the sidebar or create a new one
+                Select a startup profile from the sidebar to continue
               </p>
-              <button
-                onClick={handleAddTeam}
-                disabled={createTeam.isPending}
-                style={{
-                  marginTop: 8,
-                  padding: '8px 20px',
-                  background: '#0F2647',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: createTeam.isPending ? 'wait' : 'pointer',
-                }}
-              >
-                {createTeam.isPending ? 'Creating...' : '+ Add Profile'}
-              </button>
             </div>
           ) : (
             // Active team form
