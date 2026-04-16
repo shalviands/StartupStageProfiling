@@ -111,7 +111,7 @@ We utilize the **InUnity Premium Palette**, a curated selection of colors design
 1. **Clone and Enter the Directory**
    ```bash
    git clone <repo-url>
-   cd StartupProfiling/inunity-profiler
+   cd StartupProfiling
    ```
 
 2. **Install Dependencies**
