@@ -93,6 +93,19 @@ export default function DiagnosticPDF({ team }: { team: TeamProfile }) {
           </View>
         </View>
 
+        {/* Problem/Solution */}
+        <View style={s.section}>
+          <Text style={s.sectionTitle}>Problem & Solution</Text>
+          <View style={s.box}>
+            <Text style={s.label}>Problem Statement</Text>
+            <Text style={s.value}>{team.problemStatement || 'No details provided.'}</Text>
+          </View>
+          <View style={s.box}>
+            <Text style={s.label}>Solution ({team.productType || 'Product'})</Text>
+            <Text style={s.value}>{team.solutionDescription || 'No details provided.'}</Text>
+          </View>
+        </View>
+
         {/* Assessment Summary */}
         <View style={s.section}>
           <Text style={s.sectionTitle}>Assessment Summary</Text>
