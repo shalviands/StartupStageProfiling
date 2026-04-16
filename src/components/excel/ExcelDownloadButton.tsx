@@ -7,6 +7,7 @@ import { calculateScores } from '@/utils/scores'
 
 export default function ExcelDownloadButton({ team }: { team: TeamProfile }) {
   const handleExport = async () => {
+    if (!team?.id) return
     const { utils, writeFile } = await import('xlsx')
     const scores = calculateScores(team)
 

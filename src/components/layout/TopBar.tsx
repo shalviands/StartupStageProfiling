@@ -6,15 +6,8 @@ import { useUIStore } from '@/store/uiStore'
 import { useTeams } from '@/hooks/useTeams'
 import dynamic from 'next/dynamic'
 
-const PDFDownloadButton = dynamic(
-  () => import('@/components/pdf/PDFDownloadButton'),
-  { ssr: false }
-)
-
-const ExcelDownloadButton = dynamic(
-  () => import('@/components/excel/ExcelDownloadButton'),
-  { ssr: false }
-)
+import PDFDownloadButton from '@/components/pdf/PDFDownloadButton'
+import ExcelDownloadButton from '@/components/excel/ExcelDownloadButton'
 
 export default function TopBar() {
   const router = useRouter()
