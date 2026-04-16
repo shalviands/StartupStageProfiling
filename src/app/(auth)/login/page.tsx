@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import Link from 'next/link'
-import { getHomeRouteForRole } from '@/lib/roles'
+import { getHomeRouteForRole } from '@/utils/navigation'
 import { Loader2, AlertCircle } from 'lucide-react'
 
 function LoginForm() {

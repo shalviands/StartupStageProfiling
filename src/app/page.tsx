@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
-import { getUserProfile, getHomeRouteForRole } from '@/lib/roles'
+import { getUserProfile } from '@/lib/roles'
+import { getHomeRouteForRole } from '@/utils/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 

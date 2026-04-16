@@ -4,7 +4,7 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import { LogOut, User as UserIcon, Bell, Search, ShieldCheck } from 'lucide-react'
-import { UserProfile } from '@/lib/roles'
+import { UserProfile } from '@/types/auth'
 
 export default function AdminTopBar({ profile }: { profile: UserProfile }) {
   const router = useRouter()

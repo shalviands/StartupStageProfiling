@@ -1,15 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-
-export type UserRole = 'startup' | 'programme_team' | 'admin'
-export type UserStatus = 'pending' | 'approved' | 'rejected'
-
-export interface UserProfile {
-  id: string
-  email: string
-  full_name: string
-  role: UserRole
-  status: UserStatus
-}
+import { UserProfile } from '@/types/auth'
 
 export async function getUserProfile(): Promise<UserProfile | null> {
   try {
@@ -27,17 +17,4 @@ export async function getUserProfile(): Promise<UserProfile | null> {
   } catch {
     return null
   }
-}
-
-export function getHomeRouteForRole(
-  role: UserRole,
-  status: UserStatus
-): string {
-  if (role === 'admin') return '/admin/dashboard'
-  if (role === 'programme_team') return '/profiler'
-  
-  // startup
-  if (status === 'pending') return '/pending'
-  if (status === 'rejected') return '/login?error=rejected'
-  return '/startup/profile'
 }
