@@ -161,7 +161,7 @@ export default function AllStartupsPage() {
                            className="w-8 h-8 rounded-lg mx-auto flex items-center justify-center text-[11px] font-black tabular-nums border"
                            style={{ backgroundColor: scoreBg(score), color: scoreColor(score), borderColor: scoreColor(score) + '20' }}
                          >
-                           {score.toFixed(1)}
+                           {(score || 0).toFixed(1)}
                          </div>
                       </td>
                     ))}
@@ -170,7 +170,7 @@ export default function AllStartupsPage() {
                          "text-sm font-black tabular-nums tracking-tighter",
                          overall >= 4 ? "text-emerald-600" : overall >= 3 ? "text-amber-500" : overall > 0 ? "text-rose-500" : "text-slate-300"
                        )}>
-                         {overall.toFixed(1)}
+                         {(overall || 0).toFixed(1)}
                        </span>
                     </td>
                     <td className="p-6 text-left">
@@ -189,15 +189,30 @@ export default function AllStartupsPage() {
                     </td>
                     <td className="p-6 text-right">
                        <div className="flex items-center justify-end gap-2">
+                          {team.submission_status === 'submitted' && (
+                             <button 
+                               onClick={async () => {
+                                 const res = await fetch('/api/admin/finalise', {
+                                   method: 'POST',
+                                   headers: { 'Content-Type': 'application/json' },
+                                   body: JSON.stringify({ teamId: team.id, status: 'finalised' })
+                                 })
+                                 if (res.ok) {
+                                   setTeams(prev => prev.map(t => t.id === team.id ? { ...t, submission_status: 'finalised' } : t))
+                                 }
+                               }}
+                               title="Approve & Finalise"
+                               className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all"
+                             >
+                                <ShieldCheck size={16} />
+                             </button>
+                          )}
                           <Link 
                             href={`/admin/startups/${team.id}`}
                             className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-navy hover:border-navy/20 hover:shadow-lg transition-all"
                           >
                              <Eye size={16} />
                           </Link>
-                          <button className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-navy hover:border-navy/20 transition-all">
-                             <FileText size={16} />
-                          </button>
                        </div>
                     </td>
                   </tr>

@@ -89,7 +89,7 @@ export default function DiagnosticPDF({ team }: { team: TeamProfile }) {
             <Text style={s.stageTier}>Classification: LEVEL {level} STRATEGY</Text>
           </View>
           <View style={s.scoreCircle}>
-            <Text style={s.overallScore}>{overall.toFixed(1)}</Text>
+            <Text style={s.overallScore}>{(overall || 0).toFixed(1)}</Text>
             <Text style={s.overallLabel}>WEIGHTED AVG</Text>
           </View>
         </View>
@@ -106,7 +106,7 @@ export default function DiagnosticPDF({ team }: { team: TeamProfile }) {
             {params.slice(0, 4).map(p => (
               <View key={p.id} style={[s.paramCard, { width: '23%' }]}>
                 <Text style={s.metaLabel}>{p.id}</Text>
-                <Text style={{ fontSize: 18, color: '#0F172A' }}>{p.score.toFixed(1)}</Text>
+                <Text style={{ fontSize: 18, color: '#0F172A' }}>{(p.score || 0).toFixed(1)}</Text>
                 <Text style={{ fontSize: 7, color: '#64748B', marginTop: 4 }}>{p.name}</Text>
               </View>
             ))}
@@ -126,7 +126,7 @@ export default function DiagnosticPDF({ team }: { team: TeamProfile }) {
             <View key={p.id} style={s.paramCard}>
               <View style={s.paramHeader}>
                 <Text style={s.paramTitle}>{p.id}: {p.name}</Text>
-                <Text style={{ fontSize: 10, color: scoreColor(p.score) }}>{p.score.toFixed(1)}</Text>
+                <Text style={{ fontSize: 10, color: scoreColor(p.score) }}>{(p.score || 0).toFixed(1)}</Text>
               </View>
               <Text style={s.paramObs}>{p.obs || 'No specific observations recorded.'}</Text>
             </View>

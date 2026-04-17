@@ -49,7 +49,7 @@ export function mapDbToFrontend(row: any): TeamProfile | null {
     p2_observation:             row.p2_observation                    ?? '',
 
     // P3
-    p3_trl:                     row.p3_trl ? Number(row.p3_trl) : null,
+    p3_trl:                     row.p3_trl ? parseInt(String(row.p3_trl), 10) : null,
     p3_trl_score:               Number(row.p3_trl_score)               || 0,
     p3_built:                   row.p3_built                         ?? '',
     p3_built_score:             Number(row.p3_built_score)           || 0,

@@ -167,11 +167,11 @@ export default function AdminStartupDetailPage() {
                   "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
                   isFinalised 
                     ? "bg-emerald-600 text-white shadow-xl shadow-emerald-100" 
-                    : "text-slate-500 hover:text-slate-900"
+                    : "bg-amber-100/50 text-amber-700 hover:bg-amber-100 hover:text-amber-900 border border-amber-200"
                 )}
               >
                 {isFinalised ? <CheckCircle2 size={14} /> : <AlertTriangle size={14} />}
-                {isFinalised ? 'Finalised' : 'Mark Finalised'}
+                {isFinalised ? 'Approved & Finalised' : 'Approve & Finalise Profile'}
               </button>
            </div>
 

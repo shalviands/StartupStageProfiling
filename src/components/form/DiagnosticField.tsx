@@ -86,9 +86,10 @@ export default function DiagnosticField({
             value={val}
             onChange={(e) => {
               const rawV = e.target.value
-              // Bug fix: If it's CRL/TRL, we extract the digit but keep the full context if needed, 
-              // however the DB expects the value. If we want it to work with parseInt, it must start with a digit.
-              onChange(fieldName, rawV)
+              // If it's CRL/TRL, we extract only the digit for clean storage
+              const isNumericField = question.id === 'trl' || question.id === 'crl'
+              const v = isNumericField ? parseInt(rawV, 10) : rawV
+              onChange(fieldName, Number.isNaN(v) ? '' : v)
             }}
             className="w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none appearance-none transition-all"
           >

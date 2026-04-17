@@ -35,7 +35,8 @@ export function calculateParameterAverage(team: TeamProfile, prefix: string): nu
   
   if (scores.length === 0) return 0
   const sum = scores.reduce((a, b) => a + b, 0)
-  return Math.round((sum / scores.length) * 10) / 10
+  const avg = sum / scores.length
+  return Number.isFinite(avg) ? Math.round(avg * 10) / 10 : 0
 }
 
 export function classifyStage(team: TeamProfile): { 
@@ -44,9 +45,9 @@ export function classifyStage(team: TeamProfile): {
   override: string | null,
   p9Bonus: boolean 
 } {
-  const p1 = calculateParameterAverage(team, 'p1')
-  const p3 = calculateParameterAverage(team, 'p3')
-  const p7 = calculateParameterAverage(team, 'p7')
+  const p1 = calculateParameterAverage(team, 'p1') || 0
+  const p3 = calculateParameterAverage(team, 'p3') || 0
+  const p7 = calculateParameterAverage(team, 'p7') || 0
   const p6_stage = team.p6_revenue_stage || ''
   
   let detectedLevel = 0 // Stage 1: IDEA
@@ -58,15 +59,15 @@ export function classifyStage(team: TeamProfile): {
   if (p6_stage.toLowerCase().includes('revenue')) detectedLevel = 4 // Stage 5: REVENUE
   
   // Specific Growth Check (P7 Retention/Growth)
-  const p7_retention = team.p7_retention_score || 0
-  const p7_growth = team.p7_growth_score || 0
+  const p7_retention = Number(team.p7_retention_score) || 0
+  const p7_growth = Number(team.p7_growth_score) || 0
   if (detectedLevel >= 4 && (p7_retention > 4.0 && p7_growth > 4.0)) {
     detectedLevel = 5 // Stage 6: GROWTH
   }
 
   // WEAKEST LINK OVERRIDES
   let override: string | null = null
-  const p8 = calculateParameterAverage(team, 'p8')
+  const p8 = calculateParameterAverage(team, 'p8') || 0
 
   // Rule 1: P1 < 2 caps at IDEA
   if (p1 < 2.0 && detectedLevel > 0) {
@@ -87,10 +88,10 @@ export function classifyStage(team: TeamProfile): {
   }
 
   return {
-    stage: STAGES[detectedLevel],
+    stage: STAGES[detectedLevel] || STAGES[0],
     level: detectedLevel + 1,
     override,
-    p9Bonus: detectedLevel >= 3 // Bonus activates for MVP/Pre-Revenue (Stage 4) and above
+    p9Bonus: detectedLevel >= 3 
   }
 }
 
@@ -99,15 +100,15 @@ export function calculateOverallScore(team: TeamProfile): {
   p1: number, p2: number, p3: number, p4: number, p5: number, p6: number, p7: number, p8: number, p9: number,
   isBonusActive: boolean
 } {
-  const p1 = calculateParameterAverage(team, 'p1')
-  const p2 = calculateParameterAverage(team, 'p2')
-  const p3 = calculateParameterAverage(team, 'p3')
-  const p4 = calculateParameterAverage(team, 'p4')
-  const p5 = calculateParameterAverage(team, 'p5')
-  const p6 = calculateParameterAverage(team, 'p6')
-  const p7 = calculateParameterAverage(team, 'p7')
-  const p8 = calculateParameterAverage(team, 'p8')
-  const p9 = calculateParameterAverage(team, 'p9')
+  const p1 = calculateParameterAverage(team, 'p1') || 0
+  const p2 = calculateParameterAverage(team, 'p2') || 0
+  const p3 = calculateParameterAverage(team, 'p3') || 0
+  const p4 = calculateParameterAverage(team, 'p4') || 0
+  const p5 = calculateParameterAverage(team, 'p5') || 0
+  const p6 = calculateParameterAverage(team, 'p6') || 0
+  const p7 = calculateParameterAverage(team, 'p7') || 0
+  const p8 = calculateParameterAverage(team, 'p8') || 0
+  const p9 = calculateParameterAverage(team, 'p9') || 0
 
   const { p9Bonus } = classifyStage(team)
 
@@ -123,14 +124,15 @@ export function calculateOverallScore(team: TeamProfile): {
     (p9 * WEIGHTS.p9);
 
   if (p9Bonus) {
-    // Add 3% bonus weight to P9 contribution
     weightedSum += (p9 * 0.03)
   }
 
+  const overall = Number.isFinite(weightedSum) ? Math.round(weightedSum * 10) / 10 : 0
+
   return {
-    overall: Math.round(weightedSum * 10) / 10,
+    overall,
     p1, p2, p3, p4, p5, p6, p7, p8, p9,
-    isBonusActive: p9Bonus
+    isBonusActive: !!p9Bonus
   }
 }
 
