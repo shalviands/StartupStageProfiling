@@ -122,12 +122,7 @@ export default function SubmissionView({ submission }: SubmissionViewProps) {
       </div>
 
       <div className="flex justify-center">
-        <button 
-          onClick={() => window.print()}
-          className="bg-navy text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all flex items-center gap-3 shadow-xl shadow-navy/20"
-        >
-          Download as PDF
-        </button>
+        <PDFDownloadButton team={submission} />
       </div>
     </div>
   )

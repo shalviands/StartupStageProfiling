@@ -29,19 +29,35 @@ export default function AllStartupsPage() {
           
           // Deduplicate: Keep only the latest submission per startupName
           const uniqueMap = new Map()
-          mapped.forEach((t: any) => {
+          
+          // Sort teams so that 'submitted' or 'finalised' come after 'draft' for the same startup
+          // This way, when we iterate, the better status wins in the map
+          const sorted = [...mapped].sort((a: any, b: any) => {
+             // Priority: finalised (2) > submitted (1) > draft (0)
+             const getScore = (s: string) => s === 'finalised' ? 2 : s === 'submitted' ? 1 : 0
+             return getScore(a.submission_status) - getScore(b.submission_status)
+          })
+
+          sorted.forEach((t: any) => {
             const key = t.startupName?.trim().toLowerCase() || t.id
             if (!uniqueMap.has(key)) {
               uniqueMap.set(key, t)
             } else {
-              // Compare dates to keep latest
               const existing = uniqueMap.get(key)
-              if (new Date(t.created_at) > new Date(existing.created_at)) {
+              // If status is better, or status is same but date is newer, replace
+              const getScore = (s: string) => s === 'finalised' ? 2 : s === 'submitted' ? 1 : 0
+              const currentScore = getScore(t.submission_status)
+              const existingScore = getScore(existing.submission_status)
+              
+              if (currentScore > existingScore) {
                 uniqueMap.set(key, t)
+              } else if (currentScore === existingScore) {
+                if (new Date(t.created_at) > new Date(existing.created_at)) {
+                  uniqueMap.set(key, t)
+                }
               }
             }
           })
-          
           setTeams(Array.from(uniqueMap.values()))
         }
       })

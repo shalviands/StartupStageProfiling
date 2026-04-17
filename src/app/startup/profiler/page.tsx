@@ -83,9 +83,10 @@ export default function StartupProfilePage() {
   }, [teams, isLoading, localTeam, createTeam.isPending])
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isSubmittedRef = useRef(false)
 
   function handleDataChange(field: string, value: any) {
-    if (!localTeam) return
+    if (!localTeam || isSubmittedRef.current) return
     
     const nextTeam = { ...localTeam, [field]: value }
     const { stage, level } = classifyStage(nextTeam)
@@ -102,6 +103,7 @@ export default function StartupProfilePage() {
     
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
+      if (isSubmittedRef.current) return
       setSaving(true)
       try {
         await updateTeam.mutateAsync({ 
@@ -122,9 +124,14 @@ export default function StartupProfilePage() {
   }
 
   async function handleSubmit() {
-    if (!localTeam) return
+    if (!localTeam || isSubmitting) return
     setIsSubmitting(true)
+    isSubmittedRef.current = true // Block any further autosave immediately
+    
     try {
+      // Clear any pending saves
+      if (saveTimer.current) clearTimeout(saveTimer.current)
+
       // Use the dedicated submit API
       const res = await fetch('/api/startup/submit', {
         method: 'POST',
@@ -132,14 +139,17 @@ export default function StartupProfilePage() {
         body: JSON.stringify({ team_id: localTeam.id })
       })
 
-      if (!res.ok) throw new Error('Submission failed')
+      if (!res.ok) {
+        isSubmittedRef.current = false // Re-enable on failure
+        throw new Error('Submission failed')
+      }
 
       router.push('/startup/submissions')
     } catch (err) {
       console.error('[StartupProfile] Submit failed:', err)
       alert('Failed to submit. Please try again.')
-    } finally {
       setIsSubmitting(false)
+      isSubmittedRef.current = false
     }
   }
 

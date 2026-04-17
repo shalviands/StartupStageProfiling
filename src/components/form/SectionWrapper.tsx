@@ -29,9 +29,8 @@ export default function SectionWrapper({
   deepDive,
   hideObservation = true,
 }: SectionWrapperProps) {
-  const { level } = classifyStage(data)
-  const isDeepDiveUnlocked = level >= 3
   const avg = calculateParameterAverage(data, parameterId)
+  const isDeepDiveUnlocked = true // Open to all startups as requested
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -71,48 +70,34 @@ export default function SectionWrapper({
       {/* Deep Dive Section */}
       {deepDive && (
         <div className={cn(
-          "space-y-6 transition-all duration-700 rounded-[32px] p-10 border",
-          isDeepDiveUnlocked 
-            ? "bg-purple-lt border-purple/10" 
-            : "bg-smoke border-rule/50 opacity-70"
+          "space-y-6 transition-all duration-700 rounded-[32px] p-10 border bg-purple-lt border-purple/10"
         )}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={cn(
-                "w-10 h-10 rounded-2xl flex items-center justify-center transition-colors shadow-sm",
-                isDeepDiveUnlocked ? "bg-purple text-white" : "bg-white text-silver"
+                "w-10 h-10 rounded-2xl flex items-center justify-center transition-colors shadow-sm bg-purple text-white"
               )}>
-                {isDeepDiveUnlocked ? <Zap size={18} fill="currentColor" /> : <Lock size={18} />}
+                <Zap size={18} fill="currentColor" />
               </div>
               <div>
                 <span className={cn(
-                  "text-xs font-black uppercase tracking-widest block",
-                  isDeepDiveUnlocked ? "text-purple" : "text-silver"
+                  "text-xs font-black uppercase tracking-widest block text-purple"
                 )}>
                   Strategic Deep Dive
                 </span>
                 <span className="text-[10px] font-bold text-slate/60 block">Advanced risk & moat analysis</span>
               </div>
             </div>
-            {!isDeepDiveUnlocked && (
-               <div className="bg-white border border-rule px-4 py-2 rounded-2xl shadow-sm text-[10px] font-black text-navy uppercase tracking-wider flex items-center gap-2">
-                 <Lock size={12} className="text-coral" /> Unlock at Validation Stage
-               </div>
-            )}
+            <div className="bg-white border border-rule px-4 py-2 rounded-2xl shadow-sm text-[10px] font-black text-navy uppercase tracking-wider flex items-center gap-2">
+              <Zap size={12} className="text-purple" /> Strategic Insight
+            </div>
           </div>
 
           <div className={cn(
-            "grid grid-cols-1 gap-6 transition-all duration-500",
-            !isDeepDiveUnlocked && "blur-[2px] pointer-events-none select-none"
+            "grid grid-cols-1 gap-6 transition-all duration-500"
           )}>
             {deepDive}
           </div>
-          
-          {!isDeepDiveUnlocked && (
-            <p className="text-center text-[11px] font-bold text-silver mt-4 italic">
-              Evidence of Problem-Solution Fit required for deep-dive profiling.
-            </p>
-          )}
         </div>
       )}
 
