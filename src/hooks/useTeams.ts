@@ -16,13 +16,18 @@ async function fetchTeams(): Promise<TeamProfile[]> {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
   })
+  
   if (res.status === 401) {
+    console.warn('[useTeams] 401 Unauthorized - redirecting to login may be needed')
     throw new Error('Not authenticated')
   }
+  
   if (!res.ok) {
-    const body = await res.text()
+    const body = await res.text().catch(() => 'No body')
+    console.error(`[useTeams] fetchTeams failed: ${res.status}`, body)
     throw new Error(`Failed to fetch teams: ${res.status} ${body}`)
   }
+  
   const data = await res.json()
   return Array.isArray(data) 
     ? data.map(mapDbToFrontend).filter((t): t is TeamProfile => t !== null)
@@ -58,6 +63,7 @@ export function useCreateTeam() {
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({ error: 'Unknown error' }))
+        console.error(`[useCreateTeam] API Error: ${res.status}`, body)
         throw new Error(body.error || `Create failed: ${res.status}`)
       }
       const data = await res.json()

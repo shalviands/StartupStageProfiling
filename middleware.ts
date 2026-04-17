@@ -12,12 +12,21 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet: any) {
-          cookiesToSet.forEach(({ name, value }: any) =>
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           )
-          response = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }: any) =>
+          
+          // Sync headers for downstream request
+          const requestHeaders = new Headers(request.headers)
+          requestHeaders.set('Cookie', request.cookies.toString())
+
+          response = NextResponse.next({
+            request: {
+              headers: requestHeaders,
+            },
+          })
+          cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           )
         },

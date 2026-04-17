@@ -76,11 +76,15 @@ export default function Sidebar() {
           onClick={handleAddTeam}
           disabled={createTeam.isPending}
           className={cn(
-            "w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-md active:scale-95",
+            "w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-md active:scale-95 group",
             createTeam.isPending ? "bg-slate-200 text-slate-400" : "bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200"
           )}
         >
-          {createTeam.isPending ? 'Initializing...' : '+ New Session'}
+          {createTeam.isPending ? (
+            <div className="w-4 h-4 border-2 border-slate-400 border-t-slate-600 rounded-full animate-spin" />
+          ) : (
+            '+ New Session'
+          )}
         </button>
       </div>
 

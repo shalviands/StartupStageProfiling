@@ -86,7 +86,7 @@ function StageBanner({ team, saving }: { team: TeamProfile, saving: boolean }) {
 }
 
 export default function ProfilerPage() {
-  const { data: teams = [], isLoading } = useTeams()
+  const { data: teams = [], isLoading, error, isError, refetch } = useTeams()
   const createTeam  = useCreateTeam()
   const updateTeam  = useUpdateTeam()
   const deleteTeam  = useDeleteTeam()
@@ -129,9 +129,6 @@ export default function ProfilerPage() {
       overall_weighted_score: overall,
       p9_bonus_active: isBonusActive,
       assigned_mentor_type: mentor,
-      // We don't save roadmap directly usually, but we could if needed. 
-      // User said "discard manual roadmap in favor of auto-calculated", 
-      // so we derive it on the fly in the PDF/Excel.
     }
     
     setLocalTeam(updated)
@@ -141,7 +138,6 @@ export default function ProfilerPage() {
       setSaving(true)
       setSaveError('')
       try {
-        // Sync all derived fields too
         const updates = { 
           [field]: value,
           detected_stage: stage,
@@ -186,6 +182,42 @@ export default function ProfilerPage() {
       </div>
     </div>
   )
+
+  if (isError) {
+    const isAuthError = error instanceof Error && error.message.includes('authenticated')
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 p-8 text-center">
+        <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mb-6">
+          <AlertTriangle size={36} />
+        </div>
+        <h2 className="text-2xl font-black text-slate-900 mb-2">
+          {isAuthError ? 'Session Expired' : 'Sync Error'}
+        </h2>
+        <p className="text-slate-500 max-w-sm mb-8 font-medium">
+          {isAuthError 
+            ? 'Your authentication session has expired or is invalid. Please refresh to restore access.'
+            : 'We encountered an error while syncing with the server. Please check your connection.'
+          }
+        </p>
+        <div className="flex gap-4">
+          <button 
+            onClick={() => refetch()}
+            className="bg-slate-900 text-white px-8 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
+          >
+            Retry Sync
+          </button>
+          {isAuthError && (
+            <button 
+              onClick={() => window.location.href = '/login'}
+              className="bg-white text-slate-900 border border-slate-200 px-8 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all"
+            >
+              Back to Login
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-1 overflow-hidden bg-slate-50">

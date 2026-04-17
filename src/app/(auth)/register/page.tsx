@@ -61,6 +61,7 @@ export default function RegisterPage() {
       return
     }
 
+    // Success - either they are logged in or they need to confirm email
     router.push('/pending')
   }
 
