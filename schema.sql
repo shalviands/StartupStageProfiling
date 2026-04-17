@@ -163,7 +163,8 @@ CREATE TABLE IF NOT EXISTS teams (
   startup_user_id             UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   submission_status           TEXT DEFAULT 'draft',
   diagnosis_visible           BOOLEAN DEFAULT FALSE,
-  admin_notes                 TEXT DEFAULT ''
+  admin_notes                 TEXT DEFAULT '',
+  roadmap                     JSONB DEFAULT '[]'::jsonb
 );
 
 -- Step 3: Run migrations for new 9-Parameter Engine

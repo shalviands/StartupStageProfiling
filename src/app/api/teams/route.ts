@@ -31,16 +31,15 @@ export async function GET() {
     }
 
     const { data, error } = await query
-
     if (error) {
-      console.error('[GET /api/teams] DB error:', error.message)
+      console.error('[GET /api/teams] Policy or Query error:', error.message, error.details)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json(data ?? [])
   } catch (err) {
     console.error('[GET /api/teams] Unexpected error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -87,13 +86,13 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
-      console.error('[POST /api/teams] DB error:', error.message)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('[POST /api/teams] INSERT error:', error.message, error.details)
+      return NextResponse.json({ error: error.message, details: error.details }, { status: 400 })
     }
 
     return NextResponse.json(data, { status: 201 })
   } catch (err) {
-    console.error('[POST /api/teams] Unexpected error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('[POST /api/teams] Crash:', err)
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
   }
 }

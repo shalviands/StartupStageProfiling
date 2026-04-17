@@ -32,9 +32,11 @@ export default function StartupProfilePage() {
   const [saving, setSaving] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (isLoading) return
+    setError(null)
 
     if (teams.length > 0) {
       const team = teams[0]
@@ -49,8 +51,13 @@ export default function StartupProfilePage() {
         startupName: '',
         sector: '',
         submission_status: 'draft'
-      }).then(newTeam => {
+      })
+      .then(newTeam => {
         setLocalTeam(newTeam)
+      })
+      .catch(err => {
+        console.error('[StartupProfile] Init failed:', err)
+        setError('Failed to initialise your diagnosis session. Please ensure your account is approved and try again.')
       })
     }
   }, [teams, isLoading])
@@ -110,10 +117,30 @@ export default function StartupProfilePage() {
     }
   }
 
+  if (error) return (
+    <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center gap-6">
+      <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center">
+        <AlertCircle size={36} />
+      </div>
+      <div className="space-y-2">
+        <h2 className="text-2xl font-black text-navy tracking-tight">Sync Failure</h2>
+        <p className="text-sm text-slate font-medium max-w-sm mx-auto leading-relaxed">
+          {error}
+        </p>
+      </div>
+      <button 
+        onClick={() => window.location.reload()}
+        className="bg-navy text-white px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-navy/20"
+      >
+        Retry Initialisation
+      </button>
+    </div>
+  )
+
   if (isLoading || !localTeam) return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-silver">
       <Loader2 className="animate-spin" size={32} />
-      <span className="text-[10px] font-black uppercase tracking-widest">Initialising Session...</span>
+      <span className="text-[10px] font-black uppercase tracking-widest tracking-[0.3em]">Initialising Session...</span>
     </div>
   )
 
