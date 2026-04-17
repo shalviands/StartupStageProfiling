@@ -35,16 +35,16 @@ function StageBanner({
     <div className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm backdrop-blur-md bg-white/90">
       <div className="flex items-center gap-6">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Detected Stage</span>
+          <span className="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-1">Detected Stage</span>
           <div className="flex items-center gap-3">
             <div className={cn(
               "p-1.5 rounded-lg",
-              level >= 4 ? "bg-emerald-100 text-emerald-700" : level >= 2 ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-700"
+              level >= 4 ? "bg-emerald-100 text-emerald-700" : level >= 2 ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-900"
             )}>
               {level >= 4 ? <Zap size={18} /> : level >= 2 ? <TrendingUp size={18} /> : <AlertCircle size={18} />}
             </div>
             <h3 className="text-xl font-black text-slate-900 tracking-tight">{stage}</h3>
-            <span className="bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-300 uppercase">Tier {level}</span>
+            <span className="bg-slate-200 text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-300 uppercase">Tier {level}</span>
             <button 
               onClick={onExplain}
               className="ml-2 flex items-center gap-1.5 text-[9px] font-black text-violet-600 hover:text-violet-700 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-xl border border-violet-100 transition-all group"
@@ -266,7 +266,7 @@ export default function ProfilerPage() {
               </div>
               <div className="space-y-2">
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight">Zero Sessions Selected</h2>
-                <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                <p className="text-sm text-slate-600 font-medium leading-relaxed">
                   Select an existing startup diagnosis profile from the sidebar or launch a new session to begin.
                 </p>
               </div>

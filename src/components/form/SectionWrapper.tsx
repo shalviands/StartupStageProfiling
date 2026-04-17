@@ -45,7 +45,7 @@ export default function SectionWrapper({
           <p className="text-sm text-slate font-semibold max-w-xl">{subtitle}</p>
         </div>
         <div className="text-right">
-          <div className="text-[10px] font-black text-silver uppercase tracking-widest mb-1.5">Parameter Score</div>
+          <div className="text-[10px] font-black text-slate uppercase tracking-widest mb-1.5">Parameter Score</div>
           <div className={cn(
             "text-5xl font-black tabular-nums transition-colors duration-500",
             avg >= 4 ? "text-teal" : avg >= 3 ? "text-gold" : avg > 0 ? "text-coral" : "text-smoke"
@@ -124,16 +124,16 @@ export default function SectionWrapper({
             </div>
             <div>
               <h4 className="text-sm font-black uppercase tracking-tight">Mentor / Analyst Observations</h4>
-              <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Internal high-density evidence summary</p>
+              <p className="text-[10px] text-white/80 font-bold uppercase tracking-widest">Internal high-density evidence summary</p>
             </div>
           </div>
-          <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">P{parameterId.slice(1)} LOG</div>
+          <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">P{parameterId.slice(1)} LOG</div>
         </div>
         <textarea
           value={(data as any)[`${parameterId}_observation`] || ''}
           onChange={(e) => onChange(`${parameterId}_observation`, e.target.value)}
           placeholder={`Enter strategic observations for ${title}...`}
-          className="w-full bg-slate-800/50 border border-white/10 rounded-2xl p-6 text-sm text-white placeholder:text-white/20 focus:bg-slate-800 focus:border-white/30 focus:ring-4 focus:ring-slate-700/50 outline-none min-h-[140px] resize-none transition-all font-medium leading-relaxed"
+          className="w-full bg-slate-800/80 border border-white/20 rounded-2xl p-6 text-sm text-white placeholder:text-white/40 focus:bg-slate-800 focus:border-white/40 focus:ring-4 focus:ring-slate-700/50 outline-none min-h-[140px] resize-none transition-all font-medium leading-relaxed"
         />
       </div>
     </div>
