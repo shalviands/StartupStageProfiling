@@ -47,7 +47,6 @@ export default function AdminStartupDetailPage() {
       setLocalTeam(activeTeam)
     }
   }, [activeTeam, id, localTeam?.id])
- village
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
