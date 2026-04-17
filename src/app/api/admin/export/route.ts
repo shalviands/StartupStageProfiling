@@ -35,6 +35,8 @@ export async function GET() {
     // Transform for Excel
     const rows = (teams || []).map(t => {
       const mapped = mapDbToFrontend(t)
+      if (!mapped) return null
+      
       const scores = calculateOverallScore(mapped)
       
       return {
@@ -56,7 +58,7 @@ export async function GET() {
         'P8 (Team)': scores.p8.toFixed(1),
         'P9 (Moats)': scores.p9.toFixed(1),
       }
-    })
+    }).filter(Boolean)
 
     const worksheet = XLSX.utils.json_to_sheet(rows)
     const workbook = XLSX.utils.book_new()
