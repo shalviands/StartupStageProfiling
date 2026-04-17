@@ -9,7 +9,8 @@ import {
   Download, 
   Eye,
   FileText,
-  Loader2
+  Loader2,
+  ShieldCheck
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import Link from 'next/link'
