@@ -22,8 +22,8 @@ export default function DiagnosisResultsPage() {
     </div>
   )
 
-  if (!team || team.submission_status !== 'finalised' || !team.diagnosis_visible) {
-    router.push('/startup/submitted')
+  if (!team || team.submission_status !== 'finalised') {
+    router.push('/startup/submissions')
     return null
   }
 
@@ -194,7 +194,7 @@ export default function DiagnosisResultsPage() {
          <p className="text-[11px] font-black text-silver uppercase tracking-[0.3em] mb-10">Advanced venture intelligence is active</p>
          <div className="flex items-center gap-6">
             <Link 
-              href="/startup/profile"
+              href="/startup/profiler"
               className="px-12 py-5 bg-navy text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-2xl shadow-navy/20 flex items-center gap-3 active:scale-95 group"
             >
                <FileText size={16} className="text-gold" /> 

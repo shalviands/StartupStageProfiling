@@ -39,12 +39,26 @@ export default function StartupProfilePage() {
     setError(null)
 
     if (teams.length > 0) {
-      const team = teams[0]
-      if (team.submission_status !== 'draft') {
-        router.push('/startup/submitted')
-        return
+      // Find the latest draft if any, otherwise showing most recent
+      const latest = teams[0]
+      // In the new architecture, if they land on /profiler, we always want to show a draft or create one.
+      // If the latest is submitted, we should probably check if there's a draft.
+      const draft = teams.find(t => t.submission_status === 'draft')
+      
+      if (draft) {
+        setLocalTeam(draft)
+      } else {
+        // Create new draft
+        createTeam.mutateAsync({
+          teamName: `Submission #${teams.length + 1}`,
+          startupName: latest.startupName || '',
+          sector: latest.sector || '',
+          submission_status: 'draft'
+        })
+        .then(newTeam => {
+          setLocalTeam(newTeam)
+        })
       }
-      setLocalTeam(team)
     } else {
       createTeam.mutateAsync({
         teamName: 'Baseline Diagnosis',
@@ -105,13 +119,19 @@ export default function StartupProfilePage() {
     if (!localTeam) return
     setIsSubmitting(true)
     try {
-      await updateTeam.mutateAsync({
-        id: localTeam.id,
-        updates: { submission_status: 'submitted' }
+      // Use the dedicated submit API
+      const res = await fetch('/api/startup/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ team_id: localTeam.id })
       })
-      router.push('/startup/submitted')
+
+      if (!res.ok) throw new Error('Submission failed')
+
+      router.push('/startup/submissions')
     } catch (err) {
       console.error('[StartupProfile] Submit failed:', err)
+      alert('Failed to submit. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

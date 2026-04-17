@@ -7,5 +7,6 @@ export interface UserProfile {
   full_name: string
   role: UserRole
   status: UserStatus
+  avatar_url?: string
   startup_name?: string
 }

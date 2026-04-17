@@ -4,10 +4,6 @@ import { useRouter } from 'next/navigation'
 import { getSupabaseBrowser } from '@/lib/supabase/client'
 import { useUIStore } from '@/store/uiStore'
 import { useTeams } from '@/hooks/useTeams'
-import dynamic from 'next/dynamic'
-
-import PDFDownloadButton from '@/components/pdf/PDFDownloadButton'
-import ExcelDownloadButton from '@/components/excel/ExcelDownloadButton'
 
 export default function TopBar() {
   const router = useRouter()
@@ -52,9 +48,6 @@ export default function TopBar() {
             >
               {showPreview ? '✏ Edit Profile' : '👁 Live Preview'}
             </button>
-            <div className="w-[1px] h-6 bg-slate-800 mx-1" />
-            <ExcelDownloadButton team={activeTeam} />
-            <PDFDownloadButton team={activeTeam} />
           </>
         )}
       </div>

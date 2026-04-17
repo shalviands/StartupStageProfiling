@@ -63,7 +63,7 @@ export default function DiagnosticField({
           value={val}
           onChange={(e) => onChange(fieldName, e.target.value)}
           placeholder={question.placeholder}
-          className="w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none min-h-[100px] resize-none transition-all placeholder:text-silver/50"
+          className="w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none min-h-[100px] resize-none transition-all placeholder:text-silver font-medium"
         />
       )}
 
@@ -73,7 +73,7 @@ export default function DiagnosticField({
           value={val}
           onChange={(e) => onChange(fieldName, Number(e.target.value))}
           placeholder={question.placeholder}
-          className="w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none transition-all placeholder:text-silver/50"
+          className="w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none transition-all placeholder:text-silver font-medium"
         />
       )}
 

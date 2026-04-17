@@ -19,10 +19,10 @@
   --purple-lt: #EEF2FF;
   
   /* Neutral Palette */
-  --slate: #334155;
-  --silver: #64748B;
-  --smoke: #F8FAFC;
-  --rule: #E2E8F0;
+  --slate: #475569;   /* Slate-600 for high baseline contrast */
+  --silver: #94A3B8;  /* Requested placeholder/muted color */
+  --smoke: #F1F5F9;   /* Slate-100 for background depth */
+  --rule: #E2E8F0;    /* Slate-200 for borders */
 }
 
 body {

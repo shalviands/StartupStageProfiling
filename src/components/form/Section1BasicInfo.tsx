@@ -25,7 +25,7 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
               <input 
                 type="text" value={team.startupName}
                 onChange={(e) => onChange('startupName', e.target.value)}
-                className="w-full bg-white/10 border border-white/30 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/40 outline-none transition-all placeholder:text-white/50"
+                className="w-full bg-white/10 border border-white/30 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/40 outline-none transition-all placeholder:text-silver/70 font-medium"
                 placeholder="e.g. AgriFlow Systems"
               />
             </div>
@@ -34,7 +34,7 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
               <input 
                 type="text" value={team.teamName}
                 onChange={(e) => onChange('teamName', e.target.value)}
-                className="w-full bg-white/10 border border-white/30 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/40 outline-none transition-all placeholder:text-white/50"
+                className="w-full bg-white/10 border border-white/30 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/40 outline-none transition-all placeholder:text-silver/70 font-medium"
                 placeholder="e.g. Cohort 7 - Team Delta"
               />
             </div>
@@ -44,7 +44,7 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-1">
         <div className="space-y-4">
-          <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest px-1 flex items-center gap-2">
+          <label className="text-[10px] font-black text-slate uppercase tracking-widest px-1 flex items-center gap-2">
             <div className="w-1 h-1 bg-slate-900 rounded-full" /> Primary Sector
           </label>
           <div className="relative">
@@ -65,35 +65,35 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
         </div>
 
         <div className="space-y-4">
-          <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest px-1 flex items-center gap-2">
+          <label className="text-[10px] font-black text-slate uppercase tracking-widest px-1 flex items-center gap-2">
             <div className="w-1 h-1 bg-slate-900 rounded-full" /> Institution
           </label>
           <input 
             type="text" value={team.institution}
             onChange={(e) => onChange('institution', e.target.value)}
-            className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm transition-all"
+            className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm transition-all placeholder:text-silver"
             placeholder="e.g. NIT Karnataka"
           />
         </div>
 
         <div className="space-y-4">
-          <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest px-1 flex items-center gap-2">
+          <label className="text-[10px] font-black text-slate uppercase tracking-widest px-1 flex items-center gap-2">
             <div className="w-1 h-1 bg-slate-900 rounded-full" /> Team Size
           </label>
           <input 
             type="text" value={team.teamSize}
             onChange={(e) => onChange('teamSize', e.target.value)}
-            className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm transition-all"
+            className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm transition-all placeholder:text-silver"
             placeholder="e.g. 3 Cofounders"
           />
         </div>
       </div>
 
       <div className="bg-white border border-slate-200 rounded-[32px] p-8 space-y-6 shadow-sm">
-        <label className="text-[10px] font-black text-slate-800 uppercase tracking-[0.2em] px-1 block">Diagnostic Session Metadata</label>
+        <label className="text-[10px] font-black text-slate uppercase tracking-[0.2em] px-1 block">Diagnostic Session Metadata</label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
-             <label className="text-[10px] font-bold text-slate-700">Interview Date</label>
+             <label className="text-[10px] font-bold text-slate">Interview Date</label>
              <input 
               type="date" value={team.interviewDate}
               onChange={(e) => onChange('interviewDate', e.target.value)}
@@ -101,11 +101,11 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
             />
           </div>
           <div className="space-y-3">
-            <label className="text-[10px] font-bold text-slate-700">Principal Interviewer</label>
+            <label className="text-[10px] font-bold text-slate">Principal Interviewer</label>
             <input 
               type="text" value={team.interviewer}
               onChange={(e) => onChange('interviewer', e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none transition-all"
+              className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none transition-all placeholder:text-silver"
               placeholder="Full Name"
             />
           </div>

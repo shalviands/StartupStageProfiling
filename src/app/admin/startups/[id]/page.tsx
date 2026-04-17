@@ -83,20 +83,7 @@ export default function AdminStartupDetailPage() {
     }, 600)
   }
 
-  async function toggleDiagnosisVisibility() {
-    if (!localTeam) return
-    const nextVisible = !localTeam.diagnosis_visible
-    try {
-      setSaving(true)
-      await updateTeam.mutateAsync({
-        id: localTeam.id,
-        updates: { diagnosis_visible: nextVisible }
-      })
-      setLocalTeam({ ...localTeam, diagnosis_visible: nextVisible })
-    } finally {
-      setSaving(false)
-    }
-  }
+  // Visibility toggle removed as per schema restructuring (dropped from DB)
 
   async function markFinalised() {
     if (!localTeam) return
@@ -161,18 +148,7 @@ export default function AdminStartupDetailPage() {
            )}
 
            <div className="flex items-center gap-2 p-1.5 bg-slate-100 rounded-2xl border border-slate-200">
-              <button 
-                onClick={toggleDiagnosisVisibility}
-                className={cn(
-                  "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
-                  localTeam.diagnosis_visible 
-                    ? "bg-white text-emerald-600 shadow-sm" 
-                    : "text-slate-500 hover:text-slate-900"
-                )}
-              >
-                {localTeam.diagnosis_visible ? <Eye size={14} /> : <EyeOff size={14} />}
-                {localTeam.diagnosis_visible ? 'Visible' : 'Hidden'}
-              </button>
+              {/* Visibility toggle removed */}
               
               <button 
                 onClick={markFinalised}

@@ -1,5 +1,16 @@
 import { z } from 'zod'
 
+export interface SubmissionComment {
+  id: string
+  team_id: string
+  commenter_id: string
+  commenter_name: string
+  comment_text: string
+  parameter_ref: string   // 'overall' | 'P1' | 'P2' | ... | 'P9'
+  created_at: string
+  updated_at: string
+}
+
 export const RoadmapItemSchema = z.object({
   priority:    z.enum(['P0', 'P1', 'P2']),
   action:      z.string().max(500).default(''),
@@ -167,13 +178,17 @@ export const TeamBaseSchema = z.object({
 
   // 3-Role Architecture Extensions
   startup_user_id:           z.string().nullable().default(null),
-  submission_status:         z.enum(['draft', 'submitted', 'locked', 'finalised']).default('draft'),
-  diagnosis_visible:         z.boolean().default(false),
+  submission_status:         z.enum(['draft', 'submitted', 'finalised']).default('draft'),
+  submission_number:         z.number().int().default(1),
   admin_notes:               z.string().default(''),
 })
 
 export const TeamCreateSchema = TeamBaseSchema
 export const TeamUpdateSchema = TeamBaseSchema.partial()
 
-export type TeamProfile = z.infer<typeof TeamBaseSchema> & { id: string }
+export type TeamProfile = z.infer<typeof TeamBaseSchema> & { 
+  id: string
+  created_at: string
+  updated_at: string
+}
 export type RoadmapItem = z.infer<typeof RoadmapItemSchema>

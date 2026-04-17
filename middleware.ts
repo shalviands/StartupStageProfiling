@@ -99,11 +99,21 @@ export async function middleware(request: NextRequest) {
 
       // Approved Startup
       if (status === 'approved') {
+        // Home/Login -> /startup/profiler
         if (pathname === '/' || pathname.startsWith('/login')) {
-           return NextResponse.redirect(new URL('/startup/profile', request.url))
+           return NextResponse.redirect(new URL('/startup/profiler', request.url))
         }
-        if (!pathname.startsWith('/startup') && !pathname.startsWith('/api/')) {
-          return NextResponse.redirect(new URL('/startup/profile', request.url))
+        // Redirect from old /startup/profile to new /startup/profiler
+        if (pathname === '/startup/profile') {
+           return NextResponse.redirect(new URL('/startup/profiler', request.url))
+        }
+        // Restrict access to other areas
+        if ((pathname.startsWith('/programme') || pathname.startsWith('/admin')) && !pathname.startsWith('/api/')) {
+          return NextResponse.redirect(new URL('/startup/profiler', request.url))
+        }
+        // Must stay in /startup
+        if (!pathname.startsWith('/startup') && !pathname.startsWith('/api/') && !pathname.startsWith('/pending')) {
+          return NextResponse.redirect(new URL('/startup/profiler', request.url))
         }
         return response
       }
@@ -112,10 +122,16 @@ export async function middleware(request: NextRequest) {
     // 2. Programme Team Role
     if (role === 'programme_team') {
       if (pathname === '/' || pathname.startsWith('/login')) {
-        return NextResponse.redirect(new URL('/profiler', request.url))
+        return NextResponse.redirect(new URL('/programme/dashboard', request.url))
       }
-      if (pathname.startsWith('/admin') || pathname.startsWith('/startup')) {
-        return NextResponse.redirect(new URL('/profiler', request.url))
+      // Restrict access to other areas
+      if ((pathname.startsWith('/admin') || pathname.startsWith('/startup')) && !pathname.startsWith('/api/')) {
+        return NextResponse.redirect(new URL('/programme/dashboard', request.url))
+      }
+      // Redirect from old /profiler to new /programme/dashboard or similar?
+      // Actually /profiler was specifically for them before.
+      if (pathname === '/profiler') {
+        return NextResponse.redirect(new URL('/programme/dashboard', request.url))
       }
       return response
     }
