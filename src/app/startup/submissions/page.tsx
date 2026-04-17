@@ -7,6 +7,7 @@ import { Loader2, Plus, Eye, Calendar, BarChart3, Rocket, Trash2 } from 'lucide-
 import Link from 'next/link'
 import { cn } from '@/utils/cn'
 import { useDeleteTeam } from '@/hooks/useTeams'
+import PDFDownloadButton from '@/components/pdf/PDFDownloadButton'
 
 export default function SubmissionsPage() {
   const router = useRouter()
