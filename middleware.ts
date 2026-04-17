@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
           
           // Sync headers for downstream request
           const requestHeaders = new Headers(request.headers)
-          requestHeaders.set('Cookie', request.cookies.toString())
+          requestHeaders.set('Cookie', request.cookies.getAll().map(c => `${c.name}=${c.value}`).join('; '))
 
           response = NextResponse.next({
             request: {
