@@ -41,8 +41,13 @@ export default function AdminStartupDetailPage() {
   const activeTeam = teams.find(t => t.id === id) || null
 
   useEffect(() => {
-    if (activeTeam) setLocalTeam(activeTeam)
-  }, [activeTeam])
+    // Only update localTeam if it was null OR if the ID of the startup changed
+    // This prevents background refetches from snapping-back user typing
+    if (activeTeam && (!localTeam || localTeam.id !== id)) {
+      setLocalTeam(activeTeam)
+    }
+  }, [activeTeam, id, localTeam?.id])
+ village
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 

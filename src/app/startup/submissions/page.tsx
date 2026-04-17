@@ -118,11 +118,11 @@ export default function SubmissionsPage() {
                         <PDFDownloadButton team={sub} />
                       ) : (
                         <Link 
-                          href={`/startup/submissions/${sub.id}`}
+                          href={sub.submission_status === 'draft' ? '/startup/profiler' : `/startup/submissions/${sub.id}`}
                           className="inline-flex items-center gap-2 bg-white border border-rule text-navy px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-navy hover:text-white transition-all shadow-sm"
                         >
                           <Eye size={12} />
-                          View
+                          {sub.submission_status === 'draft' ? 'Continue Editing' : 'View'}
                         </Link>
                       )}
                       

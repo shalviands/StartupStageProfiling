@@ -37,6 +37,9 @@ export default function StartupProfilePage() {
   useEffect(() => {
     if (isLoading) return
     setError(null)
+    
+    // Only set localTeam if we don't have one yet or if there's no active draft being edited
+    if (localTeam) return
 
     if (teams.length > 0) {
       // Find the latest draft if any, otherwise showing most recent
@@ -60,6 +63,9 @@ export default function StartupProfilePage() {
         })
       }
     } else {
+      // Prevent multiple creations
+      if (createTeam.isPending) return
+      
       createTeam.mutateAsync({
         teamName: 'Baseline Profile',
         startupName: '',
@@ -74,7 +80,7 @@ export default function StartupProfilePage() {
         setError('Failed to initialise your profiling session. Please ensure your account is approved and try again.')
       })
     }
-  }, [teams, isLoading])
+  }, [teams, isLoading, localTeam, createTeam.isPending])
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
