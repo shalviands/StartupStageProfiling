@@ -107,7 +107,7 @@ export default function SubmissionView({ submission }: SubmissionViewProps) {
                         <Info size={20} />
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-[10px] font-black text-gold uppercase tracking-widest">Startup Observation</h4>
+                        <h4 className="text-[10px] font-black text-gold uppercase tracking-widest">Strategic Observation</h4>
                         <p className="text-sm font-medium text-slate leading-relaxed">
                           {(submission as any)[`${param.id}_observation`]}
                         </p>

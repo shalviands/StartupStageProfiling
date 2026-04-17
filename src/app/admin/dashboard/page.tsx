@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
             <span className="text-[10px] font-black uppercase tracking-[0.3em]">Administrator Oversight</span>
           </div>
           <h1 className="text-4xl font-black text-navy tracking-tight leading-none mb-1">System Intelligence</h1>
-          <p className="text-sm text-slate font-semibold">Diagnostic performance and cohort integrity monitoring.</p>
+          <p className="text-sm text-slate font-semibold">Profiler performance and cohort integrity monitoring.</p>
         </div>
         <div className="flex items-center gap-4">
            <button className="px-6 py-3.5 bg-white border border-rule rounded-2xl text-[10px] font-black uppercase tracking-widest text-navy hover:bg-smoke transition-all shadow-sm active:scale-95">
@@ -160,7 +160,7 @@ export default async function AdminDashboardPage() {
                 </div>
                 <div>
                   <h4 className="text-2xl font-black tracking-tight leading-tight mb-2">Analytic Engine Active</h4>
-                  <p className="text-white/60 text-xs font-semibold leading-relaxed">System is verified and currently reconciling diagnostic patterns for {totalStartups} startup nodes.</p>
+                  <p className="text-white/60 text-xs font-semibold leading-relaxed">System is verified and currently reconciling profiling patterns for {totalStartups} startup nodes.</p>
                 </div>
                 <Link 
                   href="/admin/activity"

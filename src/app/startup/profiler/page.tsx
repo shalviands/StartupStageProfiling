@@ -61,7 +61,7 @@ export default function StartupProfilePage() {
       }
     } else {
       createTeam.mutateAsync({
-        teamName: 'Baseline Diagnosis',
+        teamName: 'Baseline Profile',
         startupName: '',
         sector: '',
         submission_status: 'draft'
@@ -71,7 +71,7 @@ export default function StartupProfilePage() {
       })
       .catch(err => {
         console.error('[StartupProfile] Init failed:', err)
-        setError('Failed to initialise your diagnosis session. Please ensure your account is approved and try again.')
+        setError('Failed to initialise your profiling session. Please ensure your account is approved and try again.')
       })
     }
   }, [teams, isLoading])
@@ -184,9 +184,18 @@ export default function StartupProfilePage() {
     <div className="max-w-5xl mx-auto px-6 py-10 pb-32">
       {/* Header Stat & Title */}
       <div className="flex items-center justify-between mb-12">
-        <div>
-          <h1 className="text-3xl font-black text-navy tracking-tight mb-2">Diagnosis Profile</h1>
-          <p className="text-slate font-bold uppercase text-[10px] tracking-widest opacity-60">Strategic 9-Parameter Venture Assessment</p>
+        <div className="flex items-center gap-6">
+          <button 
+            onClick={() => router.push('/startup/submissions')}
+            className="w-12 h-12 rounded-2xl border border-rule flex items-center justify-center text-silver hover:text-navy hover:bg-white transition-all shadow-sm"
+            title="Back to Dashboard"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <div>
+            <h1 className="text-3xl font-black text-navy tracking-tight mb-2">Startup Stage Profiler</h1>
+            <p className="text-slate font-bold uppercase text-[10px] tracking-widest opacity-60">Strategic 9-Parameter Venture Assessment</p>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           {saving && (
@@ -251,10 +260,10 @@ export default function StartupProfilePage() {
             <div className="w-20 h-20 bg-gold-lt rounded-3xl flex items-center justify-center text-gold mb-8 mx-auto shadow-inner">
               <AlertCircle size={40} />
             </div>
-            <h3 className="text-2xl font-black text-navy text-center mb-4 tracking-tight">Finalise Diagnosis?</h3>
+            <h3 className="text-2xl font-black text-navy text-center mb-4 tracking-tight">Finalise Profiling?</h3>
             <p className="text-slate text-center text-sm font-semibold leading-relaxed mb-10">
               Once submitted, your baseline profile will be locked for review. 
-              The InUnity team will finalise your strategic diagnosis based on this evidence.
+              The InUnity team will finalise your strategic profile based on this evidence.
             </p>
             <div className="flex flex-col gap-4">
               <button

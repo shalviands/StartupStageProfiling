@@ -103,7 +103,7 @@ export default function AdminStartupDetailPage() {
   if (isLoading || !localTeam) return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
       <Loader2 className="animate-spin" size={32} />
-      <span className="text-[10px] font-black uppercase tracking-widest">Initialising Session...</span>
+      <span className="text-[10px] font-black uppercase tracking-widest">Initialising Profiler...</span>
     </div>
   )
 
@@ -127,7 +127,7 @@ export default function AdminStartupDetailPage() {
           <div className="h-6 w-px bg-slate-200" />
           
           <div className="flex flex-col">
-            <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none">{localTeam.startupName || 'Diagnostic Session'}</h1>
+            <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none">{localTeam.startupName || 'Profiling Session'}</h1>
             <div className="flex items-center gap-2 mt-1.5">
                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">{localTeam.id.slice(0, 8)}</span>
                <div className={cn(

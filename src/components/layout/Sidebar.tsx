@@ -39,7 +39,7 @@ export default function Sidebar() {
 
   async function handleDelete(id: string, e: React.MouseEvent) {
     e.stopPropagation()
-    if (!confirm('Permanently delete this diagnostic session?')) return
+    if (!confirm('Permanently delete this profiling session?')) return
     try {
       if (activeTeamId === id) setActiveTeamId(null)
       await deleteTeam.mutateAsync(id)
@@ -52,7 +52,7 @@ export default function Sidebar() {
     if (createTeam.isPending) return
     try {
       const newTeam = await createTeam.mutateAsync({
-        teamName: 'New Diagnostic Session',
+        teamName: 'New Profiling Session',
         startupName: '',
         p8_team_members: [],
         detected_stage: 'IDEA / CONCEPTION',
@@ -124,7 +124,7 @@ export default function Sidebar() {
                       "text-[9px] font-black uppercase tracking-widest truncate",
                       isActive ? "text-white/60" : "text-slate-500"
                     )}>
-                      {team.teamName || 'Diagnostic Session'}
+                      {team.teamName || 'Profiling Session'}
                     </span>
                     <span className={cn(
                       "text-[10px] font-black tabular-nums transition-colors",

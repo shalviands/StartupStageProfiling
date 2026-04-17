@@ -15,6 +15,7 @@ interface SectionWrapperProps {
   onChange: (field: string, value: any) => void
   children: React.ReactNode
   deepDive?: React.ReactNode
+  hideObservation?: boolean
 }
 
 export default function SectionWrapper({
@@ -26,6 +27,7 @@ export default function SectionWrapper({
   onChange,
   children,
   deepDive,
+  hideObservation = true,
 }: SectionWrapperProps) {
   const { level } = classifyStage(data)
   const isDeepDiveUnlocked = level >= 3
@@ -59,7 +61,7 @@ export default function SectionWrapper({
       <div className="space-y-6">
         <div className="flex items-center gap-2 text-silver">
           <ChevronRight size={16} />
-          <span className="text-[11px] font-black uppercase tracking-widest">Core Diagnostic Evidence</span>
+          <span className="text-[11px] font-black uppercase tracking-widest">Core Profiler Evidence</span>
         </div>
         <div className="grid grid-cols-1 gap-6">
           {children}
@@ -108,34 +110,36 @@ export default function SectionWrapper({
           
           {!isDeepDiveUnlocked && (
             <p className="text-center text-[11px] font-bold text-silver mt-4 italic">
-              Evidence of Problem-Solution Fit required for deep-dive diagnostics.
+              Evidence of Problem-Solution Fit required for deep-dive profiling.
             </p>
           )}
         </div>
       )}
 
-      {/* Observation Box */}
-      <div className="bg-slate-900 rounded-[32px] p-10 text-white space-y-6 shadow-2xl relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000" />
-        <div className="flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-emerald-400 shadow-inner">
-              <ShieldCheck size={20} />
+      {/* Observation Box - Hidden for Startups */}
+      {!hideObservation && (
+        <div className="bg-navy rounded-[32px] p-10 text-white space-y-6 shadow-2xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000" />
+          <div className="flex items-center justify-between relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-emerald-400 shadow-inner">
+                <ShieldCheck size={20} />
+              </div>
+              <div>
+                <h4 className="text-sm font-black uppercase tracking-tight">Oversight Observations</h4>
+                <p className="text-[10px] text-white/80 font-bold uppercase tracking-widest">Internal high-density evidence summary</p>
+              </div>
             </div>
-            <div>
-              <h4 className="text-sm font-black uppercase tracking-tight">Mentor / Analyst Observations</h4>
-              <p className="text-[10px] text-white/80 font-bold uppercase tracking-widest">Internal high-density evidence summary</p>
-            </div>
+            <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">P{parameterId.slice(1)} LOG</div>
           </div>
-          <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">P{parameterId.slice(1)} LOG</div>
+          <textarea
+            value={(data as any)[`${parameterId}_observation`] || ''}
+            onChange={(e) => onChange(`${parameterId}_observation`, e.target.value)}
+            placeholder={`Enter strategic observations for ${title}...`}
+            className="w-full bg-slate-800/80 border border-white/20 rounded-2xl p-6 text-sm text-white placeholder:text-white/40 focus:bg-slate-800 focus:border-white/40 focus:ring-4 focus:ring-slate-700/50 outline-none min-h-[140px] resize-none transition-all font-medium leading-relaxed"
+          />
         </div>
-        <textarea
-          value={(data as any)[`${parameterId}_observation`] || ''}
-          onChange={(e) => onChange(`${parameterId}_observation`, e.target.value)}
-          placeholder={`Enter strategic observations for ${title}...`}
-          className="w-full bg-slate-800/80 border border-white/20 rounded-2xl p-6 text-sm text-white placeholder:text-white/40 focus:bg-slate-800 focus:border-white/40 focus:ring-4 focus:ring-slate-700/50 outline-none min-h-[140px] resize-none transition-all font-medium leading-relaxed"
-        />
-      </div>
+      )}
     </div>
   )
 }

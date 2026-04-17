@@ -9,8 +9,8 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'Startup Diagnosis Profiler — InUnity',
-  description: 'Startup diagnosis and profiling tool by InUnity Private Limited',
+  title: 'Startup Stage Profiler — InUnity',
+  description: 'Startup stage profiling and analysis tool by InUnity Private Limited',
 }
 
 export default function RootLayout({

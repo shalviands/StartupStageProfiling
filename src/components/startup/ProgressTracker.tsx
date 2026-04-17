@@ -37,7 +37,7 @@ export default function ProgressTracker({ team, activeSection }: ProgressTracker
     <div className="bg-white rounded-3xl border border-slate-200 p-6 mb-8 shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Diagnostic Progress</span>
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Profiling Progress</span>
           <h3 className="text-xl font-black text-slate-900">{overallPercent}% Complete</h3>
         </div>
         <div className="flex items-center gap-1.5">
@@ -60,7 +60,7 @@ export default function ProgressTracker({ team, activeSection }: ProgressTracker
             key={p.id}
             className={cn(
               "flex flex-col items-center gap-2 p-2 rounded-xl transition-all",
-              p.isActive ? "bg-slate-900" : "bg-slate-50 border border-slate-100"
+              p.isActive ? "bg-navy" : "bg-slate-50 border border-slate-100"
             )}
           >
             <span className={cn(

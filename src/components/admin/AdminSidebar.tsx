@@ -19,7 +19,6 @@ const NAV_ITEMS = [
   { label: 'All Startups', href: '/admin/startups', icon: Rocket },
   { label: 'Approvals', href: '/admin/approvals', icon: Clock, badge: true },
   { label: 'Users', href: '/admin/users', icon: Users },
-  { label: 'Profiler', href: '/profiler', icon: TrendingUp },
 ]
 
 export default function AdminSidebar() {

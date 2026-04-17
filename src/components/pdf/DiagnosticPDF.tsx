@@ -75,16 +75,16 @@ export default function DiagnosticPDF({ team }: { team: TeamProfile }) {
   ]
 
   return (
-    <Document title={`${team.startupName || 'Startup'}-Diagnosis-Report`}>
+    <Document title={`${team.startupName || 'Startup'}-Profiler-Report`}>
       <Page size="A4" style={s.page}>
         <View style={s.header}>
-          <Text style={s.brand}>INUNITY STARTUP DIAGNOSIS</Text>
+          <Text style={s.brand}>INUNITY STARTUP STAGE PROFILER</Text>
           <Text style={s.title}>{team.startupName || 'Startup Profile'}</Text>
         </View>
 
         <View style={s.heroSection}>
           <View style={s.stageBox}>
-            <Text style={s.stageLabel}>Diagnosis Stage</Text>
+            <Text style={s.stageLabel}>Profiler Stage</Text>
             <Text style={s.stageValue}>{stage}</Text>
             <Text style={s.stageTier}>Classification: LEVEL {level} STRATEGY</Text>
           </View>
@@ -114,8 +114,8 @@ export default function DiagnosticPDF({ team }: { team: TeamProfile }) {
         </View>
 
         <View style={s.footer}>
-          <Text style={s.footerText}>© {new Date().getFullYear()} InUnity Diagnosis Profiler</Text>
-          <Text style={s.footerText}>Highly Confidential • Diagnostic Intelligence</Text>
+          <Text style={s.footerText}>© {new Date().getFullYear()} InUnity Startup Stage Profiler</Text>
+          <Text style={s.footerText}>Highly Confidential • Strategic Analytics</Text>
         </View>
       </Page>
 

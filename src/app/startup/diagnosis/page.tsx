@@ -18,7 +18,7 @@ export default function DiagnosisResultsPage() {
   if (isLoading) return (
     <div className="min-h-[40vh] flex flex-col items-center justify-center gap-4 text-silver">
       <Loader2 className="animate-spin" size={32} />
-      <span className="text-[10px] font-black uppercase tracking-widest leading-loose">Retrieving Your Diagnosis...</span>
+      <span className="text-[10px] font-black uppercase tracking-widest leading-loose">Retrieving Your Analysis...</span>
     </div>
   )
 
@@ -50,9 +50,9 @@ export default function DiagnosisResultsPage() {
         <div className="space-y-1">
           <div className="flex items-center gap-3 text-silver">
              <ShieldCheck size={14} className="text-gold" />
-             <span className="text-[10px] font-black uppercase tracking-[0.3em]">Official Diagnostic Record</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.3em]">Official Profiler Record</span>
           </div>
-          <h1 className="text-3xl font-black text-navy tracking-tight leading-none">Strategic Diagnosis</h1>
+          <h1 className="text-3xl font-black text-navy tracking-tight leading-none">Venture Profiler Results</h1>
           <p className="text-sm text-slate font-semibold uppercase tracking-widest text-[10px] opacity-60">Result Output for {team.startupName || 'Your Venture'}</p>
         </div>
         <div className="flex flex-col items-end">

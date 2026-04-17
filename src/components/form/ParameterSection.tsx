@@ -23,6 +23,7 @@ interface ParameterSectionProps {
   deepDiveQs: readonly Question[]
   data: TeamProfile
   onChange: (field: string, value: any) => void
+  hideObservation?: boolean
 }
 
 export default function ParameterSection({
@@ -34,6 +35,7 @@ export default function ParameterSection({
   deepDiveQs,
   data,
   onChange,
+  hideObservation = false
 }: ParameterSectionProps) {
   const { level } = classifyStage(data)
   const isDeepDiveUnlocked = level >= 3
@@ -198,7 +200,7 @@ export default function ParameterSection({
       <div className="space-y-6">
         <div className="flex items-center gap-2 text-slate-500">
           <ChevronRight size={16} />
-          <span className="text-[11px] font-black uppercase tracking-widest">Core Diagnostics</span>
+          <span className="text-[11px] font-black uppercase tracking-widest">Core Parameters</span>
         </div>
         <div className="grid grid-cols-1 gap-6">
           {parameterId === 'p8' && renderTeamMembers()}
@@ -237,24 +239,26 @@ export default function ParameterSection({
         )}
       </div>
 
-      {/* Observation Box */}
-      <div className="bg-slate-900 rounded-3xl p-8 text-white space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white">
-            <MessageSquare size={16} />
+      {/* Observation Box - Hidden for Startups */}
+      {!hideObservation && (
+        <div className="bg-navy rounded-3xl p-8 text-white space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white">
+              <MessageSquare size={16} />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold">Profiler Observation</h4>
+              <p className="text-[10px] text-white/70 font-medium">Summarize key evidence or risks for this parameter</p>
+            </div>
           </div>
-          <div>
-            <h4 className="text-sm font-bold">Diagnostic Observation</h4>
-            <p className="text-[10px] text-white/70 font-medium">Summarize key evidence or risks for this parameter</p>
-          </div>
+          <textarea
+            value={(data as any)[`${parameterId}_observation`] || ''}
+            onChange={(e) => onChange(`${parameterId}_observation`, e.target.value)}
+            placeholder={`Enter mentor observations for ${title}...`}
+            className="w-full bg-white/5 border border-white/20 rounded-2xl p-6 text-sm text-white placeholder:text-white/40 focus:ring-1 focus:ring-white/30 min-h-[120px] resize-none"
+          />
         </div>
-        <textarea
-          value={(data as any)[`${parameterId}_observation`] || ''}
-          onChange={(e) => onChange(`${parameterId}_observation`, e.target.value)}
-          placeholder={`Enter mentor observations for ${title}...`}
-          className="w-full bg-white/5 border border-white/20 rounded-2xl p-6 text-sm text-white placeholder:text-white/40 focus:ring-1 focus:ring-white/30 min-h-[120px] resize-none"
-        />
-      </div>
+      )}
     </div>
   )
 }

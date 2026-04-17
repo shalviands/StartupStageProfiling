@@ -17,7 +17,7 @@ export default function LivePreview({ team }: { team: TeamProfile }) {
   return (
     <div className="flex-1 overflow-y-auto p-6 bg-white space-y-8 scrollbar-hide">
       <div className="space-y-1">
-        <h3 className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Diagnostic Summary</h3>
+        <h3 className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Profiler Summary</h3>
         <h2 className="text-lg font-black text-slate-900 truncate leading-tight">{team.startupName || 'Draft Profile'}</h2>
       </div>
 

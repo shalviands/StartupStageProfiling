@@ -96,7 +96,7 @@ export default function SubmissionsPage() {
                     </div>
                     <div>
                       <h3 className="text-navy font-black text-sm">No submissions yet</h3>
-                      <p className="text-xs text-slate font-medium">Start your first strategic diagnosis to see results here.</p>
+                      <p className="text-xs text-slate font-medium">Start your first strategic profiling session to see results here.</p>
                     </div>
                     <Link 
                       href="/startup/profiler"

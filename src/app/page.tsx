@@ -62,7 +62,7 @@ export default async function RootPage() {
                 Accelerate Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0F172A] to-[#475569]">Venture DNA</span>
               </h1>
               <p className="text-lg text-slate-700 leading-relaxed mb-10 max-w-lg font-medium">
-                The high-performance diagnostic framework used by InUnity founders and programme teams to benchmark readiness, identify bottlenecks, and unlock growth.
+                The high-performance profiling framework used by InUnity founders and programme teams to benchmark readiness, identify bottlenecks, and unlock growth.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
@@ -89,7 +89,7 @@ export default async function RootPage() {
               <div className="relative glass-card premium-shadow rounded-[32px] p-2 overflow-hidden border-2 border-white/50">
                 <Image 
                   src="/hero_diagnostic_illustration_1776344892364.png"
-                  alt="Startup Diagnostic Illustration"
+                  alt="Startup Profiling Illustration"
                   width={600}
                   height={600}
                   className="rounded-[28px] object-cover"
@@ -111,7 +111,7 @@ export default async function RootPage() {
               {[
                 {
                   title: '9-Parameter Framework',
-                  desc: 'Deep-dive into Problem Clarity, Moats, and CRL with research-backed diagnostics.',
+                  desc: 'Deep-dive into Problem Clarity, Moats, and CRL with research-backed profiling tools.',
                   icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
                 },
                 {
@@ -147,9 +147,9 @@ export default async function RootPage() {
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F59E0B]/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
               
               <div className="relative z-10">
-                <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Ready to Profiler?</h2>
+                <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Ready to Profile?</h2>
                 <p className="text-slate-400 text-lg mb-10 max-w-xl mx-auto font-medium">
-                  Join the cohort of data-driven founders scaling with the InUnity Startup Diagnosis platform.
+                  Join the cohort of data-driven founders scaling with the InUnity Startup Stage Profiler platform.
                 </p>
                 <Link 
                   href="/login" 

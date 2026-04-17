@@ -34,7 +34,7 @@ export default async function StartupLayout({
           }}>IU</div>
           <div>
             <div style={{ color: '#fff', fontWeight: 700, fontSize: 13, lineHeight: '14px' }}>
-              Startup Diagnosis Profiler
+              Startup Stage Profiler
             </div>
             <div style={{ color: '#8A9BB0', fontSize: 10, marginTop: 2 }}>
               InUnity Private Limited

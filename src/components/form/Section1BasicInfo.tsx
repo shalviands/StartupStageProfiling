@@ -12,11 +12,11 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Session Hero */}
-      <div className="bg-slate-900 rounded-[32px] p-10 text-white relative overflow-hidden group shadow-2xl">
+      <div className="bg-navy rounded-[32px] p-10 text-white relative overflow-hidden group shadow-2xl">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-700" />
         <div className="relative z-10 space-y-6">
           <div className="space-y-2">
-             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/90">Diagnosis Identity</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/90">Profiler Identity</span>
              <h1 className="text-4xl font-black tracking-tight leading-none text-white">Startup Profile</h1>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -30,7 +30,7 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
               />
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] font-bold text-white/90 uppercase tracking-widest px-1">Diagnostic Batch / Team ID</label>
+              <label className="text-[10px] font-bold text-white/90 uppercase tracking-widest px-1">Profiling Batch / Team ID</label>
               <input 
                 type="text" value={team.teamName}
                 onChange={(e) => onChange('teamName', e.target.value)}
@@ -90,7 +90,7 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
       </div>
 
       <div className="bg-white border border-slate-200 rounded-[32px] p-8 space-y-6 shadow-sm">
-        <label className="text-[10px] font-black text-slate uppercase tracking-[0.2em] px-1 block">Diagnostic Session Metadata</label>
+        <label className="text-[10px] font-black text-slate uppercase tracking-[0.2em] px-1 block">Profiling Session Metadata</label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
              <label className="text-[10px] font-bold text-slate">Interview Date</label>
