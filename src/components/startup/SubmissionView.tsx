@@ -5,6 +5,7 @@ import { PARAMETERS_CONFIG } from '@/config/parameters'
 import { TeamProfile } from '@/types/team.types'
 import { cn } from '@/utils/cn'
 import { ChevronRight, BarChart3, CheckSquare, Info } from 'lucide-react'
+import PDFDownloadButton from '@/components/pdf/PDFDownloadButton'
 
 interface SubmissionViewProps {
   submission: TeamProfile
