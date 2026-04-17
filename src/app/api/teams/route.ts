@@ -86,13 +86,17 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
-      console.error('[POST /api/teams] INSERT error:', error.message, error.details)
-      return NextResponse.json({ error: error.message, details: error.details }, { status: 400 })
+      console.error('[POST /api/teams] Critical Insert Failure:', error.message, error.details)
+      return NextResponse.json({ 
+        error: error.message, 
+        details: error.details,
+        hint: 'Verify database columns (p8_team_members, roadmap) and RLS policies.'
+      }, { status: 400 })
     }
 
     return NextResponse.json(data, { status: 201 })
   } catch (err) {
-    console.error('[POST /api/teams] Crash:', err)
+    console.error('[POST /api/teams] Fatal Crash:', err)
     return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
   }
 }
