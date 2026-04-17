@@ -18,6 +18,7 @@ export default function RecentSubmissionsTable({ teams }: { teams: TeamProfile[]
             <th className="pb-4">Startup</th>
             <th className="pb-4">Stage</th>
             <th className="pb-4">Score</th>
+            <th className="pb-4">Submitted At</th>
             <th className="pb-4 text-right">Action</th>
           </tr>
         </thead>
@@ -37,6 +38,16 @@ export default function RecentSubmissionsTable({ teams }: { teams: TeamProfile[]
               </td>
               <td className="py-4 font-black text-navy text-xs">
                 {(team.overall_weighted_score || 0).toFixed(1)}
+              </td>
+              <td className="py-4">
+                <div className="flex flex-col">
+                  <span className="text-navy font-black text-[10px]">
+                    {team.created_at ? new Date(team.created_at).toLocaleDateString() : 'N/A'}
+                  </span>
+                  <span className="text-[9px] text-silver font-bold opacity-60">
+                    {team.created_at ? new Date(team.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                  </span>
+                </div>
               </td>
               <td className="py-4 text-right">
                 <Link 

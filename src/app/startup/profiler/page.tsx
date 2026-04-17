@@ -198,11 +198,11 @@ export default function StartupProfilePage() {
             <ChevronLeft size={20} />
           </button>
           <button 
-            onClick={() => router.push('/startup/dashboard')}
+            onClick={() => router.push('/startup/submissions')}
             className="w-12 h-12 rounded-2xl border border-rule flex items-center justify-center text-slate-500 hover:text-navy hover:bg-white transition-all shadow-sm bg-white"
-            title="Return Home"
+            title="Go Home"
           >
-            <Rocket size={18} />
+            <Rocket size={20} />
           </button>
           <div>
             <h1 className="text-3xl font-black text-navy tracking-tight mb-2">Startup Stage Profiler</h1>

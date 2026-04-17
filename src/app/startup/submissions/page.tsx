@@ -74,8 +74,7 @@ export default function SubmissionsPage() {
                       </span>
                    </div>
                 </td>
-                <td className="px-8 py-6 text-slate text-xs flex items-center gap-2">
-                  <Calendar size={14} className="text-silver" />
+                <td className="py-6 px-4">
                   <div className="flex flex-col">
                      <span>{sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A'}</span>
                      <span className="text-[9px] opacity-40 font-bold">{sub.created_at ? new Date(sub.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>

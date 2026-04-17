@@ -114,6 +114,7 @@ export default function AllStartupsPage() {
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">P4</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">P5</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Overall</th>
+                <th className="p-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Submitted At</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
                 <th className="p-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
               </tr>
@@ -155,6 +156,12 @@ export default function AllStartupsPage() {
                        )}>
                          {overall.toFixed(1)}
                        </span>
+                    </td>
+                    <td className="p-6 text-left">
+                       <div className="flex flex-col">
+                          <span className="text-[10px] font-black text-navy">{team.created_at ? new Date(team.created_at).toLocaleDateString() : 'N/A'}</span>
+                          <span className="text-[9px] font-bold text-silver uppercase tracking-widest mt-0.5">{team.created_at ? new Date(team.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                       </div>
                     </td>
                     <td className="p-6 text-center text-[10px]">
                        <div className={cn(
