@@ -51,7 +51,6 @@ export default function SubmissionsPage() {
       <div className="bg-white rounded-[40px] border border-rule shadow-xl shadow-navy/5 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-          <thead>
             <tr className="bg-smoke/50 border-b border-rule font-bold text-[10px] uppercase tracking-widest text-silver">
               <th className="px-8 py-6 text-[10px]">Sub # / Identity</th>
               <th className="px-8 py-6 text-[10px]">Timestamp</th>
