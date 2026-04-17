@@ -145,9 +145,10 @@ export default function StartupProfilePage() {
       }
 
       router.push('/startup/submissions')
-    } catch (err) {
+    } catch (err: any) {
       console.error('[StartupProfile] Submit failed:', err)
-      alert('Failed to submit. Please try again.')
+      const errorMsg = err instanceof Error ? err.message : 'Unknown network failure'
+      alert(`Submission failed: ${errorMsg}. Please try again later.`)
       setIsSubmitting(false)
       isSubmittedRef.current = false
     }

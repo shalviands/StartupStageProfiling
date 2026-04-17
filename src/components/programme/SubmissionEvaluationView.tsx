@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { TeamProfile, SubmissionComment } from '@/types/team.types'
 import SubmissionView from '@/components/startup/SubmissionView'
 import CommentPanel from './CommentPanel'
-import { BarChart3, Rocket, Target, Zap, Loader2 } from 'lucide-react'
+import { BarChart3, Rocket, Target, Zap, Loader2, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
 interface SubmissionEvaluationViewProps {
@@ -54,6 +54,36 @@ export default function SubmissionEvaluationView({
               </div>
 
               <div className="flex gap-4">
+                <button 
+                  onClick={async () => {
+                    const nextStatus = team.submission_status === 'finalised' ? 'submitted' : 'finalised'
+                    try {
+                      setRunningAI(true)
+                      const res = await fetch('/api/admin/finalise', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ teamId: team.id, status: nextStatus })
+                      })
+                      if (!res.ok) throw new Error('Failed to update status')
+                      window.location.reload() // Quick refresh to update state
+                    } catch (err) {
+                      console.error('[Evaluation] Finalise failed:', err)
+                    } finally {
+                      setRunningAI(false)
+                    }
+                  }}
+                  disabled={runningAI}
+                  className={cn(
+                    "flex items-center gap-3 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl disabled:opacity-50",
+                    team.submission_status === 'finalised'
+                      ? "bg-emerald-600 text-white shadow-emerald-200"
+                      : "bg-gold text-navy shadow-gold/20 hover:scale-[1.02] active:scale-95"
+                  )}
+                >
+                  {runningAI ? <Loader2 size={16} className="animate-spin" /> : team.submission_status === 'finalised' ? <CheckCircle2 size={16} /> : <Target size={16} />}
+                  {team.submission_status === 'finalised' ? 'Approved & Finalised' : 'Approve & Finalise'}
+                </button>
+
                 <button 
                   onClick={handleRunAI}
                   disabled={runningAI}

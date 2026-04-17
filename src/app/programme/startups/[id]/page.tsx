@@ -30,12 +30,19 @@ export default async function ProgrammeStartupDetailPage({
     .eq('team_id', params.id)
     .order('created_at', { ascending: false })
 
+  // Fetch user role
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
   return (
     <div className="h-full flex flex-col">
        <SubmissionEvaluationView 
          team={team} 
          initialComments={comments || []} 
-         currentUserRole={'programme_team'} // Mock for now, will get from profile
+         currentUserRole={profile?.role || 'programme_team'} 
        />
     </div>
   )

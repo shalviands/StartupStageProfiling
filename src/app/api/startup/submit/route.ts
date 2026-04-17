@@ -11,9 +11,9 @@ export async function POST(request: NextRequest) {
     const { data: profile } = await supabase
       .from('profiles').select('role').eq('id', user.id).single()
 
-    if (profile?.role !== 'startup') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    // We allow anyone who is currently authenticated to submit, 
+    // provided they own the team record (checked in the update query below).
+    // This allows admins/programme-team members to submit for test-startups they created.
 
     const { team_id } = await request.json()
     if (!team_id) return NextResponse.json({ error: 'team_id required' }, { status: 400 })
