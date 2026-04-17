@@ -12,13 +12,22 @@ export async function POST(req: Request) {
         get(name: string) {
           return cookieStore.get(name)?.value
         },
+        set(name: string, value: string, options: any) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: any) {
+          cookieStore.set({ name, value: '', ...options })
+        },
       },
     }
   )
 
   // 1. Check Admin Permission
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) {
+    console.error('[Approve API] Auth failure:', authError)
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
   const { data: adminProfile } = await supabase
     .from('profiles')
@@ -46,6 +55,7 @@ export async function POST(req: Request) {
     .eq('id', userId)
 
   if (error) {
+    console.error('[Approve API] Database error during update:', error.message, error.details)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
