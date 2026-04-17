@@ -341,6 +341,7 @@ export default function ProfilerPage() {
              <AIAnalysisPanel teamId={localTeam.id} />
            </div>
         </aside>
+      )}
       {/* AI Assistant Drawer */}
       {localTeam && (
         <AIAssistantDrawer 
