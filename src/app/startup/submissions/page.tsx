@@ -3,16 +3,27 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import { useTeams } from '@/hooks/useTeams'
-import { Loader2, Plus, Eye, Calendar, BarChart3, Rocket } from 'lucide-react'
+import { Loader2, Plus, Eye, Calendar, BarChart3, Rocket, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/utils/cn'
+import { useDeleteTeam } from '@/hooks/useTeams'
 
 export default function SubmissionsPage() {
   const router = useRouter()
   const { data: teams = [], isLoading } = useTeams()
+  const deleteTeam = useDeleteTeam()
   
-  // Filter for only submitted ones (optional, but requested view shows past submissions)
-  const submissions = teams.filter(t => t.submission_status === 'submitted')
+  // Show all teams for the startup
+  const submissions = teams
+
+  async function handleDelete(id: string) {
+    if (!confirm('Are you sure you want to delete this profiling session? This action cannot be undone.')) return
+    try {
+      await deleteTeam.mutateAsync(id)
+    } catch (err) {
+      alert('Failed to delete session.')
+    }
+  }
 
   if (isLoading) return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-silver">
@@ -41,19 +52,19 @@ export default function SubmissionsPage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-smoke/50 border-b border-rule font-bold text-[10px] uppercase tracking-widest text-silver">
-              <th className="px-8 py-6">Submission #</th>
-              <th className="px-8 py-6">Date Submitted</th>
-              <th className="px-8 py-6">Overall Score</th>
-              <th className="px-8 py-6">Stage Detected</th>
-              <th className="px-8 py-6">Status</th>
-              <th className="px-8 py-6 text-right">Action</th>
+              <th className="px-8 py-6 text-[10px]">Session / No.</th>
+              <th className="px-8 py-6 text-[10px]">Date Submitted</th>
+              <th className="px-8 py-6 text-[10px]">Overall Score</th>
+              <th className="px-8 py-6 text-[10px]">Stage Detected</th>
+              <th className="px-8 py-6 text-[10px]">Status</th>
+              <th className="px-8 py-6 text-right text-[10px]">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-rule font-semibold">
             {submissions.map((sub) => (
               <tr key={sub.id} className="hover:bg-smoke/30 transition-colors group">
                 <td className="px-8 py-6 text-navy font-black">
-                  #{sub.submission_number || 1}
+                  {sub.teamName || `Session #${sub.submission_number || 1}`}
                 </td>
                 <td className="px-8 py-6 text-slate text-xs flex items-center gap-2">
                   <Calendar size={14} className="text-silver" />
@@ -72,18 +83,39 @@ export default function SubmissionsPage() {
                   </div>
                 </td>
                 <td className="px-8 py-6">
-                   <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-tighter rounded-full border border-emerald-100">
-                    SUBMITTED
-                   </span>
+                   <div className="flex flex-col gap-1">
+                      {sub.submission_status === 'draft' ? (
+                        <span className="px-3 py-1 bg-slate-100 text-slate-500 text-[8px] font-black uppercase tracking-tighter rounded-full border border-slate-200">
+                          DRAFT MODE
+                        </span>
+                      ) : sub.submission_status === 'submitted' ? (
+                        <span className="px-3 py-1 bg-amber-50 text-amber-600 text-[8px] font-black uppercase tracking-tighter rounded-full border border-amber-100">
+                          AWAITING EVALUATION
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase tracking-tighter rounded-full border border-emerald-100">
+                          FINALISED
+                        </span>
+                      )}
+                   </div>
                 </td>
                 <td className="px-8 py-6 text-right">
-                  <Link 
-                    href={`/startup/submissions/${sub.id}`}
-                    className="inline-flex items-center gap-2 bg-smoke text-navy px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-navy hover:text-white transition-all shadow-sm"
-                  >
-                    <Eye size={12} />
-                    View
-                  </Link>
+                   <div className="flex items-center justify-end gap-3">
+                      <Link 
+                        href={`/startup/submissions/${sub.id}`}
+                        className="inline-flex items-center gap-2 bg-white border border-rule text-navy px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-navy hover:text-white transition-all shadow-sm"
+                      >
+                        <Eye size={12} />
+                        View
+                      </Link>
+                      <button 
+                        onClick={() => handleDelete(sub.id)}
+                        className="p-2.5 text-silver hover:text-coral hover:bg-coral-lt rounded-xl transition-all"
+                        title="Delete Session"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                   </div>
                 </td>
               </tr>
             ))}

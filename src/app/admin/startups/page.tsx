@@ -1,47 +1,82 @@
-import React from 'react'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+'use client'
+
+import React, { useState, useEffect } from 'react'
 import { calculateOverallScore, scoreBg, scoreColor } from '@/utils/scores'
 import { 
   Rocket, 
   Search, 
   Filter, 
-  ArrowUpDown, 
   Download, 
   Eye,
   FileText,
-  Table
+  Loader2
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import Link from 'next/link'
+import { mapDbToFrontend } from '@/utils/mappers'
 
-export default async function AllStartupsPage() {
-  const supabase = await createServerSupabaseClient()
-  
-  // Fetch all startups (teams that have a startup_user_id)
-  // Or actually all teams in general for now as requested
-  const { data: teams, error } = await supabase
-    .from('teams')
-    .select('*')
-    .order('created_at', { ascending: false })
+export default function AllStartupsPage() {
+  const [teams, setTeams] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
-  if (error) return <div>Error loading startups</div>
+  useEffect(() => {
+    fetch('/api/teams')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const mapped = data.map(mapDbToFrontend).filter(t => t !== null)
+          
+          // Deduplicate: Keep only the latest submission per startupName
+          const uniqueMap = new Map()
+          mapped.forEach((t: any) => {
+            const key = t.startupName?.trim().toLowerCase() || t.id
+            if (!uniqueMap.has(key)) {
+              uniqueMap.set(key, t)
+            } else {
+              // Compare dates to keep latest
+              const existing = uniqueMap.get(key)
+              if (new Date(t.created_at) > new Date(existing.created_at)) {
+                uniqueMap.set(key, t)
+              }
+            }
+          })
+          
+          setTeams(Array.from(uniqueMap.values()))
+        }
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  const filteredTeams = teams.filter(t => 
+    t.startupName?.toLowerCase().includes(search.toLowerCase()) || 
+    t.sector?.toLowerCase().includes(search.toLowerCase()) ||
+    t.detected_stage?.toLowerCase().includes(search.toLowerCase())
+  )
+
+  if (loading) return (
+    <div className="p-20 flex flex-col items-center justify-center gap-4 text-silver">
+      <Loader2 className="animate-spin" size={32} />
+      <span className="text-[10px] font-black uppercase tracking-widest">Hydrating Portfolio...</span>
+    </div>
+  )
 
   return (
     <div className="p-10 space-y-8 max-w-[1600px] mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-           <div className="w-12 h-12 bg-indigo-600 shadow-xl shadow-indigo-100 rounded-2xl flex items-center justify-center text-white">
+           <div className="w-12 h-12 bg-navy shadow-xl shadow-navy/10 rounded-2xl flex items-center justify-center text-gold">
               <Rocket size={24} />
            </div>
            <div>
-             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Portfolio Engine</h1>
-             <p className="text-slate-500 font-medium">Monitoring {teams?.length || 0} active diagnostic profiles</p>
+             <h1 className="text-3xl font-black text-navy tracking-tight">Portfolio Engine</h1>
+             <p className="text-slate-500 font-medium tracking-tight">Monitoring {filteredTeams.length} unique venture profiles</p>
            </div>
         </div>
         <div className="flex items-center gap-3">
-           <button className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
-              <Download size={14} /> Export Global Excel
+           <button className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
+              <Download size={14} /> Export Dataset
            </button>
         </div>
       </div>
@@ -52,21 +87,21 @@ export default async function AllStartupsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input 
               type="text" 
-              placeholder="Filter by startup name, sector, or stage..." 
-              className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border border-transparent rounded-2xl text-[13px] font-medium text-slate-900 outline-none focus:bg-white focus:border-indigo-100 focus:ring-4 focus:ring-indigo-50/50 transition-all"
+              placeholder="Search ventures, sectors, or stages..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border border-transparent rounded-2xl text-[13px] font-medium text-slate-900 outline-none focus:bg-white focus:border-navy/20 focus:ring-4 focus:ring-navy/5 transition-all"
             />
          </div>
          <div className="flex items-center gap-2">
-            <button className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 flex items-center gap-2">
-               <Filter size={14} /> Advanced Filter
+            <button className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-navy flex items-center gap-2">
+               <Filter size={14} /> Filters
             </button>
-            <div className="h-6 w-px bg-slate-200 mx-2" />
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Sorted By: Date Created</span>
          </div>
       </div>
 
       {/* Table Content */}
-      <div className="bg-white rounded-[40px] border border-slate-200 overflow-hidden shadow-xl shadow-slate-200/20">
+      <div className="bg-white rounded-[40px] border border-slate-200 overflow-hidden shadow-xl shadow-navy/5">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
@@ -83,15 +118,15 @@ export default async function AllStartupsPage() {
                 <th className="p-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
-              {teams?.map((team) => {
+            <tbody className="divide-y divide-slate-50 font-semibold">
+              {filteredTeams.map((team) => {
                 const { overall, p1, p2, p3, p4, p5 } = calculateOverallScore(team)
                 
                 return (
                   <tr key={team.id} className="hover:bg-slate-50/50 transition-colors group">
                     <td className="p-6">
                       <div className="flex flex-col">
-                        <span className="text-sm font-black text-slate-900 group-hover:text-indigo-600 transition-colors">{team.startupName || 'Untitled Startup'}</span>
+                        <span className="text-sm font-black text-navy group-hover:text-indigo-600 transition-colors">{team.startupName || 'Untitled Startup'}</span>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{team.sector || 'Uncategorised'}</span>
                       </div>
                     </td>
@@ -124,7 +159,7 @@ export default async function AllStartupsPage() {
                     <td className="p-6 text-center text-[10px]">
                        <div className={cn(
                          "inline-flex px-3 py-1 rounded-lg font-black uppercase tracking-widest border",
-                         team.submission_status === 'draft' ? "bg-slate-50 text-slate-400 border-slate-100" : team.submission_status === 'submitted' ? "bg-amber-50 text-amber-600 border-amber-100" : team.submission_status === 'finalised' ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-indigo-50 text-indigo-600 border-indigo-100"
+                         team.submission_status === 'draft' ? "bg-slate-50 text-slate-400 border-slate-100" : team.submission_status === 'submitted' ? "bg-amber-50 text-amber-600 border-amber-100" : team.submission_status === 'finalised' ? "bg-teal-lt text-teal-brand border-teal-brand/10" : "bg-indigo-50 text-indigo-600 border-indigo-100"
                        )}>
                          {team.submission_status}
                        </div>
@@ -133,11 +168,11 @@ export default async function AllStartupsPage() {
                        <div className="flex items-center justify-end gap-2">
                           <Link 
                             href={`/admin/startups/${team.id}`}
-                            className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-indigo-600 hover:border-indigo-100 hover:shadow-lg hover:shadow-indigo-50 transition-all"
+                            className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-navy hover:border-navy/20 hover:shadow-lg transition-all"
                           >
                              <Eye size={16} />
                           </Link>
-                          <button className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-indigo-600 hover:border-indigo-100 transition-all">
+                          <button className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-navy hover:border-navy/20 transition-all">
                              <FileText size={16} />
                           </button>
                        </div>

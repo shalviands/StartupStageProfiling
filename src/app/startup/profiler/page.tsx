@@ -244,7 +244,7 @@ export default function StartupProfilePage() {
         ) : (
           <button
             onClick={() => setShowConfirm(true)}
-            className="flex items-center gap-4 bg-teal text-white px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-teal/90 transition-all shadow-xl shadow-teal/20 group animate-pulse hover:animate-none"
+            className="flex items-center gap-4 bg-navy text-white px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all shadow-xl shadow-navy/20 group"
           >
             <Send size={16} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
             Submit Final Profile

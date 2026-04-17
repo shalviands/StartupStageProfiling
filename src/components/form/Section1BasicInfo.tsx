@@ -29,15 +29,7 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
                 placeholder="e.g. AgriFlow Systems"
               />
             </div>
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold text-white/90 uppercase tracking-widest px-1">Profiling Batch / Team ID</label>
-              <input 
-                type="text" value={team.teamName}
-                onChange={(e) => onChange('teamName', e.target.value)}
-                className="w-full bg-white/10 border border-white/30 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/40 outline-none transition-all placeholder:text-silver/70 font-medium"
-                placeholder="e.g. Cohort 7 - Team Delta"
-              />
-            </div>
+            {/* Team ID / Batch removed from UI as requested to auto-fill */}
           </div>
         </div>
       </div>
@@ -101,12 +93,12 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
             />
           </div>
           <div className="space-y-3">
-            <label className="text-[10px] font-bold text-slate">Principal Interviewer</label>
+            <label className="text-[10px] font-bold text-slate">Submitted By (Person filling form)</label>
             <input 
               type="text" value={team.interviewer}
               onChange={(e) => onChange('interviewer', e.target.value)}
               className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none transition-all placeholder:text-silver"
-              placeholder="Full Name"
+              placeholder="Your Full Name"
             />
           </div>
         </div>
