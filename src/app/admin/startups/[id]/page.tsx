@@ -90,11 +90,18 @@ export default function AdminStartupDetailPage() {
     const nextStatus = localTeam.submission_status === 'finalised' ? 'submitted' : 'finalised'
     try {
       setSaving(true)
-      await updateTeam.mutateAsync({
-        id: localTeam.id,
-        updates: { submission_status: nextStatus }
+      const res = await fetch('/api/admin/finalise', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamId: localTeam.id, status: nextStatus })
       })
+      
+      if (!res.ok) throw new Error('Failed to update status')
+      
       setLocalTeam({ ...localTeam, submission_status: nextStatus })
+    } catch (err) {
+      console.error('[AdminDetail] Finalise failed:', err)
+      alert('Failed to update status. Please try again.')
     } finally {
       setSaving(false)
     }

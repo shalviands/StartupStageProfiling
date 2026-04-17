@@ -51,35 +51,48 @@ export default function SubmissionsPage() {
       <div className="bg-white rounded-[40px] border border-rule shadow-xl shadow-navy/5 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
+          <thead>
             <tr className="bg-smoke/50 border-b border-rule font-bold text-[10px] uppercase tracking-widest text-silver">
-              <th className="px-8 py-6 text-[10px]">Session / No.</th>
-              <th className="px-8 py-6 text-[10px]">Date Submitted</th>
+              <th className="px-8 py-6 text-[10px]">Sub # / Identity</th>
+              <th className="px-8 py-6 text-[10px]">Timestamp</th>
+              <th className="px-8 py-6 text-[10px]">Submitted By</th>
               <th className="px-8 py-6 text-[10px]">Overall Score</th>
-              <th className="px-8 py-6 text-[10px]">Stage Detected</th>
               <th className="px-8 py-6 text-[10px]">Status</th>
               <th className="px-8 py-6 text-right text-[10px]">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-rule font-semibold">
-            {submissions.map((sub) => (
+            {submissions.map((sub: any) => (
               <tr key={sub.id} className="hover:bg-smoke/30 transition-colors group">
-                <td className="px-8 py-6 text-navy font-black">
-                  {sub.teamName || `Session #${sub.submission_number || 1}`}
+                <td className="px-8 py-6">
+                   <div className="flex flex-col">
+                      <span className="text-navy font-black">
+                        #{sub.startup_user_id?.slice(0, 4).toUpperCase()}-{sub.submission_number || 1}
+                      </span>
+                      <span className="text-[10px] text-slate font-bold uppercase tracking-widest mt-1">
+                        {sub.startupName || 'Venture Profile'}
+                      </span>
+                   </div>
                 </td>
                 <td className="px-8 py-6 text-slate text-xs flex items-center gap-2">
                   <Calendar size={14} className="text-silver" />
-                  {sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A'}
+                  <div className="flex flex-col">
+                     <span>{sub.created_at ? new Date(sub.created_at).toLocaleDateString() : 'N/A'}</span>
+                     <span className="text-[9px] opacity-40 font-bold">{sub.created_at ? new Date(sub.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                  </div>
+                </td>
+                <td className="px-8 py-6">
+                   <div className="flex flex-col">
+                      <span className="text-navy text-xs">{sub.submitter?.full_name || 'Account Owner'}</span>
+                      {sub.interviewer && sub.interviewer !== sub.submitter?.full_name && (
+                        <span className="text-[9px] text-silver font-bold uppercase mt-0.5">Ref: {sub.interviewer}</span>
+                      )}
+                   </div>
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-2">
                     <BarChart3 size={14} className="text-silver" />
                     <span className="text-navy">{(sub.overall_weighted_score || 0).toFixed(1)}</span>
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <div className="flex items-center gap-2">
-                    <Rocket size={14} className="text-silver" />
-                    <span className="text-navy">{sub.detected_stage || 'N/A'}</span>
                   </div>
                 </td>
                 <td className="px-8 py-6">
@@ -101,20 +114,27 @@ export default function SubmissionsPage() {
                 </td>
                 <td className="px-8 py-6 text-right">
                    <div className="flex items-center justify-end gap-3">
-                      <Link 
-                        href={`/startup/submissions/${sub.id}`}
-                        className="inline-flex items-center gap-2 bg-white border border-rule text-navy px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-navy hover:text-white transition-all shadow-sm"
-                      >
-                        <Eye size={12} />
-                        View
-                      </Link>
-                      <button 
-                        onClick={() => handleDelete(sub.id)}
-                        className="p-2.5 text-silver hover:text-coral hover:bg-coral-lt rounded-xl transition-all"
-                        title="Delete Session"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {sub.submission_status === 'finalised' ? (
+                        <PDFDownloadButton team={sub} />
+                      ) : (
+                        <Link 
+                          href={`/startup/submissions/${sub.id}`}
+                          className="inline-flex items-center gap-2 bg-white border border-rule text-navy px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-navy hover:text-white transition-all shadow-sm"
+                        >
+                          <Eye size={12} />
+                          View
+                        </Link>
+                      )}
+                      
+                      {sub.submission_status !== 'finalised' && (
+                        <button 
+                          onClick={() => handleDelete(sub.id)}
+                          className="p-2.5 text-silver hover:text-coral hover:bg-coral-lt rounded-xl transition-all"
+                          title="Delete Session"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                    </div>
                 </td>
               </tr>

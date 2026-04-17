@@ -69,7 +69,7 @@ export default function AdminSidebar() {
       {/* Footer Branding */}
       <div className="p-8 border-t border-white/5 opacity-30">
         <div className="text-[10px] font-black text-[#8A9BB0] uppercase tracking-[0.3em]">
-          Version 2.0.4 Platinum
+          Platform Version v 0.04
         </div>
       </div>
     </aside>

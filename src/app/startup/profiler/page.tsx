@@ -182,15 +182,21 @@ export default function StartupProfilePage() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 pb-32">
-      {/* Header Stat & Title */}
-      <div className="flex items-center justify-between mb-12">
-        <div className="flex items-center gap-6">
+      <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center gap-4">
           <button 
             onClick={() => router.push('/startup/submissions')}
-            className="w-12 h-12 rounded-2xl border border-rule flex items-center justify-center text-silver hover:text-navy hover:bg-white transition-all shadow-sm"
-            title="Back to Dashboard"
+            className="w-12 h-12 rounded-2xl border border-rule flex items-center justify-center text-slate-500 hover:text-navy hover:bg-white transition-all shadow-sm bg-white"
+            title="Back to Submissions"
           >
             <ChevronLeft size={20} />
+          </button>
+          <button 
+            onClick={() => router.push('/startup/dashboard')}
+            className="w-12 h-12 rounded-2xl border border-rule flex items-center justify-center text-slate-500 hover:text-navy hover:bg-white transition-all shadow-sm bg-white"
+            title="Return Home"
+          >
+            <Rocket size={18} />
           </button>
           <div>
             <h1 className="text-3xl font-black text-navy tracking-tight mb-2">Startup Stage Profiler</h1>

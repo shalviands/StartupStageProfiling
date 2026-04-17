@@ -61,12 +61,13 @@ export default async function AdminDashboardPage() {
           <p className="text-sm text-slate font-semibold">Profiler performance and cohort integrity monitoring.</p>
         </div>
         <div className="flex items-center gap-4">
-           <button className="px-6 py-3.5 bg-white border border-rule rounded-2xl text-[10px] font-black uppercase tracking-widest text-navy hover:bg-smoke transition-all shadow-sm active:scale-95">
-              Sync Node
-           </button>
-           <button className="px-6 py-3.5 bg-navy text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl shadow-navy/20 active:scale-95">
-              Export Analysis
-           </button>
+           <a 
+             href="/api/admin/export"
+             className="px-6 py-3.5 bg-navy text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl shadow-navy/20 active:scale-95 flex items-center gap-3"
+           >
+              <FileCheck size={16} className="text-gold" />
+              Download Portfolio (Excel)
+           </a>
         </div>
       </div>
 

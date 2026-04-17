@@ -8,23 +8,40 @@ import DiagnosticPDF from '@/components/pdf/DiagnosticPDF'
 
 export async function POST(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params
+    const { id } = params
     const user = await getUserFromRequest()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const supabase = await createServerSupabaseClient()
+
+    // 1. Get user role
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    // 2. Fetch team
     const { data: team, error } = await supabase
       .from('teams')
       .select('*')
       .eq('id', id)
-      .eq('user_id', user.id)
       .single()
 
     if (error || !team) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+
+    // 3. Security Check
+    const isOwner = team.user_id === user.id
+    const isStartupOwner = team.startup_user_id === user.id
+    const isAdmin = profile?.role === 'admin'
+    
+    if (!isAdmin && !isOwner && !isStartupOwner) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     // Generate PDF stream
@@ -37,7 +54,8 @@ export async function POST(
     return new NextResponse(stream as any, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${team.startupName || 'Diagnosis'}-Brief.pdf"`,
+        'Cache-Control': 'no-cache',
+        'Content-Disposition': `attachment; filename="${(team.startup_name || 'Diagnosis').replace(/[^a-z0-9]/gi, '_')}-Report.pdf"`,
       },
     })
   } catch (err) {

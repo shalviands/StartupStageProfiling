@@ -14,7 +14,6 @@ import { cn } from '@/utils/cn'
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/programme/dashboard', icon: BarChart3 },
   { label: 'All Submissions', href: '/programme/startups', icon: Rocket },
-  { label: 'My Comments', href: '/programme/comments', icon: MessageSquare },
 ]
 
 export default function ProgrammeSidebar() {
@@ -65,7 +64,7 @@ export default function ProgrammeSidebar() {
       {/* Footer Branding */}
       <div className="p-8 border-t border-white/5 opacity-30">
         <div className="text-[10px] font-black text-[#8A9BB0] uppercase tracking-[0.3em]">
-          Version 2.0.4 Platinum
+          Platform Version v 0.04
         </div>
       </div>
     </aside>

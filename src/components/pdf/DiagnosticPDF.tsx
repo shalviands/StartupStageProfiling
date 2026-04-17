@@ -78,8 +78,8 @@ export default function DiagnosticPDF({ team }: { team: TeamProfile }) {
     <Document title={`${team.startupName || 'Startup'}-Profiler-Report`}>
       <Page size="A4" style={s.page}>
         <View style={s.header}>
-          <Text style={s.brand}>INUNITY STARTUP STAGE PROFILER</Text>
-          <Text style={s.title}>{team.startupName || 'Startup Profile'}</Text>
+          <Text style={s.brand}>INUNITY STARTUP STAGE PROFILER • v0.04</Text>
+          <Text style={s.title}>{team.startupName || 'Startup Strategic Profile'}</Text>
         </View>
 
         <View style={s.heroSection}>
@@ -114,8 +114,8 @@ export default function DiagnosticPDF({ team }: { team: TeamProfile }) {
         </View>
 
         <View style={s.footer}>
-          <Text style={s.footerText}>© {new Date().getFullYear()} InUnity Startup Stage Profiler</Text>
-          <Text style={s.footerText}>Highly Confidential • Strategic Analytics</Text>
+          <Text style={s.footerText}>© {new Date().getFullYear()} InUnity Strategic Systems • v0.04 Platinum</Text>
+          <Text style={s.footerText}>Highly Confidential • Performance Analytics</Text>
         </View>
       </Page>
 
