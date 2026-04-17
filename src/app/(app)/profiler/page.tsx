@@ -15,10 +15,19 @@ import { useUIStore } from '@/store/uiStore'
 import { useDebounce } from '@/hooks/useDebounce'
 import dynamic from 'next/dynamic'
 import PDFDownloadButton from '@/components/pdf/PDFDownloadButton'
+import AIAssistantDrawer from '@/components/ai/AIAssistantDrawer'
 const ExcelDownloadButton = dynamic(() => import('@/components/excel/ExcelDownloadButton'), { ssr: false })
 
 // --- Stage Detection Banner ---
-function StageBanner({ team, saving }: { team: TeamProfile, saving: boolean }) {
+function StageBanner({ 
+  team, 
+  saving,
+  onExplain 
+}: { 
+  team: TeamProfile, 
+  saving: boolean,
+  onExplain: () => void
+}) {
   const { stage, level, override, p9Bonus } = classifyStage(team)
   const { overall } = calculateOverallScore(team)
   
@@ -36,6 +45,13 @@ function StageBanner({ team, saving }: { team: TeamProfile, saving: boolean }) {
             </div>
             <h3 className="text-xl font-black text-slate-900 tracking-tight">{stage}</h3>
             <span className="bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-300 uppercase">Tier {level}</span>
+            <button 
+              onClick={onExplain}
+              className="ml-2 flex items-center gap-1.5 text-[9px] font-black text-violet-600 hover:text-violet-700 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-xl border border-violet-100 transition-all group"
+            >
+              Why this stage?
+              <Sparkles size={10} className="group-hover:rotate-12 transition-transform" />
+            </button>
           </div>
         </div>
 
@@ -97,6 +113,9 @@ export default function ProfilerPage() {
     setActiveTeamId,
     setSection,
   } = useUIStore()
+
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerMode, setDrawerMode] = useState<'explanation' | 'roadmap'>('explanation')
 
   const activeTeam: TeamProfile | null = activeTeamId
     ? (teams.find(t => t.id === activeTeamId) ?? null)
@@ -224,7 +243,16 @@ export default function ProfilerPage() {
       <div className="flex-1 flex flex-col overflow-hidden relative">
         
         {/* Banner */}
-        {localTeam && <StageBanner team={localTeam} saving={saving} />}
+        {localTeam && (
+          <StageBanner 
+            team={localTeam} 
+            saving={saving} 
+            onExplain={() => {
+              setDrawerMode('explanation')
+              setDrawerOpen(true)
+            }}
+          />
+        )}
 
         {/* Navigation Tabs */}
         {localTeam && <SectionTabs activeTab={activeSection} setActiveTab={setSection} />}
@@ -313,6 +341,14 @@ export default function ProfilerPage() {
              <AIAnalysisPanel teamId={localTeam.id} />
            </div>
         </aside>
+      {/* AI Assistant Drawer */}
+      {localTeam && (
+        <AIAssistantDrawer 
+          isOpen={drawerOpen}
+          mode={drawerMode}
+          onClose={() => setDrawerOpen(false)}
+          team={localTeam}
+        />
       )}
     </div>
   )

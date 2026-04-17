@@ -17,6 +17,7 @@ import {
 import { cn } from '@/utils/cn'
 import Link from 'next/link'
 import UserApprovals from '@/components/admin/UserApprovals'
+import CohortInsights from '@/components/admin/CohortInsights'
 
 export default async function AdminDashboardPage() {
   const supabase = await createServerSupabaseClient()
@@ -68,6 +69,9 @@ export default async function AdminDashboardPage() {
            </button>
         </div>
       </div>
+
+      {/* AI Strategic Insights */}
+      <CohortInsights />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">

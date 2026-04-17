@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Sparkles, Loader2, AlertCircle, CheckCircle2, Zap, Target } from 'lucide-react'
+import { Sparkles, Loader2, AlertCircle, CheckCircle2, Zap, Target, Quote, TrendingUp, Calendar, ArrowRight } from 'lucide-react'
 import { useAIAnalysis } from '@/hooks/useAIAnalysis'
+import { useAIRoadmap } from '@/hooks/useAIRoadmap'
 import { cn } from '@/utils/cn'
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 
 export default function AIAnalysisPanel({ teamId }: Props) {
   const { mutate: runAnalysis, data, isPending, error } = useAIAnalysis(teamId)
+  const { mutate: generateRoadmap, isPending: isGeneratingRoadmap } = useAIRoadmap(teamId)
 
   return (
     <div className="p-6 bg-slate-50 border-t border-slate-100 flex flex-col gap-6 min-h-[400px]">
@@ -20,7 +22,7 @@ export default function AIAnalysisPanel({ teamId }: Props) {
             <Sparkles size={16} />
           </div>
           <div>
-            <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none">AI Strategic Logic</h3>
+            <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none">InUnity Strategic AI</h3>
             <p className="text-[9px] font-bold text-slate-600 mt-1 uppercase tracking-tighter">Powered by Llama 3.1 Neural Engine</p>
           </div>
         </div>
@@ -39,7 +41,7 @@ export default function AIAnalysisPanel({ teamId }: Props) {
           <div className="space-y-2">
             <p className="text-xs font-black text-slate-900 uppercase tracking-widest">Diagnostic Intelligence</p>
             <p className="text-[10px] font-bold text-slate-500 max-w-[200px] leading-relaxed">
-              Run neural analysis to identify growth moats and weakest-link bottlenecks.
+              Run neural analysis to identify growth moats and weakest-link bottlenecks based on YC, Lean Startup, and TRL frameworks.
             </p>
           </div>
           <button 
@@ -81,56 +83,99 @@ export default function AIAnalysisPanel({ teamId }: Props) {
 
       {data && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-6">
-          {/* Executive Summary */}
+          {/* Readiness Summary */}
           <div className="bg-slate-900 rounded-[32px] p-6 text-white shadow-2xl shadow-slate-200">
              <div className="flex items-center gap-2 mb-4">
                 <Target size={14} className="text-violet-400" />
-                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70">Executive Verdict</span>
+                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70">Readiness Summary</span>
              </div>
-             <p className="text-[13px] font-black leading-relaxed">{data.executive_summary}</p>
+             <p className="text-[13px] font-black leading-relaxed italic">"{data.readiness_summary}"</p>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {/* Strategic Strengths */}
+            {/* Strengths */}
             <div className="bg-white border border-slate-100 p-5 rounded-[28px] shadow-sm space-y-3">
               <div className="flex items-center gap-2 text-[9px] font-black text-emerald-600 uppercase tracking-widest">
                 <CheckCircle2 size={14} />
-                Strategic Moats
+                Venture Strengths
               </div>
-              <div className="text-[11px] text-slate-700 leading-relaxed font-bold whitespace-pre-wrap pl-1">
-                {data.strategic_strengths}
-              </div>
+              <p className="text-[11px] text-slate-700 leading-relaxed font-bold pl-1">
+                {data.strengths}
+              </p>
             </div>
 
-            {/* Critical Gaps */}
+            {/* Stage Insight */}
+            <div className="bg-white border border-slate-100 p-5 rounded-[28px] shadow-sm space-y-3">
+              <div className="flex items-center gap-2 text-[9px] font-black text-amber-600 uppercase tracking-widest">
+                <TrendingUp size={14} />
+                Stage Intelligence
+              </div>
+              <p className="text-[11px] text-slate-700 leading-relaxed font-bold pl-1">
+                {data.stage_insight}
+              </p>
+            </div>
+
+            {/* Gaps */}
             <div className="bg-white border border-slate-100 p-5 rounded-[28px] shadow-sm space-y-3">
               <div className="flex items-center gap-2 text-[9px] font-black text-rose-500 uppercase tracking-widest">
                  <AlertCircle size={14} />
                  Growth Inhibitors
               </div>
-              <div className="text-[11px] text-slate-700 leading-relaxed font-bold whitespace-pre-wrap pl-1">
-                {data.critical_gaps}
-              </div>
+              <p className="text-[11px] text-slate-700 leading-relaxed font-bold pl-1">
+                {data.gaps}
+              </p>
             </div>
 
-            {/* Roadmap Focus */}
-            <div className="bg-violet-50/50 border border-violet-100 p-5 rounded-[28px] space-y-3">
+            {/* Recommendations */}
+            <div className="bg-violet-50 border border-violet-100 p-5 rounded-[28px] space-y-3">
               <div className="flex items-center gap-2 text-[9px] font-black text-violet-700 uppercase tracking-widest">
                  <Zap size={14} />
-                 4-Week Tactical Focus
+                 Recommended Next Steps
               </div>
-              <div className="text-[11px] text-slate-700 leading-relaxed font-black pl-1">
-                {data.roadmap_focus}
-              </div>
+              <p className="text-[11px] text-slate-800 leading-relaxed font-black pl-1">
+                {data.recommendations}
+              </p>
+            </div>
+
+            {/* Founder Note */}
+            <div className="bg-slate-50 border border-slate-200 border-dashed p-6 rounded-[28px] relative">
+               <Quote className="absolute top-4 right-6 text-slate-200" size={32} />
+               <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">
+                  A Note to the Founder
+               </div>
+               <p className="text-[11px] text-slate-600 leading-relaxed font-semibold pr-8 italic">
+                 {data.founder_note}
+               </p>
             </div>
             
-            <div className="pt-4">
+            <div className="pt-4 px-2">
                <button 
                  onClick={() => runAnalysis()}
                  className="w-full py-4 rounded-2xl border border-slate-200 bg-white text-[9px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all flex items-center justify-center gap-2"
                >
-                 🔄 Recalibrate Strategic Insights
+                 🔄 Recalibrate Tactical Insights
                </button>
+            </div>
+
+            <div className="pt-2 px-2">
+               <button 
+                 onClick={() => generateRoadmap()}
+                 disabled={isGeneratingRoadmap}
+                 className="w-full py-5 rounded-2xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-100 disabled:opacity-50 group"
+               >
+                 {isGeneratingRoadmap ? (
+                   <Loader2 size={16} className="animate-spin" />
+                 ) : (
+                   <>
+                     <Calendar size={16} />
+                     Generate AI Roadmap
+                     <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                   </>
+                 )}
+               </button>
+               <p className="text-[8px] font-bold text-slate-400 text-center mt-3 uppercase tracking-widest">
+                 Saves 4-week sprint directly to profile
+               </p>
             </div>
           </div>
         </div>
