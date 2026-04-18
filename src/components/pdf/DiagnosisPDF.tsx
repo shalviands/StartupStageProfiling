@@ -264,6 +264,10 @@ const s = StyleSheet.create({
     borderTopColor: '#e2e8f0',
     paddingTop: 15
   },
+  footerText: {
+    fontSize: 8,
+    color: '#94a3b8'
+  },
   tableRowAnswers: {
     flexDirection: 'row',
     borderLeft: 1,
