@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { TeamProfile, SubmissionComment } from '@/types/team.types'
 import SubmissionView from '@/components/startup/SubmissionView'
 import CommentPanel from './CommentPanel'
-import { BarChart3, Rocket, Target, Zap, Loader2, CheckCircle2, Sparkles } from 'lucide-react'
+import { BarChart3, Rocket, Target, Zap, Loader2, CheckCircle2, Sparkles, FileDown, FileSpreadsheet } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
 interface SubmissionEvaluationViewProps {
@@ -19,6 +19,30 @@ export default function SubmissionEvaluationView({
   currentUserRole 
 }: SubmissionEvaluationViewProps) {
   const [runningAI, setRunningAI] = useState(false)
+  const [downloading, setDownloading] = useState<string | null>(null)
+
+  const handleDownload = async (type: 'pdf' | 'excel') => {
+    try {
+      setDownloading(type)
+      const res = await fetch(`/api/teams/${team.id}/${type}`)
+      if (!res.ok) throw new Error(`Failed to download ${type}`)
+      
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${team.startupName || 'Startup'}_${type === 'pdf' ? 'Report' : 'Analysis'}.${type === 'pdf' ? 'pdf' : 'xlsx'}`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (err) {
+      console.error(`[Download] ${type} failed:`, err)
+      alert(`Failed to generate ${type}. Please try again.`)
+    } finally {
+      setDownloading(null)
+    }
+  }
 
   const handleRunAI = async () => {
     setRunningAI(true)
@@ -92,6 +116,25 @@ export default function SubmissionEvaluationView({
                   {runningAI ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} className="text-gold" />}
                   Run AI Assessment
                 </button>
+
+                <div className="flex bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-xl">
+                  <button 
+                    onClick={() => handleDownload('pdf')}
+                    disabled={!!downloading}
+                    className="flex items-center gap-2 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all border-r border-white/10 disabled:opacity-50"
+                  >
+                    {downloading === 'pdf' ? <Loader2 size={14} className="animate-spin" /> : <FileDown size={14} />}
+                    PDF
+                  </button>
+                  <button 
+                    onClick={() => handleDownload('excel')}
+                    disabled={!!downloading}
+                    className="flex items-center gap-2 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all disabled:opacity-50"
+                  >
+                    {downloading === 'excel' ? <Loader2 size={14} className="animate-spin" /> : <FileSpreadsheet size={14} />}
+                    Excel
+                  </button>
+                </div>
               </div>
             </div>
           </div>

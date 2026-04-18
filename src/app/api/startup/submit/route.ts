@@ -1,48 +1,84 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const user = await getUserFromRequest()
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const supabase = await createServerSupabaseClient()
+    
     const { data: profile } = await supabase
-      .from('profiles').select('role').eq('id', user.id).single()
+      .from('profiles')
+      .select('role, status')
+      .eq('id', user.id)
+      .single()
 
-    // We allow anyone who is currently authenticated to submit, 
-    // provided they own the team record (checked in the update query below).
-    // This allows admins/programme-team members to submit for test-startups they created.
+    if (profile?.role !== 'startup' || profile?.status !== 'approved') {
+      // Allow admin/programme_team to submit for testing
+      if (!['admin', 'programme_team'].includes(profile?.role || '')) {
+         return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
+    }
 
-    const { team_id } = await request.json()
-    if (!team_id) return NextResponse.json({ error: 'team_id required' }, { status: 400 })
+    const body = await request.json()
+    const { team_id } = body
 
-    // Calculate submission number
+    if (!team_id) {
+      return NextResponse.json({ error: 'team_id required' }, { status: 400 })
+    }
+
+    // Verify ownership (unless admin/programme_team)
+    let query = supabase
+      .from('teams')
+      .select('id')
+      .eq('id', team_id)
+    
+    if (profile?.role === 'startup') {
+      query = query.eq('startup_user_id', user.id)
+    }
+
+    const { data: team } = await query.single()
+
+    if (!team) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+
+    // Count previous submissions
     const { count } = await supabase
       .from('teams')
-      .select('id', { count: 'exact', head: true })
+      .select('id', { count: 'exact' })
       .eq('startup_user_id', user.id)
       .eq('submission_status', 'submitted')
 
-    const submission_number = (count ?? 0) + 1
+    const submissionNumber = (count || 0) + 1
 
-    const { data, error } = await supabase
+    // Update to submitted (this preserves all existing data)
+    const { error: updateError } = await supabase
       .from('teams')
       .update({
         submission_status: 'submitted',
-        submission_number,
-        updated_at: new Date().toISOString()
+        submission_number: submissionNumber,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', team_id)
-      .eq('startup_user_id', user.id)
-      .select()
-      .single()
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (updateError) {
+      console.error('[Submit Error]:', updateError)
+      return NextResponse.json({ error: 'Failed to submit' }, { status: 500 })
+    }
 
-    return NextResponse.json(data)
-  } catch (err) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({
+      success: true,
+      submission_number: submissionNumber,
+      team_id: team_id,
+    })
+
+  } catch (error) {
+    console.error('[Submit Error]:', error)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

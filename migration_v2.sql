@@ -50,5 +50,38 @@ CREATE POLICY "Commenters can update own comments" ON submission_comments
 -- 5. Ensure admin_notes is secure (Handled via RLS or specific API filtering)
 -- We'll enforce the API filter in the route logic as well.
 
--- 6. Add soft-delete filter to default select (Optional, we'll handle in queries)
+-- 6. Add soft-delete filter to default select
 CREATE INDEX IF NOT EXISTS teams_deleted_at_idx ON teams(deleted_at) WHERE deleted_at IS NULL;
+
+-- 7. Add Teams RLS Policies
+ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "programme_team_read_all" ON teams;
+DROP POLICY IF EXISTS "startup_read_own" ON teams;
+DROP POLICY IF EXISTS "admin_read_all" ON teams;
+
+-- Programme team and admin can read ALL teams
+CREATE POLICY "programme_team_read_all" ON teams
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role IN ('programme_team', 'admin')
+    )
+  );
+
+-- Startup can read ONLY their own teams
+CREATE POLICY "startup_read_own" ON teams
+  FOR SELECT USING (
+    startup_user_id = auth.uid()
+  );
+
+-- Admin can read everything (Already covered by programme_team_read_all, but making it explicit)
+CREATE POLICY "admin_read_all" ON teams
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'admin'
+    )
+  );

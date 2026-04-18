@@ -1,7 +1,7 @@
 import React from 'react'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
-import { redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import SubmissionEvaluationView from '@/components/programme/SubmissionEvaluationView'
 
 export default async function ProgrammeStartupDetailPage({
@@ -12,6 +12,17 @@ export default async function ProgrammeStartupDetailPage({
 
   const supabase = await createServerSupabaseClient()
   
+  // Fetch user role for permission check
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (!['programme_team', 'admin'].includes(profile?.role ?? '')) {
+    redirect('/startup/dashboard')
+  }
+
   // Fetch team/submission
   const { data: team, error } = await supabase
     .from('teams')
@@ -20,8 +31,18 @@ export default async function ProgrammeStartupDetailPage({
     .single()
 
   if (error || !team) {
-    redirect('/programme/startups')
+    console.error('[Programme Detail Fetch Error]:', error)
+    notFound()
   }
+
+  // DEBUG LOGS (Remove in production if needed)
+  console.log('[Programme Discovery Cache]: Hydrating startup node', {
+    id: team.id,
+    name: team.startup_name,
+    has_p1: !!team.p1_problem_statement,
+    has_p3: !!team.p3_trl,
+    status: team.submission_status,
+  })
 
   // Fetch comments
   const { data: comments } = await supabase
@@ -29,13 +50,6 @@ export default async function ProgrammeStartupDetailPage({
     .select('*')
     .eq('team_id', params.id)
     .order('created_at', { ascending: false })
-
-  // Fetch user role
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
 
   return (
     <div className="h-full flex flex-col">
