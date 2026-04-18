@@ -56,7 +56,22 @@ export async function GET(
     // --- SHEET 3: DYNAMIC ROADMAP (ON-THE-FLY) ---
     const roadmapData = [['PRIORITY', 'ISSUE AREA', 'RECOMMENDED ACTION', 'TARGET TIMELINE']]
     
-    // Logic: Identify areas scoring below 3.0 and suggest actions
+    // --- SHEET 4: DETAILED ANSWERS ---
+    const answersData = [['PARAMETER', 'QUESTION', 'ANSWER', 'SCORE']]
+    PARAMETERS_CONFIG.forEach((p, idx) => {
+      [...p.coreQs, ...p.deepDiveQs].forEach((q) => {
+         const ans = (team as any)[`${p.id}_${q.id}`] || 'No answer provided'
+         const score = (team as any)[`${p.id}_${q.id}_score`]
+         answersData.push([
+           p.title,
+           q.label,
+           ans,
+           score !== undefined && score !== null ? score : 'N/A'
+         ])
+      })
+    })
+
+    // Logic: Identify areas scoring below 3.5 and suggest actions
     const lowScores = Object.entries(averages)
       .filter(([_, score]) => score < 3.5)
       .sort(([_, a], [__, b]) => a - b) // Scariest first
@@ -91,10 +106,12 @@ export async function GET(
     
     const wsProfile = XLSX.utils.aoa_to_sheet(profileData)
     const wsScores = XLSX.utils.aoa_to_sheet(scoreData)
+    const wsAnswers = XLSX.utils.aoa_to_sheet(answersData)
     const wsRoadmap = XLSX.utils.aoa_to_sheet(roadmapData)
 
     XLSX.utils.book_append_sheet(wb, wsProfile, 'Startup Profile')
     XLSX.utils.book_append_sheet(wb, wsScores, 'Score Analysis')
+    XLSX.utils.book_append_sheet(wb, wsAnswers, 'Detailed Answers')
     XLSX.utils.book_append_sheet(wb, wsRoadmap, 'Strategic Roadmap')
 
     // Generate buffer

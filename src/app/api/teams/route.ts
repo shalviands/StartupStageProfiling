@@ -27,7 +27,7 @@ export async function GET() {
     let query = supabase.from('teams').select(selectFields).order('created_at', { ascending: false })
  
     if (role === 'startup') {
-      query = query.eq('startup_user_id', user.id).is('deleted_at', null)
+      query = query.or(`startup_user_id.eq.${user.id},user_id.eq.${user.id}`).is('deleted_at', null)
     } else if (role === 'programme_team') {
       query = query.is('deleted_at', null)
     }
