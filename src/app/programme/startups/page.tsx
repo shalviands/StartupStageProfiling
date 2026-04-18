@@ -73,13 +73,21 @@ export default async function ProgrammeStartupsPage() {
                   {(team.overall_weighted_score || 0).toFixed(1)}
                 </td>
                 <td className="px-8 py-6 text-right">
-                  <Link 
-                    href={`/programme/startups/${team.id}`}
-                    className="inline-flex items-center gap-2 bg-navy text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-navy/90 transition-all shadow-lg shadow-navy/10"
-                  >
-                    View & Comment
-                    <ArrowUpRight size={14} />
-                  </Link>
+                  <div className="flex justify-end items-center gap-3">
+                    <a href={`/api/teams/${team.id}/pdf`} target="_blank" className="p-2 border border-rule bg-white rounded-xl text-silver hover:bg-smoke hover:text-navy transition-all shadow-sm" title="Download PDF">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </a>
+                    <a href={`/api/teams/${team.id}/excel`} target="_blank" className="p-2 border border-rule bg-white rounded-xl text-silver hover:bg-smoke hover:text-navy transition-all shadow-sm" title="Download Excel">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                    </a>
+                    <Link 
+                      href={`/programme/startups/${team.id}`}
+                      className="inline-flex items-center gap-2 bg-navy text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-navy/90 transition-all shadow-lg shadow-navy/10"
+                    >
+                      View & Comment
+                      <ArrowUpRight size={14} />
+                    </Link>
+                  </div>
                 </td>
               </tr>
             ))}

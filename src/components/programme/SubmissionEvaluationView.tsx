@@ -117,21 +117,21 @@ export default function SubmissionEvaluationView({
                   Run AI Assessment
                 </button>
 
-                <div className="flex bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-xl">
+                <div className="flex rounded-2xl overflow-hidden shadow-sm border border-rule">
                   <button 
                     onClick={() => handleDownload('pdf')}
                     disabled={!!downloading}
-                    className="flex items-center gap-2 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all border-r border-white/10 disabled:opacity-50"
+                    className="flex items-center gap-2 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-navy bg-smoke hover:bg-slate/10 transition-all border-r border-rule disabled:opacity-50"
                   >
-                    {downloading === 'pdf' ? <Loader2 size={14} className="animate-spin" /> : <FileDown size={14} />}
+                    {downloading === 'pdf' ? <Loader2 size={14} className="animate-spin text-silver" /> : <FileDown size={14} className="text-silver" />}
                     PDF
                   </button>
                   <button 
                     onClick={() => handleDownload('excel')}
                     disabled={!!downloading}
-                    className="flex items-center gap-2 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all disabled:opacity-50"
+                    className="flex items-center gap-2 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-navy bg-smoke hover:bg-slate/10 transition-all disabled:opacity-50"
                   >
-                    {downloading === 'excel' ? <Loader2 size={14} className="animate-spin" /> : <FileSpreadsheet size={14} />}
+                    {downloading === 'excel' ? <Loader2 size={14} className="animate-spin text-silver" /> : <FileSpreadsheet size={14} className="text-silver" />}
                     Excel
                   </button>
                 </div>
