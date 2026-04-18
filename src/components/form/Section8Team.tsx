@@ -10,9 +10,10 @@ import { Plus, Trash2 } from 'lucide-react'
 interface Props {
   data: TeamProfile
   onChange: (field: string, value: any) => void
+  readOnlyScores?: boolean
 }
 
-export default function Section8Team({ data, onChange }: Props) {
+export default function Section8Team({ data, onChange, readOnlyScores = false }: Props) {
   const config = PARAMETERS_CONFIG[7] // p8
 
   const renderTeamMembers = () => {
@@ -94,6 +95,7 @@ export default function Section8Team({ data, onChange }: Props) {
       weight={config.weight}
       data={data}
       onChange={onChange}
+      readOnlyScores={readOnlyScores}
       deepDive={
         <>
           {config.deepDiveQs.map(q => (
@@ -103,6 +105,7 @@ export default function Section8Team({ data, onChange }: Props) {
               question={q as any}
               data={data}
               onChange={onChange}
+              readOnlyScores={readOnlyScores}
             />
           ))}
         </>
@@ -116,6 +119,7 @@ export default function Section8Team({ data, onChange }: Props) {
           question={q as any}
           data={data}
           onChange={onChange}
+          readOnlyScores={readOnlyScores}
         />
       ))}
     </SectionWrapper>

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import * as XLSX from 'xlsx'
+import { mapDbToFrontend } from '@/utils/mappers'
 import { calculateOverallScore, classifyStage } from '@/utils/scores'
 import { PARAMETERS_CONFIG } from '@/config/parameters'
 
@@ -17,14 +18,19 @@ export async function GET(
 
     const supabase = await createServerSupabaseClient()
     
-    const { data: team } = await supabase
+    const { data: teamRow } = await supabase
       .from('teams')
       .select('*')
       .eq('id', params.id)
       .single()
 
-    if (!team) {
+    if (!teamRow) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+
+    const team = mapDbToFrontend(teamRow)
+    if (!team) {
+      return NextResponse.json({ error: 'Mapping failed' }, { status: 500 })
     }
 
     const { overall, averages } = calculateOverallScore(team)
@@ -33,11 +39,11 @@ export async function GET(
     // --- SHEET 1: STARTUP PROFILE ---
     const profileData = [
       ['FIELD', 'VALUE'],
-      ['Startup Name', team.startupName || team.startup_name || 'N/A'],
+      ['Startup Name', team.startupName || 'N/A'],
       ['Sector', team.sector || 'N/A'],
       ['Institution', team.institution || 'N/A'],
       ['Interviewer', team.interviewer || 'N/A'],
-      ['Interview Date', team.interviewDate || team.interview_date || 'N/A'],
+      ['Interview Date', team.interviewDate || 'N/A'],
       ['Overall Score', overall],
       ['Detected Stage', stage],
       ['Strategic Level', level],

@@ -17,6 +17,7 @@ interface DiagnosticFieldProps {
   question: Question
   data: any
   onChange: (field: string, value: any) => void
+  readOnlyScores?: boolean
 }
 
 export default function DiagnosticField({
@@ -24,6 +25,7 @@ export default function DiagnosticField({
   question,
   data,
   onChange,
+  readOnlyScores = false
 }: DiagnosticFieldProps) {
   const [showInfo, setShowInfo] = useState(false)
   const fieldName = `${parameterId}_${question.id}`
@@ -42,23 +44,25 @@ export default function DiagnosticField({
         </label>
         
         {/* Score Dots */}
-        <div className="flex gap-1">
-          {[1, 2, 3, 4, 5].map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => onChange(scoreField, s)}
-              className={cn(
-                "w-6 h-6 rounded-full text-[10px] font-bold transition-all border",
-                scoreVal === s 
-                  ? "bg-navy border-navy text-white scale-110 shadow-sm" 
-                  : "bg-white border-rule text-silver hover:border-navy hover:text-navy"
-              )}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
+        {!readOnlyScores && (
+          <div className="flex gap-1">
+            {[1, 2, 3, 4, 5].map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => onChange(scoreField, s)}
+                className={cn(
+                  "w-6 h-6 rounded-full text-[10px] font-bold transition-all border",
+                  scoreVal === s 
+                    ? "bg-navy border-navy text-white scale-110 shadow-sm" 
+                    : "bg-white border-rule text-silver hover:border-navy hover:text-navy"
+                )}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {question.type === 'text' && (

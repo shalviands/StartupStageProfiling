@@ -264,11 +264,47 @@ const s = StyleSheet.create({
     borderTopColor: '#e2e8f0',
     paddingTop: 15
   },
-  footerText: {
+  tableRowAnswers: {
+    flexDirection: 'row',
+    borderLeft: 1,
+    borderRight: 1,
+    borderBottom: 1,
+    borderColor: '#e2e8f0',
+    padding: 10,
+    minHeight: 40,
+    alignItems: 'center'
+  },
+  ansCol1: { width: '30%' },
+  ansCol2: { width: '70%', paddingLeft: 10 },
+  ansLabel: {
+    fontSize: 7,
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    fontWeight: 'bold'
+  },
+  ansText: {
     fontSize: 8,
-    color: '#94a3b8'
+    color: '#0f172a',
+    lineHeight: 1.4
+  },
+  sectionHeaderRow: {
+    backgroundColor: '#f1f5f9',
+    padding: 8,
+    border: 1,
+    borderColor: '#e2e8f0',
+    marginTop: 15
+  },
+  sectionHeaderText: {
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: '#475569',
+    textTransform: 'uppercase',
+    letterSpacing: 1
   }
 })
+
+import { PARAMETERS_CONFIG } from '@/config/parameters'
 
 export default function DiagnosisPDF({ team }: { team: TeamProfile }) {
   const { overall, averages } = calculateOverallScore(team)
@@ -411,6 +447,37 @@ export default function DiagnosisPDF({ team }: { team: TeamProfile }) {
             <Text style={[s.tableRowText, s.tableCol3]}>-</Text>
           </View>
         )}
+
+        <View style={s.footer} fixed>
+          <Text style={s.footerText}>{currentYear} InUnity Diagnosis Profiler</Text>
+          <Text style={s.footerText}>Highly Confidential • Diagnostic Intelligence</Text>
+        </View>
+      </Page>
+
+      {/* Page 4: Raw Submission Log */}
+      <Page size="A4" style={s.page}>
+        <Text style={s.obsTitle}>DETAILED SUBMISSION LOG (FOUNDER RESPONSES)</Text>
+        
+        {PARAMETERS_CONFIG.map((p) => (
+          <View key={p.id} wrap={false}>
+            <View style={s.sectionHeaderRow}>
+              <Text style={s.sectionHeaderText}>{p.id}: {p.title}</Text>
+            </View>
+            {[...p.coreQs, ...p.deepDiveQs].map((q) => {
+              const answer = (team as any)[`${p.id}_${q.id}`] || '-'
+              return (
+                <View key={q.id} style={s.tableRowAnswers}>
+                  <View style={s.ansCol1}>
+                    <Text style={s.ansLabel}>{q.label}</Text>
+                  </View>
+                  <View style={s.ansCol2}>
+                    <Text style={s.ansText}>{answer}</Text>
+                  </View>
+                </View>
+              )
+            })}
+          </View>
+        ))}
 
         <View style={s.footer} fixed>
           <Text style={s.footerText}>{currentYear} InUnity Diagnosis Profiler</Text>

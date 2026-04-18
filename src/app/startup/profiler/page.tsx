@@ -226,15 +226,15 @@ export default function StartupProfilePage() {
   const renderActiveSection = () => {
     switch (activeTab) {
       case 0: return <Section1BasicInfo team={localTeam} onChange={handleDataChange} />
-      case 1: return <Section1Character data={localTeam} onChange={handleDataChange} />
-      case 2: return <Section2CustomerDiscovery data={localTeam} onChange={handleDataChange} />
-      case 3: return <Section3ProductTRL data={localTeam} onChange={handleDataChange} />
-      case 4: return <Section4Differentiation data={localTeam} onChange={handleDataChange} />
-      case 5: return <Section5Market data={localTeam} onChange={handleDataChange} />
-      case 6: return <Section6BusinessModel data={localTeam} onChange={handleDataChange} />
-      case 7: return <Section7Traction data={localTeam} onChange={handleDataChange} />
-      case 8: return <Section8Team data={localTeam} onChange={handleDataChange} />
-      case 9: return <Section9Moats data={localTeam} onChange={handleDataChange} />
+      case 1: return <Section1Character data={localTeam} onChange={handleDataChange} readOnlyScores={true} />
+      case 2: return <Section2CustomerDiscovery data={localTeam} onChange={handleDataChange} readOnlyScores={true} />
+      case 3: return <Section3ProductTRL data={localTeam} onChange={handleDataChange} readOnlyScores={true} />
+      case 4: return <Section4Differentiation data={localTeam} onChange={handleDataChange} readOnlyScores={true} />
+      case 5: return <Section5Market data={localTeam} onChange={handleDataChange} readOnlyScores={true} />
+      case 6: return <Section6BusinessModel data={localTeam} onChange={handleDataChange} readOnlyScores={true} />
+      case 7: return <Section7Traction data={localTeam} onChange={handleDataChange} readOnlyScores={true} />
+      case 8: return <Section8Team data={localTeam} onChange={handleDataChange} readOnlyScores={true} />
+      case 9: return <Section9Moats data={localTeam} onChange={handleDataChange} readOnlyScores={true} />
       default: return <Section1BasicInfo team={localTeam} onChange={handleDataChange} />
     }
   }

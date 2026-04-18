@@ -16,6 +16,7 @@ interface SectionWrapperProps {
   children: React.ReactNode
   deepDive?: React.ReactNode
   hideObservation?: boolean
+  readOnlyScores?: boolean
 }
 
 export default function SectionWrapper({
@@ -28,6 +29,7 @@ export default function SectionWrapper({
   children,
   deepDive,
   hideObservation = true,
+  readOnlyScores = false,
 }: SectionWrapperProps) {
   const avg = calculateParameterAverage(data, parameterId)
   const isDeepDiveUnlocked = true // Open to all startups as requested
@@ -39,21 +41,26 @@ export default function SectionWrapper({
         <div className="space-y-2">
           <div className="flex items-center gap-3">
              <h2 className="text-3xl font-black text-navy tracking-tight leading-none">{title}</h2>
-             <span className="bg-navy text-gold text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm">
-               {weight} WEIGHT
-             </span>
+             {!readOnlyScores && (
+               <span className="bg-navy text-gold text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm">
+                 {weight} WEIGHT
+               </span>
+             )}
           </div>
           <p className="text-sm text-slate font-semibold max-w-xl">{subtitle}</p>
         </div>
-        <div className="text-right">
-          <div className="text-[10px] font-black text-slate uppercase tracking-widest mb-1.5">Parameter Score</div>
-          <div className={cn(
-            "text-5xl font-black tabular-nums transition-colors duration-500",
-            avg >= 4 ? "text-teal" : avg >= 3 ? "text-gold" : avg > 0 ? "text-coral" : "text-smoke"
-          )}>
-            {avg > 0 ? avg.toFixed(1) : '--'}
+        
+        {!readOnlyScores && (
+          <div className="text-right">
+            <div className="text-[10px] font-black text-slate uppercase tracking-widest mb-1.5">Parameter Score</div>
+            <div className={cn(
+              "text-5xl font-black tabular-nums transition-colors duration-500",
+              avg >= 4 ? "text-teal" : avg >= 3 ? "text-gold" : avg > 0 ? "text-coral" : "text-smoke"
+            )}>
+              {avg > 0 ? avg.toFixed(1) : '--'}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Core Diagnostics */}

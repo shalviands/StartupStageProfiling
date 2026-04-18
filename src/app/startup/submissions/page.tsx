@@ -106,11 +106,11 @@ export default function SubmissionsPage() {
                         </span>
                       ) : !sub.diagnosis_released ? (
                         <span className="px-3 py-1 bg-gold-lt text-gold text-[8px] font-black uppercase tracking-tighter rounded-full border border-gold/10">
-                          UNDER REVIEW
+                          SUBMITTED
                         </span>
                       ) : (
                         <span className="px-3 py-1 bg-teal-lt text-teal text-[8px] font-black uppercase tracking-tighter rounded-full border border-teal/10">
-                          DIAGNOSIS READY
+                          APPROVED
                         </span>
                       )}
                    </div>

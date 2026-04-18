@@ -7,9 +7,12 @@ interface Props {
   value: number
   onChange: (val: number) => void
   label?: string
+  readOnly?: boolean
 }
 
-export default function ScoreDots({ value, onChange, label }: Props) {
+export default function ScoreDots({ value, onChange, label, readOnly = false }: Props) {
+  if (readOnly) return null
+
   return (
     <div className="flex flex-col gap-2">
       {label && <label className="text-[10px] font-bold text-silver uppercase tracking-widest px-1">{label}</label>}

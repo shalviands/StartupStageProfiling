@@ -9,9 +9,10 @@ import type { TeamProfile } from '@/types/team.types'
 interface Props {
   data: TeamProfile
   onChange: (field: string, value: any) => void
+  readOnlyScores?: boolean
 }
 
-export default function Section9Moats({ data, onChange }: Props) {
+export default function Section9Moats({ data, onChange, readOnlyScores = false }: Props) {
   const config = PARAMETERS_CONFIG[8] // p9
 
   return (
@@ -22,6 +23,7 @@ export default function Section9Moats({ data, onChange }: Props) {
       weight={config.weight}
       data={data}
       onChange={onChange}
+      readOnlyScores={readOnlyScores}
       deepDive={
         <>
           {config.deepDiveQs.map(q => (
@@ -31,6 +33,7 @@ export default function Section9Moats({ data, onChange }: Props) {
               question={q as any}
               data={data}
               onChange={onChange}
+              readOnlyScores={readOnlyScores}
             />
           ))}
         </>
@@ -43,6 +46,7 @@ export default function Section9Moats({ data, onChange }: Props) {
           question={q as any}
           data={data}
           onChange={onChange}
+          readOnlyScores={readOnlyScores}
         />
       ))}
     </SectionWrapper>

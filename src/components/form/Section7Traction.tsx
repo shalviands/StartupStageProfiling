@@ -10,6 +10,7 @@ import type { TeamProfile } from '@/types/team.types'
 interface Props {
   data: TeamProfile
   onChange: (field: string, value: any) => void
+  readOnlyScores?: boolean
 }
 
 const SCORE_TO_CRL: Record<number, number> = {
@@ -28,7 +29,7 @@ const CRL_TO_SCORE: Record<number, number> = {
   9: 5,
 }
 
-export default function Section7Traction({ data, onChange }: Props) {
+export default function Section7Traction({ data, onChange, readOnlyScores = false }: Props) {
   const config = PARAMETERS_CONFIG[6] // p7
   const crlQ = config.coreQs.find(q => q.id === 'crl')
   const otherCoreQs = config.coreQs.filter(q => q.id !== 'crl')
@@ -58,6 +59,7 @@ export default function Section7Traction({ data, onChange }: Props) {
       weight={config.weight}
       data={data}
       onChange={onChange}
+      readOnlyScores={readOnlyScores}
       deepDive={
         <>
           {config.deepDiveQs.map(q => (
@@ -67,6 +69,7 @@ export default function Section7Traction({ data, onChange }: Props) {
               question={q as any}
               data={data}
               onChange={onChange}
+              readOnlyScores={readOnlyScores}
             />
           ))}
         </>
@@ -81,6 +84,7 @@ export default function Section7Traction({ data, onChange }: Props) {
           <ScoreDots 
             value={currentScore} 
             onChange={updateScore} 
+            readOnly={readOnlyScores}
           />
         </div>
         <div className="relative">
@@ -107,6 +111,7 @@ export default function Section7Traction({ data, onChange }: Props) {
           question={q as any}
           data={data}
           onChange={onChange}
+          readOnlyScores={readOnlyScores}
         />
       ))}
     </SectionWrapper>

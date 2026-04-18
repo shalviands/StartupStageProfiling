@@ -11,6 +11,7 @@ import { cn } from '@/utils/cn'
 interface Props {
   data: TeamProfile
   onChange: (field: string, value: any) => void
+  readOnlyScores?: boolean
 }
 
 const SCORE_TO_TRL: Record<number, number> = {
@@ -29,7 +30,7 @@ const TRL_TO_SCORE: Record<number, number> = {
   9: 5,
 }
 
-export default function Section3ProductTRL({ data, onChange }: Props) {
+export default function Section3ProductTRL({ data, onChange, readOnlyScores = false }: Props) {
   const config = PARAMETERS_CONFIG[2] // p3
   const trlQ = config.coreQs.find(q => q.id === 'trl')
   const otherCoreQs = config.coreQs.filter(q => q.id !== 'trl')
@@ -59,6 +60,7 @@ export default function Section3ProductTRL({ data, onChange }: Props) {
       weight={config.weight}
       data={data}
       onChange={onChange}
+      readOnlyScores={readOnlyScores}
       deepDive={
         <>
           {config.deepDiveQs.map(q => (
@@ -68,6 +70,7 @@ export default function Section3ProductTRL({ data, onChange }: Props) {
               question={q as any}
               data={data}
               onChange={onChange}
+              readOnlyScores={readOnlyScores}
             />
           ))}
         </>
@@ -82,6 +85,7 @@ export default function Section3ProductTRL({ data, onChange }: Props) {
           <ScoreDots 
             value={currentScore} 
             onChange={updateScore} 
+            readOnly={readOnlyScores}
           />
         </div>
         <div className="relative">
@@ -108,6 +112,7 @@ export default function Section3ProductTRL({ data, onChange }: Props) {
           question={q as any}
           data={data}
           onChange={onChange}
+          readOnlyScores={readOnlyScores}
         />
       ))}
     </SectionWrapper>
