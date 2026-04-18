@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { calculateOverallScore, scoreBg, scoreColor } from '@/utils/scores'
 import { 
@@ -9,7 +9,9 @@ import {
   Eye,
   ShieldCheck,
   Building2,
-  CalendarDays
+  CalendarDays,
+  FileDown,
+  FileSpreadsheet
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import Link from 'next/link'
@@ -120,19 +122,34 @@ export default async function AllStartupsPage() {
                     <td className="p-6 text-center">
                         <div className={cn(
                           "px-3 py-1.5 rounded-xl font-black uppercase tracking-widest border text-[9px] w-fit mx-auto",
-                          team.submission_status === 'draft' ? "bg-slate-50 text-slate-400 border-slate-100" : "bg-amber-50 text-amber-600 border-amber-100"
+                          team.diagnosis_released ? "bg-teal-50 text-teal-600 border-teal-100" : team.submission_status === 'draft' ? "bg-slate-50 text-slate-400 border-slate-100" : "bg-amber-50 text-amber-600 border-amber-100"
                         )}>
-                          {team.submission_status}
+                          {team.diagnosis_released ? 'RELEASED' : team.submission_status}
                         </div>
                     </td>
                     <td className="p-6 text-right">
                        <div className="flex items-center justify-end gap-2">
-                          <Link 
+                          <Link
                             href={`/admin/startups/${team.id}`}
                             className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-navy hover:border-navy/20 hover:shadow-xl transition-all"
+                            title="View Profile"
                           >
                              <Eye size={18} />
                           </Link>
+                          <a
+                            href={`/api/teams/${team.id}/pdf`}
+                            className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-rose-500 hover:border-rose-200 hover:shadow-xl transition-all"
+                            title="Download PDF"
+                          >
+                             <FileDown size={18} />
+                          </a>
+                          <a
+                            href={`/api/teams/${team.id}/excel`}
+                            className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-emerald-500 hover:border-emerald-200 hover:shadow-xl transition-all"
+                            title="Download Excel"
+                          >
+                             <FileSpreadsheet size={18} />
+                          </a>
                        </div>
                     </td>
                   </tr>

@@ -205,6 +205,13 @@ export default function StartupProfilePage() {
            {createTeam.isPending ? <Loader2 size={16} className="animate-spin" /> : <Rocket size={16} />}
            {createTeam.isPending ? 'Initialising...' : 'Start Profiling Session'}
          </button>
+         <button 
+           type="button"
+           onClick={() => router.push('/startup')}
+           className="w-full text-slate text-[10px] font-black uppercase tracking-widest hover:text-navy transition-colors py-2"
+         >
+           ← Back to Dashboard
+         </button>
       </form>
     </div>
   )
