@@ -59,8 +59,11 @@ ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "programme_team_read_all" ON teams;
 DROP POLICY IF EXISTS "startup_read_own" ON teams;
 DROP POLICY IF EXISTS "admin_read_all" ON teams;
+DROP POLICY IF EXISTS "startup_insert_own" ON teams;
+DROP POLICY IF EXISTS "startup_update_own" ON teams;
+DROP POLICY IF EXISTS "evaluator_update_teams" ON teams;
 
--- Programme team and admin can read ALL teams
+-- 7.1 SELECT POLICIES
 CREATE POLICY "programme_team_read_all" ON teams
   FOR SELECT USING (
     EXISTS (
@@ -70,18 +73,42 @@ CREATE POLICY "programme_team_read_all" ON teams
     )
   );
 
--- Startup can read ONLY their own teams
 CREATE POLICY "startup_read_own" ON teams
   FOR SELECT USING (
     startup_user_id = auth.uid()
-  );
-
--- Admin can read everything (Already covered by programme_team_read_all, but making it explicit)
-CREATE POLICY "admin_read_all" ON teams
-  FOR SELECT USING (
+    OR 
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.role = 'admin'
+      AND profiles.role IN ('programme_team', 'admin')
+    )
+  );
+
+-- 7.2 INSERT POLICIES
+CREATE POLICY "startup_insert_own" ON teams
+  FOR INSERT WITH CHECK (
+    auth.uid() = startup_user_id
+    OR
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role IN ('programme_team', 'admin')
+    )
+  );
+
+-- 7.3 UPDATE POLICIES
+CREATE POLICY "startup_update_own" ON teams
+  FOR UPDATE USING (
+    startup_user_id = auth.uid()
+    AND 
+    submission_status = 'draft' -- Cannot edit after submission (Submission API bypasses this via service role if needed, but here we use user token)
+  );
+
+CREATE POLICY "evaluator_update_teams" ON teams
+  FOR UPDATE USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role IN ('programme_team', 'admin')
     )
   );
