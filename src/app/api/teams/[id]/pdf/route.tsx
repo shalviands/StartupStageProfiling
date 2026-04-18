@@ -4,8 +4,9 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import React from 'react'
 import DiagnosisPDF from '@/components/pdf/DiagnosisPDF'
+import { mapDbToFrontend } from '@/utils/mappers'
 
-export async function GET(
+export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
@@ -48,11 +49,16 @@ export async function GET(
       delete team.admin_notes
     }
 
+    const mappedTeam = mapDbToFrontend(team)
+    if (!mappedTeam) {
+      return NextResponse.json({ error: 'Failed to map team data' }, { status: 500 })
+    }
+
     // Generate PDF buffer
     // @ts-ignore - React-PDF types can be finicky in server environments
-    const pdfBuffer = await renderToBuffer(<DiagnosisPDF team={team} />)
+    const pdfBuffer = await renderToBuffer(<DiagnosisPDF team={mappedTeam} />)
 
-    const filename = `${team.startupName || 'Startup'}_Diagnosis_Report_${new Date().toISOString().split('T')[0]}.pdf`
+    const filename = `${mappedTeam.startupName || 'Startup'}_Diagnosis_Report_${new Date().toISOString().split('T')[0]}.pdf`
 
     return new NextResponse(pdfBuffer as any, {
       status: 200,
