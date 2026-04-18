@@ -103,8 +103,7 @@ export default function AdminStartupDetailPage() {
       
       setLocalTeam({ 
         ...localTeam, 
-        diagnosis_released: nextState,
-        submission_status: nextState ? 'verified' : 'submitted' 
+        diagnosis_released: nextState
       })
     } catch (err) {
       console.error('[AdminDetail] Release toggle failed:', err)

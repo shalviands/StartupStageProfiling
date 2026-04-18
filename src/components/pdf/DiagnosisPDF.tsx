@@ -125,14 +125,14 @@ export default function DiagnosisPDF({ team }: { team: TeamProfile }) {
 
   return (
     <Document title={`${team.startupName || 'Startup'}-Diagnosis-Report`}>
-      <Page size="A4" style={s.page}>
+      <Page size="A4" style={s.page} wrap>
         {/* Header */}
-        <View style={s.header}>
+        <View style={s.header} fixed>
           <Text style={s.brand}>INUNITY STRATEGIC SYSTEMS</Text>
           <Text style={s.reportId}>REF: {team.id.slice(0, 8).toUpperCase()}</Text>
         </View>
 
-        {/* Hero Section */}
+        {/* PAGE 1: Overview */}
         <View style={s.hero}>
           <View>
             <Text style={s.startupName}>{team.startupName || 'Unnamed Venture'}</Text>
@@ -144,7 +144,6 @@ export default function DiagnosisPDF({ team }: { team: TeamProfile }) {
           </View>
         </View>
 
-        {/* Executive Summary Cards */}
         <View style={s.stageMatrix}>
           <View style={s.stageCard}>
             <Text style={s.cardLabel}>Classification</Text>
@@ -160,35 +159,36 @@ export default function DiagnosisPDF({ team }: { team: TeamProfile }) {
           </View>
         </View>
 
-        {/* Parameter Grid Analysis */}
-        <Text style={s.sectionTitle}>Performance Parameters</Text>
-        <View style={s.paramGrid}>
-          {parameters.map(p => (
-            <View key={p.id} style={s.paramBox}>
-              <View style={s.paramTop}>
-                <Text style={s.paramId}>{p.id}</Text>
-                <Text style={[s.paramScore, { color: scoreColor(p.score) }]}>{(p.score || 0).toFixed(1)}</Text>
+        {/* PAGE 2: Performance Breakdown */}
+        <View break>
+          <Text style={s.sectionTitle}>Performance Parameters</Text>
+          <View style={s.paramGrid}>
+            {parameters.map(p => (
+              <View key={p.id} style={s.paramBox}>
+                <View style={s.paramTop}>
+                  <Text style={s.paramId}>{p.id}</Text>
+                  <Text style={[s.paramScore, { color: scoreColor(p.score) }]}>{(p.score || 0).toFixed(1)}</Text>
+                </View>
+                <Text style={s.paramName}>{p.name}</Text>
               </View>
-              <Text style={s.paramName}>{p.name}</Text>
+            ))}
+          </View>
+
+          <Text style={s.sectionTitle}>Evaluator Observations</Text>
+          {parameters.filter(p => p.obs).slice(0, 5).map((p, idx) => (
+            <View key={p.id} style={[s.obsBox, { marginBottom: idx === 4 ? 0 : 15 }]}>
+              <Text style={[s.cardLabel, { marginBottom: 4 }]}>{p.name} (P{p.id.slice(1)})</Text>
+              <Text style={s.obsText}>{p.obs}</Text>
             </View>
           ))}
         </View>
 
-        {/* Observations Summary */}
-        <Text style={s.sectionTitle}>Evaluator Observations</Text>
-        {parameters.filter(p => p.obs).slice(0, 3).map(p => (
-          <View key={p.id} style={s.obsBox}>
-            <Text style={[s.cardLabel, { marginBottom: 4 }]}>{p.name} (P{p.id.slice(1)})</Text>
-            <Text style={s.obsText}>{p.obs}</Text>
-          </View>
-        ))}
-
-        {/* Roadmap Snapshot */}
+        {/* PAGE 3: Strategic Roadmap */}
         {roadmap.length > 0 && (
-          <View wrap={false} style={{ marginTop: 20 }}>
+          <View break>
             <Text style={s.sectionTitle}>Strategic Roadmap (Next 30 Days)</Text>
             <View style={{ marginTop: 5 }}>
-              {roadmap.slice(0, 5).map((r, i) => (
+              {roadmap.map((r, i) => (
                 <View key={i} style={s.roadmapRow}>
                   <Text style={s.priority}>{r.priority}</Text>
                   <Text style={s.action}>{r.action}</Text>
@@ -199,9 +199,10 @@ export default function DiagnosisPDF({ team }: { team: TeamProfile }) {
           </View>
         )}
 
-        <View style={s.footer}>
+        {/* Footer */}
+        <View style={s.footer} fixed>
           <Text style={s.footerText}>© {new Date().getFullYear()} InUnity Strategic Systems • Platinum Tier Evaluation</Text>
-          <Text style={s.footerText}>Highly Confidential • {new Date().toLocaleDateString()}</Text>
+          <Text style={s.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages} • Highly Confidential`} />
         </View>
       </Page>
     </Document>

@@ -25,11 +25,12 @@ export async function POST(request: Request) {
     if (!teamId) return NextResponse.json({ error: 'Missing teamId' }, { status: 400 })
 
     // Update the team record
+    // Note: Do not mutate submission_status arbitrarily to 'verified' to prevent constraint failure.
+    // The UI handles 'diagnosis_released = true' as 'verified' visually.
     const { error } = await supabase
       .from('teams')
       .update({ 
-        diagnosis_released: !!release,
-        submission_status: release ? 'verified' : 'submitted'
+        diagnosis_released: !!release 
       })
       .eq('id', teamId)
 
