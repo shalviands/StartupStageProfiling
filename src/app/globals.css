@@ -3,18 +3,6 @@
 @tailwind utilities;
 
 :root {
-  --background: #F8FAFC; 
-  --foreground: #0F172A; 
-  
-  /* Primary InUnity Palette */
-  --navy: #0F172A;
-  --navy-lt: #1E293B;
-  --gold: #F59E0B;
-  --gold-lt: #FEF3C7;
-  --teal: #0D9488;
-  --teal-lt: #F0FDFA;
-  --coral: #E11D48;
-  --coral-lt: #FFF1F2;
   --purple: #6366F1;
   --purple-lt: #EEF2FF;
   

@@ -176,10 +176,12 @@ export const TeamBaseSchema = z.object({
   overall_weighted_score:    z.number().nullable().default(null),
   p9_bonus_active:           z.boolean().default(false),
 
-  // 3-Role Architecture Extensions
+  // Strategic Metadata
   startup_user_id:           z.string().nullable().default(null),
-  submission_status:         z.enum(['draft', 'submitted', 'finalised']).default('draft'),
+  submission_status:         z.enum(['draft', 'submitted']).default('draft'),
   submission_number:         z.number().int().default(1),
+  diagnosis_released:        z.boolean().default(false),
+  deleted_at:                z.string().nullable().default(null),
   admin_notes:               z.string().default(''),
 })
 

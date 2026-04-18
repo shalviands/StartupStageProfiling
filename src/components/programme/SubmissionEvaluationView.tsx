@@ -56,18 +56,18 @@ export default function SubmissionEvaluationView({
               <div className="flex gap-4">
                 <button 
                   onClick={async () => {
-                    const nextStatus = team.submission_status === 'finalised' ? 'submitted' : 'finalised'
+                    const nextState = !team.diagnosis_released
                     try {
                       setRunningAI(true)
-                      const res = await fetch('/api/admin/finalise', {
+                      const res = await fetch('/api/programme/release-diagnosis', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ teamId: team.id, status: nextStatus })
+                        body: JSON.stringify({ teamId: team.id, release: nextState })
                       })
-                      if (!res.ok) throw new Error('Failed to update status')
-                      window.location.reload() // Quick refresh to update state
+                      if (!res.ok) throw new Error('Failed to update release state')
+                      window.location.reload()
                     } catch (err) {
-                      console.error('[Evaluation] Finalise failed:', err)
+                      console.error('[Evaluation] Release failed:', err)
                     } finally {
                       setRunningAI(false)
                     }
@@ -75,13 +75,13 @@ export default function SubmissionEvaluationView({
                   disabled={runningAI}
                   className={cn(
                     "flex items-center gap-3 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl disabled:opacity-50",
-                    team.submission_status === 'finalised'
-                      ? "bg-emerald-600 text-white shadow-emerald-200"
+                    team.diagnosis_released
+                      ? "bg-teal text-white shadow-teal/20"
                       : "bg-gold text-navy shadow-gold/20 hover:scale-[1.02] active:scale-95"
                   )}
                 >
-                  {runningAI ? <Loader2 size={16} className="animate-spin" /> : team.submission_status === 'finalised' ? <CheckCircle2 size={16} /> : <Target size={16} />}
-                  {team.submission_status === 'finalised' ? 'Approved & Finalised' : 'Approve & Finalise'}
+                  {runningAI ? <Loader2 size={16} className="animate-spin" /> : team.diagnosis_released ? <CheckCircle2 size={16} /> : <Zap size={16} />}
+                  {team.diagnosis_released ? 'Diagnosis Released' : 'Release Diagnosis to Startup'}
                 </button>
 
                 <button 
@@ -89,8 +89,8 @@ export default function SubmissionEvaluationView({
                   disabled={runningAI}
                   className="flex items-center gap-3 bg-navy text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-xl shadow-navy/20 disabled:opacity-50"
                 >
-                  {runningAI ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} className="text-gold" />}
-                  Run AI Analysis
+                  {runningAI ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} className="text-gold" />}
+                  Run AI Assessment
                 </button>
               </div>
             </div>

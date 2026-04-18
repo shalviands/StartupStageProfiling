@@ -119,16 +119,36 @@ export function useUpdateTeam() {
   })
 }
 
-// ── useDeleteTeam ─────────────────────────────────────────────────
+// ── useTeam (Single) ────────────────────────────────────────────────
+export function useTeam(id: string) {
+  return useQuery<TeamProfile | null>({
+    queryKey: [...TEAMS_KEY, id],
+    queryFn: async () => {
+      const res = await fetch(`/api/teams/${id}`, {
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!res.ok) return null
+      const data = await res.json()
+      return mapDbToFrontend(data)
+    },
+    staleTime: 5000,
+  })
+}
+
+// ── useDeleteTeam (Soft Delete v2.0) ───────────────────────────────
 export function useDeleteTeam() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
+      // Blueprint v2.0: Perform Soft Delete via PUT
       const res = await fetch(`/api/teams/${id}`, {
-        method: 'DELETE',
+        method: 'PUT',
         credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deleted_at: new Date().toISOString() }),
       })
-      if (!res.ok) throw new Error(`Delete failed: ${res.status}`)
+      if (!res.ok) throw new Error(`Soft delete failed: ${res.status}`)
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: TEAMS_KEY })

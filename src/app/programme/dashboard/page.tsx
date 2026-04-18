@@ -12,17 +12,16 @@ export default async function ProgrammeDashboard() {
   const { data: teams } = await supabase
     .from('teams')
     .select('*')
-    .eq('submission_status', 'submitted')
+    .is('deleted_at', null) // Blueprint v2.0: Soft delete filter
     .order('created_at', { ascending: false })
   
-  // Placeholder data for stats
   const stats = {
     total: teams?.length || 0,
-    thisWeek: 0, 
+    released: teams?.filter(t => t.diagnosis_released).length || 0,
     avgScore: teams && teams.length > 0 
       ? teams.reduce((acc, t) => acc + (t.overall_weighted_score || 0), 0) / teams.length 
       : 0,
-    needReview: teams?.length || 0
+    needEvaluation: teams?.filter(t => !t.diagnosis_released && t.submission_status === 'submitted').length || 0
   }
 
   return (

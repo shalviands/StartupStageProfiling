@@ -120,19 +120,17 @@ export default function StartupProfilePage() {
       } finally {
         setSaving(false)
       }
-    }, 800)
+    }, 600) // Corrected v2.0 debounce: 600ms
   }
 
   async function handleSubmit() {
     if (!localTeam || isSubmitting) return
     setIsSubmitting(true)
-    isSubmittedRef.current = true // Block any further autosave immediately
+    isSubmittedRef.current = true
     
     try {
-      // Clear any pending saves
       if (saveTimer.current) clearTimeout(saveTimer.current)
 
-      // Use the dedicated submit API
       const res = await fetch('/api/startup/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -140,11 +138,12 @@ export default function StartupProfilePage() {
       })
 
       if (!res.ok) {
-        isSubmittedRef.current = false // Re-enable on failure
+        isSubmittedRef.current = false
         throw new Error('Submission failed')
       }
 
-      router.push('/startup/submissions')
+      // Redirect to new Success Page per Blueprint v2.0
+      router.push(`/startup/submissions/success?number=${localTeam.submission_number || 1}`)
     } catch (err: any) {
       console.error('[StartupProfile] Submit failed:', err)
       const errorMsg = err instanceof Error ? err.message : 'Unknown network failure'

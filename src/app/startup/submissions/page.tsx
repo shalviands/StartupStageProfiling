@@ -96,17 +96,21 @@ export default function SubmissionsPage() {
                 </td>
                 <td className="px-8 py-6">
                    <div className="flex flex-col gap-1">
-                      {sub.submission_status === 'draft' ? (
+                      {sub.deleted_at ? (
+                        <span className="px-3 py-1 bg-coral-lt text-coral text-[8px] font-black uppercase tracking-tighter rounded-full border border-coral/10">
+                          ARCHIVED
+                        </span>
+                      ) : sub.submission_status === 'draft' ? (
                         <span className="px-3 py-1 bg-slate-100 text-slate-500 text-[8px] font-black uppercase tracking-tighter rounded-full border border-slate-200">
                           DRAFT MODE
                         </span>
-                      ) : sub.submission_status === 'submitted' ? (
-                        <span className="px-3 py-1 bg-amber-50 text-amber-600 text-[8px] font-black uppercase tracking-tighter rounded-full border border-amber-100">
-                          AWAITING EVALUATION
+                      ) : !sub.diagnosis_released ? (
+                        <span className="px-3 py-1 bg-gold-lt text-gold text-[8px] font-black uppercase tracking-tighter rounded-full border border-gold/10">
+                          UNDER REVIEW
                         </span>
                       ) : (
-                        <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase tracking-tighter rounded-full border border-emerald-100">
-                          FINALISED
+                        <span className="px-3 py-1 bg-teal-lt text-teal text-[8px] font-black uppercase tracking-tighter rounded-full border border-teal/10">
+                          DIAGNOSIS READY
                         </span>
                       )}
                    </div>
