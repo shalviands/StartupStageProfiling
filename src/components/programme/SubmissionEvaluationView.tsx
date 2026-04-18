@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { TeamProfile, SubmissionComment } from '@/types/team.types'
 import SubmissionView from '@/components/startup/SubmissionView'
 import CommentPanel from './CommentPanel'
-import { BarChart3, Rocket, Target, Zap, Loader2, CheckCircle2 } from 'lucide-react'
+import { BarChart3, Rocket, Target, Zap, Loader2, CheckCircle2, Sparkles } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
 interface SubmissionEvaluationViewProps {
