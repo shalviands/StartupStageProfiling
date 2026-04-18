@@ -10,7 +10,8 @@ export default function ExcelDownloadButton({ team }: { team: TeamProfile }) {
   const handleExport = async () => {
     if (!team?.id) return
     const { utils, writeFile } = await import('xlsx')
-    const { overall, p1, p2, p3, p4, p5, p6, p7, p8, p9 } = calculateOverallScore(team)
+    const { overall, averages } = calculateOverallScore(team)
+    const { p1, p2, p3, p4, p5, p6, p7, p8, p9 } = averages
     const { stage, level, override } = classifyStage(team)
     const roadmap = getRoadmap(team)
 

@@ -7,7 +7,8 @@ import { FileText, Loader2, Target, Zap, ShieldCheck, TrendingUp } from 'lucide-
 import { cn } from '@/utils/cn'
 
 export default function LivePreview({ team }: { team: TeamProfile }) {
-  const { overall, p1, p2, p3, p4, p5, p6, p7, p8, p9 } = calculateOverallScore(team)
+  const { overall, averages } = calculateOverallScore(team)
+  const { p1, p2, p3, p4, p5, p6, p7, p8, p9 } = averages
   const pStats = [
     { id: 'P1', val: p1 }, { id: 'P2', val: p2 }, { id: 'P3', val: p3 },
     { id: 'P4', val: p4 }, { id: 'P5', val: p5 }, { id: 'P6', val: p6 },
