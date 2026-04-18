@@ -178,7 +178,7 @@ export const TeamBaseSchema = z.object({
 
   // Strategic Metadata
   startup_user_id:           z.string().nullable().default(null),
-  submission_status:         z.enum(['draft', 'submitted']).default('draft'),
+  submission_status:         z.enum(['draft', 'submitted', 'verified']).default('draft'),
   submission_number:         z.number().int().default(1),
   diagnosis_released:        z.boolean().default(false),
   deleted_at:                z.string().nullable().default(null),

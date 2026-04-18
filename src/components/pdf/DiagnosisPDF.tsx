@@ -184,16 +184,20 @@ export default function DiagnosisPDF({ team }: { team: TeamProfile }) {
         ))}
 
         {/* Roadmap Snapshot */}
-        <Text style={s.sectionTitle}>Strategic Roadmap (Next 30 Days)</Text>
-        <View style={{ marginTop: 5 }}>
-          {roadmap.slice(0, 5).map((r, i) => (
-            <View key={i} style={s.roadmapRow}>
-              <Text style={s.priority}>{r.priority}</Text>
-              <Text style={s.action}>{r.action}</Text>
-              <Text style={s.byWhen}>{r.byWhen}</Text>
+        {roadmap.length > 0 && (
+          <View wrap={false} style={{ marginTop: 20 }}>
+            <Text style={s.sectionTitle}>Strategic Roadmap (Next 30 Days)</Text>
+            <View style={{ marginTop: 5 }}>
+              {roadmap.slice(0, 5).map((r, i) => (
+                <View key={i} style={s.roadmapRow}>
+                  <Text style={s.priority}>{r.priority}</Text>
+                  <Text style={s.action}>{r.action}</Text>
+                  <Text style={s.byWhen}>{r.byWhen}</Text>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
+          </View>
+        )}
 
         <View style={s.footer}>
           <Text style={s.footerText}>© {new Date().getFullYear()} InUnity Strategic Systems • Platinum Tier Evaluation</Text>
