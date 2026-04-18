@@ -101,9 +101,23 @@ CREATE POLICY "startup_update_own" ON teams
   FOR UPDATE USING (
     startup_user_id = auth.uid()
     AND 
-    submission_status = 'draft' -- Cannot edit after submission (Submission API bypasses this via service role if needed, but here we use user token)
+    submission_status = 'draft' 
+  )
+  WITH CHECK (
+    startup_user_id = auth.uid()
+    AND 
+    submission_status = 'draft'
   );
 
+CREATE POLICY "startup_submit_own_draft" ON teams
+  FOR UPDATE USING (
+    startup_user_id = auth.uid()
+    AND submission_status = 'draft'
+  )
+  WITH CHECK (
+    startup_user_id = auth.uid()
+    AND submission_status = 'submitted'
+  );
 CREATE POLICY "evaluator_update_teams" ON teams
   FOR UPDATE USING (
     EXISTS (

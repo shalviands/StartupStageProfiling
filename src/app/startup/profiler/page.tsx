@@ -137,9 +137,11 @@ export default function StartupProfilePage() {
         body: JSON.stringify({ team_id: localTeam.id })
       })
 
+      const data = await res.json().catch(() => null)
+
       if (!res.ok) {
         isSubmittedRef.current = false
-        throw new Error('Submission failed')
+        throw new Error(data?.error || `HTTP error ${res.status}`)
       }
 
       // Redirect to new Success Page per Blueprint v2.0
