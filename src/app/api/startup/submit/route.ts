@@ -1,3 +1,6 @@
+import { NextResponse } from 'next/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { calculateOverallScore, classifyStage } from '@/utils/scores'
 import { mapDbToFrontend } from '@/utils/mappers'
 
