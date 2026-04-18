@@ -27,7 +27,10 @@ export async function POST(request: Request) {
     // Update the team record
     const { error } = await supabase
       .from('teams')
-      .update({ diagnosis_released: !!release })
+      .update({ 
+        diagnosis_released: !!release,
+        submission_status: release ? 'verified' : 'submitted'
+      })
       .eq('id', teamId)
 
     if (error) throw error

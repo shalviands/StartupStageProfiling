@@ -76,3 +76,7 @@ export async function POST(
     )
   }
 }
+
+export async function GET(req: Request, ctx: { params: { id: string } }) {
+  return POST(req, ctx)
+}

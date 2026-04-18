@@ -3,6 +3,7 @@
 import React from 'react'
 import { PARAMETERS_CONFIG } from '@/config/parameters'
 import { TeamProfile } from '@/types/team.types'
+import { calculateOverallScore, getRoadmap } from '@/utils/scores'
 import { cn } from '@/utils/cn'
 import { ChevronRight, BarChart3, CheckSquare, Info } from 'lucide-react'
 import PDFDownloadButton from '@/components/pdf/PDFDownloadButton'
@@ -12,6 +13,9 @@ interface SubmissionViewProps {
 }
 
 export default function SubmissionView({ submission }: SubmissionViewProps) {
+  const { averages } = calculateOverallScore(submission)
+  const roadmap = getRoadmap(submission)
+
   return (
     <div className="space-y-12">
       {/* Header Summary */}
@@ -52,9 +56,17 @@ export default function SubmissionView({ submission }: SubmissionViewProps) {
                   </h3>
                   <p className="text-xs text-slate font-medium mt-1">{param.subtitle}</p>
                 </div>
-                <div className="text-right">
-                   <div className="text-[10px] font-black text-silver uppercase tracking-widest mb-1">Weight</div>
-                   <div className="text-lg font-black text-navy">{param.weight}</div>
+                <div className="flex gap-6 text-right">
+                   <div>
+                     <div className="text-[10px] font-black text-silver uppercase tracking-widest mb-1">Score</div>
+                     <div className="text-lg font-black text-gold">
+                       {((averages as any)[param.id.toLowerCase()] || 0).toFixed(1)} <span className="text-[10px] text-silver">/ 5</span>
+                     </div>
+                   </div>
+                   <div>
+                     <div className="text-[10px] font-black text-silver uppercase tracking-widest mb-1">Weight</div>
+                     <div className="text-lg font-black text-navy">{param.weight}</div>
+                   </div>
                 </div>
               </div>
 
@@ -121,6 +133,30 @@ export default function SubmissionView({ submission }: SubmissionViewProps) {
           )
         })}
       </div>
+
+      {roadmap.length > 0 && (
+        <div className="bg-white rounded-[40px] border border-rule overflow-hidden shadow-sm p-10 space-y-8">
+          <div>
+            <h3 className="text-xl font-black text-navy">Strategic Roadmap (Next 30 Days)</h3>
+            <p className="text-xs text-slate font-medium mt-1">Recommended actions derived from diagnostic scoring</p>
+          </div>
+          <div className="space-y-4">
+            {roadmap.slice(0, 5).map((r, i) => (
+              <div key={i} className="flex gap-6 items-start p-4 bg-smoke/30 rounded-2xl border border-rule/50">
+                 <div className="px-3 py-1 bg-gold/10 text-gold text-[10px] font-black uppercase tracking-widest rounded-lg shrink-0 w-24 text-center">
+                   {r.priority}
+                 </div>
+                 <div className="flex-1">
+                   <p className="text-sm font-semibold text-navy">{r.action}</p>
+                 </div>
+                 <div className="text-[10px] font-bold text-silver uppercase tracking-widest shrink-0">
+                   {r.byWhen}
+                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex justify-center">
         <PDFDownloadButton team={submission} />

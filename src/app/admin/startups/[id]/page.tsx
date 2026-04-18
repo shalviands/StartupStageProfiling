@@ -24,21 +24,20 @@ import {
   FileText,
   Download
 } from 'lucide-react'
-import { useTeams, useUpdateTeam } from '@/hooks/useTeams'
+import { useTeam, useUpdateTeam } from '@/hooks/useTeams'
 import dynamic from 'next/dynamic'
 import PDFDownloadButton from '@/components/pdf/PDFDownloadButton'
 
 export default function AdminStartupDetailPage() {
   const { id } = useParams()
   const router = useRouter()
-  const { data: teams = [], isLoading } = useTeams()
+  // Use the single team hook to directly fetch instead of waiting for list
+  const { data: activeTeam, isLoading } = useTeam(id as string)
   const updateTeam = useUpdateTeam()
 
   const [activeSection, setActiveSection] = useState(0)
   const [localTeam, setLocalTeam] = useState<TeamProfile | null>(null)
   const [saving, setSaving] = useState(false)
-
-  const activeTeam = teams.find(t => t.id === id) || null
 
   useEffect(() => {
     // Only update localTeam if it was null OR if the ID of the startup changed
@@ -102,7 +101,11 @@ export default function AdminStartupDetailPage() {
       
       if (!res.ok) throw new Error('Failed to update release state')
       
-      setLocalTeam({ ...localTeam, diagnosis_released: nextState })
+      setLocalTeam({ 
+        ...localTeam, 
+        diagnosis_released: nextState,
+        submission_status: nextState ? 'verified' : 'submitted' 
+      })
     } catch (err) {
       console.error('[AdminDetail] Release toggle failed:', err)
       alert('Failed to update release state. Please try again.')
@@ -111,10 +114,20 @@ export default function AdminStartupDetailPage() {
     }
   }
 
-  if (isLoading || !localTeam) return (
+  if (isLoading) return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
       <Loader2 className="animate-spin" size={32} />
       <span className="text-[10px] font-black uppercase tracking-widest">Initialising Profiler...</span>
+    </div>
+  )
+  
+  if (!localTeam) return (
+    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
+      <AlertTriangle size={32} className="text-rose-400" />
+      <span className="text-[10px] font-black uppercase tracking-widest">Startup Not Found or Access Denied</span>
+      <button onClick={() => router.push('/admin/startups')} className="mt-4 border border-slate-200 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-colors">
+        Back to Portfolio
+      </button>
     </div>
   )
 

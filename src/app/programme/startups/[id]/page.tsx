@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { redirect, notFound } from 'next/navigation'
 import SubmissionEvaluationView from '@/components/programme/SubmissionEvaluationView'
+import { mapDbToFrontend } from '@/utils/mappers'
 
 export default async function ProgrammeStartupDetailPage({
   params
@@ -37,6 +38,11 @@ export default async function ProgrammeStartupDetailPage({
 
 
 
+  const mappedTeam = mapDbToFrontend(team)
+  if (!mappedTeam) {
+    notFound()
+  }
+
   // Fetch comments
   const { data: comments } = await supabase
     .from('submission_comments')
@@ -47,7 +53,7 @@ export default async function ProgrammeStartupDetailPage({
   return (
     <div className="h-full flex flex-col">
        <SubmissionEvaluationView 
-         team={team} 
+         team={mappedTeam} 
          initialComments={comments || []} 
          currentUserRole={profile?.role || 'programme_team'} 
        />
