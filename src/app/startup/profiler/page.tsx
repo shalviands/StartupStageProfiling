@@ -33,54 +33,56 @@ export default function StartupProfilePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // Strict entry gating: Do not auto-create entries
+  const [needsName, setNeedsName] = useState(false)
+  const [draftStartupName, setDraftStartupName] = useState('')
 
   useEffect(() => {
     if (isLoading) return
     setError(null)
     
     // Only set localTeam if we don't have one yet or if there's no active draft being edited
-    if (localTeam) return
+    if (localTeam || needsName) return
 
     if (teams.length > 0) {
-      // Find the latest draft if any, otherwise showing most recent
-      const latest = teams[0]
-      // In the new architecture, if they land on /profiler, we always want to show a draft or create one.
-      // If the latest is submitted, we should probably check if there's a draft.
       const draft = teams.find(t => t.submission_status === 'draft')
       
       if (draft) {
         setLocalTeam(draft)
       } else {
-        // Create new draft
-        createTeam.mutateAsync({
-          teamName: `Submission #${teams.length + 1}`,
-          startupName: latest.startupName || '',
-          sector: latest.sector || '',
-          submission_status: 'draft'
-        })
-        .then(newTeam => {
-          setLocalTeam(newTeam)
-        })
+        // Prompt for startup name instead of auto creating blindly to prevent empty drafts
+        setNeedsName(true)
       }
     } else {
       // Prevent multiple creations
       if (createTeam.isPending) return
-      
-      createTeam.mutateAsync({
-        teamName: 'Baseline Profile',
-        startupName: '',
-        sector: '',
-        submission_status: 'draft'
-      })
-      .then(newTeam => {
-        setLocalTeam(newTeam)
-      })
-      .catch(err => {
-        console.error('[StartupProfile] Init failed:', err)
-        setError('Failed to initialise your profiling session. Please ensure your account is approved and try again.')
-      })
+      setNeedsName(true)
     }
-  }, [teams, isLoading, localTeam, createTeam.isPending])
+  }, [teams, isLoading, localTeam, createTeam.isPending, needsName])
+
+  async function handleCreateDraft(e: React.FormEvent) {
+    e.preventDefault()
+    if (!draftStartupName.trim()) return
+
+    const latest = teams[0]
+    const submissionNum = teams.length > 0 ? teams.length + 1 : 1
+
+    createTeam.mutateAsync({
+      teamName: `Submission #${submissionNum}`,
+      startupName: draftStartupName.trim(),
+      sector: latest?.sector || '',
+      submission_status: 'draft'
+    })
+    .then(newTeam => {
+      setLocalTeam(newTeam)
+      setNeedsName(false)
+    })
+    .catch(err => {
+      console.error('[StartupProfile] Init failed:', err)
+      setError('Failed to initialise your profiling session. Please ensure your account is approved and try again.')
+    })
+  }
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isSubmittedRef = useRef(false)
@@ -172,6 +174,38 @@ export default function StartupProfilePage() {
       >
         Retry Initialisation
       </button>
+    </div>
+  )
+
+  if (needsName) return (
+    <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center bg-smoke/20 rounded-[40px] m-6 border border-rule/50">
+      <div className="w-20 h-20 bg-navy text-gold rounded-3xl flex items-center justify-center mb-6 shadow-xl shadow-navy/20">
+        <Rocket size={36} />
+      </div>
+      <h2 className="text-3xl font-black text-navy tracking-tight mb-2">Launch New Profile</h2>
+      <p className="text-sm text-slate font-medium max-w-sm mx-auto leading-relaxed mb-8">
+        Required: What is the registered or provisional name of your tech venture?
+      </p>
+      
+      <form onSubmit={handleCreateDraft} className="w-full max-w-sm mx-auto space-y-4">
+         <input 
+           type="text"
+           required
+           autoFocus
+           value={draftStartupName}
+           onChange={e => setDraftStartupName(e.target.value)}
+           placeholder="e.g. InUnity Strategic Systems"
+           className="w-full px-6 py-4 rounded-2xl border border-rule bg-white text-navy font-bold text-center placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-all shadow-sm text-lg"
+         />
+         <button 
+           type="submit"
+           disabled={!draftStartupName.trim() || createTeam.isPending}
+           className="w-full bg-navy text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-xl shadow-navy/20 disabled:opacity-50 flex items-center justify-center gap-3"
+         >
+           {createTeam.isPending ? <Loader2 size={16} className="animate-spin" /> : <Rocket size={16} />}
+           {createTeam.isPending ? 'Initialising...' : 'Start Profiling Session'}
+         </button>
+      </form>
     </div>
   )
 
