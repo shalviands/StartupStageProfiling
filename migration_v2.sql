@@ -51,6 +51,7 @@ AS $$
 $$;
 
 DROP POLICY IF EXISTS "programme_team_read_all" ON teams;
+DROP POLICY IF EXISTS "programme_read_all" ON teams;
 DROP POLICY IF EXISTS "startup_read_own" ON teams;
 DROP POLICY IF EXISTS "admin_read_all" ON teams;
 DROP POLICY IF EXISTS "startup_insert_own" ON teams;
