@@ -26,11 +26,8 @@ export async function POST(
   }
 
   // 2. Identify weakest parameters for the AI
-  const scores = calculateOverallScore(team)
-  const weakest = Object.entries({
-    p1: scores.p1, p2: scores.p2, p3: scores.p3, p4: scores.p4,
-    p5: scores.p5, p6: scores.p6, p7: scores.p7, p8: scores.p8, p9: scores.p9
-  })
+  const { averages } = calculateOverallScore(team)
+  const weakest = Object.entries(averages)
     .sort(([, a], [, b]) => a - b)
     .slice(0, 3)
     .map(([k]) => k.toUpperCase())
