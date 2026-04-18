@@ -3,6 +3,49 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { mapDbToFrontend, mapFrontendToDb } from '@/utils/mappers'
 
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const user = await getUserFromRequest()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const supabase = await createServerSupabaseClient()
+    
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const role = profile?.role
+
+    const { data: targetTeam, error } = await supabase
+      .from('teams')
+      .select('*')
+      .eq('id', params.id)
+      .single()
+
+    if (error || !targetTeam) {
+      return NextResponse.json({ error: 'Team not found' }, { status: 404 })
+    }
+
+    if (role !== 'admin' && role !== 'programme_team') {
+      if (targetTeam.startup_user_id !== user.id) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
+    }
+
+    return NextResponse.json(targetTeam)
+  } catch (error: any) {
+    console.error(`[TEAM_GET_${params.id}]`, error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
+
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }

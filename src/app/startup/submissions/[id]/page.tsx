@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import SubmissionView from '@/components/startup/SubmissionView'
+import { mapDbToFrontend } from '@/utils/mappers'
 
 export default async function SubmissionDetailPage({
   params
@@ -29,9 +30,15 @@ export default async function SubmissionDetailPage({
     }
   }
 
+  const mappedSubmission = mapDbToFrontend(submission)
+  
+  if (!mappedSubmission) {
+    redirect('/startup/submissions')
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 pb-32">
-      <SubmissionView submission={submission} />
+      <SubmissionView submission={mappedSubmission} />
     </div>
   )
 }

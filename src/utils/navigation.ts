@@ -10,5 +10,5 @@ export function getHomeRouteForRole(
   // startup
   if (status === 'pending') return '/pending'
   if (status === 'rejected') return '/login?error=rejected'
-  return '/startup/profiler'
+  return '/startup'
 }
