@@ -21,7 +21,7 @@ export default async function ProgrammeStartupDetailPage({
     .single()
 
   if (!['programme_team', 'admin'].includes(profile?.role ?? '')) {
-    redirect('/startup/dashboard')
+    redirect('/login')
   }
 
   // Fetch team/submission

@@ -158,9 +158,18 @@ export default function SubmissionView({ submission }: SubmissionViewProps) {
         </div>
       )}
 
-      <div className="flex justify-center">
-        <PDFDownloadButton team={submission} />
-      </div>
+      {submission.diagnosis_released ? (
+        <div className="flex justify-center">
+          <PDFDownloadButton team={submission} />
+        </div>
+      ) : (
+        <div className="flex justify-center">
+          <div className="px-6 py-4 bg-smoke rounded-2xl border border-rule text-center">
+            <p className="text-[10px] font-black text-silver uppercase tracking-widest">Diagnosis Under Review</p>
+            <p className="text-xs text-slate font-medium mt-1">Your report will be available here once the programme team completes the evaluation.</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

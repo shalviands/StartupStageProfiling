@@ -11,6 +11,8 @@ export default async function ProgrammeStartupsPage() {
   const { data: teams } = await supabase
     .from('teams')
     .select('*')
+    .is('deleted_at', null)
+    .neq('submission_status', 'draft')
     .order('created_at', { ascending: false })
 
   return (

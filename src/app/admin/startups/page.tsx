@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { calculateOverallScore, scoreBg, scoreColor } from '@/utils/scores'
 import { 
@@ -20,10 +20,11 @@ import { mapDbToFrontend } from '@/utils/mappers'
 export default async function AllStartupsPage() {
   const supabase = await createServerSupabaseClient()
   
-  // Fetch ALL records (no status filter)
+  // Fetch ALL non-deleted records
   const { data, error } = await supabase
     .from('teams')
     .select('*')
+    .is('deleted_at', null)
     .order('created_at', { ascending: false })
 
   if (error) {

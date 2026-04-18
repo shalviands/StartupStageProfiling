@@ -97,11 +97,11 @@ export async function middleware(request: NextRequest) {
         return response
       }
 
-      // Approved Startup
+      // Approved Startup — land on dashboard/submissions, NOT profiler
       if (status === 'approved') {
-        // Home/Login -> /startup/profiler
+        // Home/Login -> /startup (submissions list)
         if (pathname === '/' || pathname.startsWith('/login')) {
-           return NextResponse.redirect(new URL('/startup/profiler', request.url))
+           return NextResponse.redirect(new URL('/startup', request.url))
         }
         // Redirect from old /startup/profile to new /startup/profiler
         if (pathname === '/startup/profile') {
@@ -109,11 +109,11 @@ export async function middleware(request: NextRequest) {
         }
         // Restrict access to other areas
         if ((pathname.startsWith('/programme') || pathname.startsWith('/admin')) && !pathname.startsWith('/api/')) {
-          return NextResponse.redirect(new URL('/startup/profiler', request.url))
+          return NextResponse.redirect(new URL('/startup', request.url))
         }
         // Must stay in /startup
         if (!pathname.startsWith('/startup') && !pathname.startsWith('/api/') && !pathname.startsWith('/pending')) {
-          return NextResponse.redirect(new URL('/startup/profiler', request.url))
+          return NextResponse.redirect(new URL('/startup', request.url))
         }
         return response
       }
