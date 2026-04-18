@@ -102,7 +102,7 @@ export async function GET(
 
     const filename = `${team.startupName || 'Startup'}_Analysis_${new Date().toISOString().split('T')[0]}.xlsx`
 
-    return new NextResponse(buf, {
+    return new NextResponse(buf as any, {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

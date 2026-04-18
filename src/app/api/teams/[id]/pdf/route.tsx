@@ -52,7 +52,7 @@ export async function GET(
 
     const filename = `${team.startupName || 'Startup'}_Diagnosis_Report_${new Date().toISOString().split('T')[0]}.pdf`
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as any, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
