@@ -55,11 +55,7 @@ CREATE POLICY "startup_read_own" ON teams
 
 CREATE POLICY "programme_read_all" ON teams
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role IN ('programme_team', 'admin')
-    )
+    public.get_my_role() IN ('programme_team', 'admin')
   );
 
 -- INSERT: Only approved startups or staff can create
@@ -75,11 +71,7 @@ CREATE POLICY "startup_insert_own" ON teams
       )
     )
     OR
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role IN ('programme_team', 'admin')
-    )
+    public.get_my_role() IN ('programme_team', 'admin')
   );
 
 -- UPDATE: Startup can edit own draft (auto-save)
@@ -108,20 +100,26 @@ CREATE POLICY "startup_submit_own_draft" ON teams
 -- UPDATE: Evaluators (Programme Team + Admin) can update anything
 CREATE POLICY "evaluator_update_teams" ON teams
   FOR UPDATE USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role IN ('programme_team', 'admin')
-    )
+    public.get_my_role() IN ('programme_team', 'admin')
   );
 
 -- ============================================================
--- Phase 4: Profiles RLS Policies
+-- Phase 4: Profiles RLS Policies (Fixed Recursion)
 -- ============================================================
 
 DROP POLICY IF EXISTS "users_select_own_profile" ON profiles;
 DROP POLICY IF EXISTS "programme_select_all_profiles" ON profiles;
 DROP POLICY IF EXISTS "admin_update_all_profiles" ON profiles;
+
+-- Create helper function to bypass RLS recursion
+CREATE OR REPLACE FUNCTION public.get_my_role()
+RETURNS TEXT
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT role FROM profiles WHERE id = auth.uid();
+$$;
 
 -- Users select own profile
 CREATE POLICY "users_select_own_profile" ON profiles
@@ -130,21 +128,13 @@ CREATE POLICY "users_select_own_profile" ON profiles
 -- Programme team + admin can read all profiles
 CREATE POLICY "programme_select_all_profiles" ON profiles
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM profiles p
-      WHERE p.id = auth.uid()
-      AND p.role IN ('programme_team', 'admin')
-    )
+    public.get_my_role() IN ('programme_team', 'admin')
   );
 
 -- Admin can update all profiles (approvals)
 CREATE POLICY "admin_update_all_profiles" ON profiles
   FOR UPDATE USING (
-    EXISTS (
-      SELECT 1 FROM profiles p
-      WHERE p.id = auth.uid()
-      AND p.role = 'admin'
-    )
+    public.get_my_role() = 'admin'
   );
 
 -- ============================================================
@@ -161,20 +151,12 @@ DROP POLICY IF EXISTS "admin_delete_comments" ON submission_comments;
 
 CREATE POLICY "programme_select_comments" ON submission_comments
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role IN ('programme_team', 'admin')
-    )
+    public.get_my_role() IN ('programme_team', 'admin')
   );
 
 CREATE POLICY "programme_insert_comments" ON submission_comments
   FOR INSERT WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role IN ('programme_team', 'admin')
-    )
+    public.get_my_role() IN ('programme_team', 'admin')
   );
 
 CREATE POLICY "commenter_update_own" ON submission_comments
@@ -182,11 +164,7 @@ CREATE POLICY "commenter_update_own" ON submission_comments
 
 CREATE POLICY "admin_delete_comments" ON submission_comments
   FOR DELETE USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'admin'
-    )
+    public.get_my_role() = 'admin'
   );
 
 -- ============================================================
