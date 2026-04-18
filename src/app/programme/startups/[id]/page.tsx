@@ -35,14 +35,7 @@ export default async function ProgrammeStartupDetailPage({
     notFound()
   }
 
-  // DEBUG LOGS (Remove in production if needed)
-  console.log('[Programme Discovery Cache]: Hydrating startup node', {
-    id: team.id,
-    name: team.startup_name,
-    has_p1: !!team.p1_problem_statement,
-    has_p3: !!team.p3_trl,
-    status: team.submission_status,
-  })
+
 
   // Fetch comments
   const { data: comments } = await supabase

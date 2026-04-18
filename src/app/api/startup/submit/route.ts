@@ -7,8 +7,6 @@ import { mapDbToFrontend } from '@/utils/mappers'
 
 export async function POST(request: Request) {
   try {
-    console.log('[Submit] Starting submission process')
-    
     const user = await getUserFromRequest()
     if (!user) {
       console.error('[Submit] No user found')
@@ -17,8 +15,6 @@ export async function POST(request: Request) {
         { status: 401 }
       )
     }
-
-    console.log('[Submit] User ID:', user.id)
 
     const supabase = await createServerSupabaseClient()
     
@@ -37,10 +33,8 @@ export async function POST(request: Request) {
       )
     }
 
-    console.log('[Submit] Profile:', profile)
-
     if (profile?.role !== 'startup') {
-      console.error('[Submit] Wrong role:', profile?.role)
+      console.error('[Submit] Forbidden: wrong role:', profile?.role)
       return NextResponse.json(
         { error: 'Only startups can submit profiles' },
         { status: 403 }
@@ -48,7 +42,7 @@ export async function POST(request: Request) {
     }
 
     if (profile?.status !== 'approved') {
-      console.error('[Submit] Not approved:', profile?.status)
+      console.error('[Submit] Forbidden: account not approved:', profile?.status)
       return NextResponse.json(
         { error: 'Your account is not approved yet' },
         { status: 403 }
@@ -57,8 +51,6 @@ export async function POST(request: Request) {
 
     // Get team_id from request body
     const body = await request.json()
-    console.log('[Submit] Request body:', body)
-
     const { team_id } = body
 
     if (!team_id) {
@@ -68,8 +60,6 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
-
-    console.log('[Submit] Team ID:', team_id)
 
     // Verify this team belongs to the current user and get FULL data
     const { data: team, error: teamFetchError } = await supabase
@@ -86,10 +76,8 @@ export async function POST(request: Request) {
       )
     }
 
-    console.log('[Submit] Found team:', team.id)
-
     if (team.startup_user_id !== user.id) {
-      console.error('[Submit] Ownership mismatch:', team.startup_user_id, 'vs', user.id)
+      console.error('[Submit] Ownership mismatch for team:', team_id)
       return NextResponse.json(
         { error: 'You do not own this team' },
         { status: 403 }
@@ -97,7 +85,6 @@ export async function POST(request: Request) {
     }
 
     if (team.submission_status === 'submitted') {
-      console.error('[Submit] Already submitted')
       return NextResponse.json(
         { error: 'This profile is already submitted' },
         { status: 400 }
@@ -107,7 +94,7 @@ export async function POST(request: Request) {
     // Server-Side Score Calculation
     const mappedTeam = mapDbToFrontend(team)
     if (!mappedTeam) {
-      console.error('[Submit] Mapping failed')
+      console.error('[Submit] Mapping failed for team:', team_id)
       throw new Error('Mapping failed')
     }
 
@@ -126,9 +113,8 @@ export async function POST(request: Request) {
     }
 
     const submissionNumber = (count || 0) + 1
-    console.log('[Submit] This will be submission number:', submissionNumber)
 
-    // Update to submitted status
+    // Commit final submission — Admin client bypasses RLS status-lock
     const { data: updated, error: updateError } = await supabaseAdmin
       .from('teams')
       .update({
@@ -150,8 +136,6 @@ export async function POST(request: Request) {
         { status: 500 }
       )
     }
-
-    console.log('[Submit] Successfully submitted:', updated.id)
 
     return NextResponse.json({
       success: true,

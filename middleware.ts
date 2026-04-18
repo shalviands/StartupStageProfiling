@@ -60,8 +60,8 @@ export async function middleware(request: NextRequest) {
 
   // ── User is NOT logged in ────────────────────────────────────────
   if (!user) {
-    // Allow /, /login, and /register
-    if (pathname === '/' || pathname.startsWith('/login') || pathname.startsWith('/register')) {
+    // Allow /, /login, /register, /pending, and /rejected
+    if (pathname === '/' || pathname.startsWith('/login') || pathname.startsWith('/register') || pathname.startsWith('/pending') || pathname.startsWith('/rejected')) {
       return response
     }
     // Anything else (/profiler, /dashboard, etc.) → /login
@@ -91,8 +91,8 @@ export async function middleware(request: NextRequest) {
       }
 
       if (status === 'rejected') {
-        if (!pathname.startsWith('/login')) {
-          return NextResponse.redirect(new URL('/login?error=rejected', request.url))
+        if (!pathname.startsWith('/rejected') && !pathname.startsWith('/login')) {
+          return NextResponse.redirect(new URL('/rejected', request.url))
         }
         return response
       }
