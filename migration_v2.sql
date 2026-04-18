@@ -36,9 +36,19 @@ ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE submission_comments ENABLE ROW LEVEL SECURITY;
 
 -- ============================================================
--- Phase 3: Teams RLS Policies
+-- Phase 3: Helper Functions & Teams RLS Policies
 -- Drop all existing policies first for clean slate
 -- ============================================================
+
+-- Create helper function to bypass RLS recursion AT THE TOP
+CREATE OR REPLACE FUNCTION public.get_my_role()
+RETURNS TEXT
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT role FROM profiles WHERE id = auth.uid();
+$$;
 
 DROP POLICY IF EXISTS "programme_team_read_all" ON teams;
 DROP POLICY IF EXISTS "startup_read_own" ON teams;
@@ -110,16 +120,6 @@ CREATE POLICY "evaluator_update_teams" ON teams
 DROP POLICY IF EXISTS "users_select_own_profile" ON profiles;
 DROP POLICY IF EXISTS "programme_select_all_profiles" ON profiles;
 DROP POLICY IF EXISTS "admin_update_all_profiles" ON profiles;
-
--- Create helper function to bypass RLS recursion
-CREATE OR REPLACE FUNCTION public.get_my_role()
-RETURNS TEXT
-LANGUAGE sql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT role FROM profiles WHERE id = auth.uid();
-$$;
 
 -- Users select own profile
 CREATE POLICY "users_select_own_profile" ON profiles
