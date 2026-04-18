@@ -27,8 +27,12 @@ export default function RecentSubmissionsTable({ teams }: { teams: TeamProfile[]
             <tr key={team.id} className="hover:bg-smoke/30 transition-colors group">
               <td className="py-4">
                 <div className="flex flex-col">
-                  <span className="text-navy font-black text-xs">{team.startupName || 'Unnamed'}</span>
-                  <span className="text-[8px] text-silver uppercase tracking-widest">{team.sector}</span>
+                  <span className="text-navy font-black text-xs">
+                    {team.startupName || (team as any).startup_name || 'Unnamed'}
+                  </span>
+                  <span className="text-[8px] text-silver uppercase tracking-widest">
+                    {team.sector || (team as any).sector}
+                  </span>
                 </div>
               </td>
               <td className="py-4">
