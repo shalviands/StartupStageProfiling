@@ -31,12 +31,17 @@ export default function AllStartupsPage() {
           // Deduplicate: Keep only the latest submission per startupName
           const uniqueMap = new Map()
           
-          // Sort teams so that 'submitted' or 'finalised' come after 'draft' for the same startup
-          // This way, when we iterate, the better status wins in the map
           const sorted = [...mapped].sort((a: any, b: any) => {
-             // Priority: finalised (2) > submitted (1) > draft (0)
-             const getScore = (s: string) => s === 'finalised' ? 2 : s === 'submitted' ? 1 : 0
-             return getScore(a.submission_status) - getScore(b.submission_status)
+             // Priority: submitted (1) > draft (0)
+             const getScore = (s: string) => s === 'submitted' ? 1 : 0
+             const scoreA = getScore(a.submission_status)
+             const scoreB = getScore(b.submission_status)
+             
+             if (scoreA !== scoreB) return scoreA - scoreB
+             
+             // Tie-breaker: prioritization of released diagnoses
+             if (a.diagnosis_released !== b.diagnosis_released) return a.diagnosis_released ? 1 : -1
+             return 0
           })
 
           sorted.forEach((t: any) => {
@@ -45,8 +50,7 @@ export default function AllStartupsPage() {
               uniqueMap.set(key, t)
             } else {
               const existing = uniqueMap.get(key)
-              // If status is better, or status is same but date is newer, replace
-              const getScore = (s: string) => s === 'finalised' ? 2 : s === 'submitted' ? 1 : 0
+              const getScore = (s: string) => s === 'submitted' ? 1 : 0
               const currentScore = getScore(t.submission_status)
               const existingScore = getScore(existing.submission_status)
               
@@ -92,9 +96,12 @@ export default function AllStartupsPage() {
            </div>
         </div>
         <div className="flex items-center gap-3">
-           <button className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
+           <a 
+             href="/api/admin/export"
+             className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+           >
               <Download size={14} /> Export Dataset
-           </button>
+           </a>
         </div>
       </div>
 
@@ -136,10 +143,11 @@ export default function AllStartupsPage() {
                 <th className="p-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50 font-semibold">
+            <tbody className="divide-y divide-slate-50 font-semibold text-sm">
               {filteredTeams.map((team) => {
-                const { overall, p1, p2, p3, p4, p5 } = calculateOverallScore(team)
-                
+                const { overall, averages } = calculateOverallScore(team)
+                const { p1, p2, p3, p4, p5 } = averages
+
                 return (
                   <tr key={team.id} className="hover:bg-slate-50/50 transition-colors group">
                     <td className="p-6">
@@ -181,29 +189,34 @@ export default function AllStartupsPage() {
                        </div>
                     </td>
                     <td className="p-6 text-center text-[10px]">
-                       <div className={cn(
-                         "inline-flex px-3 py-1 rounded-lg font-black uppercase tracking-widest border",
-                         team.submission_status === 'draft' ? "bg-slate-50 text-slate-400 border-slate-100" : team.submission_status === 'submitted' ? "bg-amber-50 text-amber-600 border-amber-100" : team.submission_status === 'finalised' ? "bg-teal-lt text-teal-brand border-teal-brand/10" : "bg-indigo-50 text-indigo-600 border-indigo-100"
-                       )}>
-                         {team.submission_status}
-                       </div>
+                        <div className="flex flex-col gap-1 items-center">
+                          <div className={cn(
+                            "px-3 py-1 rounded-lg font-black uppercase tracking-widest border",
+                            team.submission_status === 'draft' ? "bg-slate-50 text-slate-400 border-slate-100" : "bg-amber-50 text-amber-600 border-amber-100"
+                          )}>
+                            {team.submission_status}
+                          </div>
+                          {team.diagnosis_released && (
+                            <span className="text-[8px] font-black text-teal uppercase tracking-widest">Released</span>
+                          )}
+                        </div>
                     </td>
                     <td className="p-6 text-right">
                        <div className="flex items-center justify-end gap-2">
-                          {team.submission_status === 'submitted' && (
+                          {team.submission_status === 'submitted' && !team.diagnosis_released && (
                              <button 
                                onClick={async () => {
-                                 const res = await fetch('/api/admin/finalise', {
+                                 const res = await fetch('/api/programme/release-diagnosis', {
                                    method: 'POST',
                                    headers: { 'Content-Type': 'application/json' },
-                                   body: JSON.stringify({ teamId: team.id, status: 'finalised' })
+                                   body: JSON.stringify({ teamId: team.id, release: true })
                                  })
                                  if (res.ok) {
-                                   setTeams(prev => prev.map(t => t.id === team.id ? { ...t, submission_status: 'finalised' } : t))
+                                   setTeams(prev => prev.map(t => t.id === team.id ? { ...t, diagnosis_released: true } : t))
                                  }
                                }}
-                               title="Approve & Finalise"
-                               className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all"
+                               title="Release Diagnosis"
+                               className="p-2.5 bg-teal-lt border border-teal/20 rounded-xl text-teal hover:bg-teal hover:text-white transition-all shadow-sm"
                              >
                                 <ShieldCheck size={16} />
                              </button>

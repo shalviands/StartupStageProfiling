@@ -28,12 +28,12 @@ export default async function AdminDashboardPage() {
   const { data: teams } = await supabase.from('teams').select('*')
   
   const submittedCount = teams?.filter(t => t.submission_status === 'submitted').length || 0
-  const finalisedCount = teams?.filter(t => t.submission_status === 'finalised').length || 0
+  const releasedCount = teams?.filter(t => t.diagnosis_released).length || 0
   
   const overallScores = teams?.map(t => calculateOverallScore(t).overall) || []
   const avgOverall = overallScores.length > 0 ? (overallScores.reduce((a, b) => a + b, 0) / overallScores.length).toFixed(1) : '0.0'
   const needingAttention = teams?.filter(t => calculateOverallScore(t).overall < 2.0).length || 0
-
+  
   // Stage Distribution
   const stages = ['IDEA', 'PSF', 'VALIDATION', 'MVP', 'REVENUE', 'GROWTH']
   const stageCounts = stages.map(s => teams?.filter(t => t.detected_stage?.includes(s)).length || 0)
@@ -43,7 +43,7 @@ export default async function AdminDashboardPage() {
     { label: 'Total ventures', val: totalStartups || 0, icon: Users, color: 'text-navy', bg: 'bg-smoke' },
     { label: 'Pending Access', val: pendingApprovals || 0, icon: ShieldCheck, color: 'text-gold', bg: 'bg-gold-lt' },
     { label: 'Submitted forms', val: submittedCount, icon: FileCheck, color: 'text-teal', bg: 'bg-teal-lt' },
-    { label: 'Finalised sets', val: finalisedCount, icon: CheckCircle2, color: 'text-teal', bg: 'bg-teal-lt' },
+    { label: 'Released Diagnosis', val: releasedCount, icon: CheckCircle2, color: 'text-teal', bg: 'bg-teal-lt' },
     { label: 'Avg Peer Score', val: avgOverall, icon: TrendingUp, color: 'text-purple', bg: 'bg-purple-lt' },
     { label: 'At Risk', val: needingAttention, icon: AlertTriangle, color: 'text-coral', bg: 'bg-coral-lt' },
   ]

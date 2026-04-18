@@ -261,3 +261,32 @@ export function scoreLabel(score: number | null): string {
   if (score >= 2.0) return 'Initial / Early'
   return 'Gaps Identified'
 }
+
+/**
+ * Heuristic Roadmap (Section 13 of Blueprint — Fallback)
+ */
+export function getRoadmap(team: TeamProfile): any[] {
+  const { level } = classifyStage(team)
+  
+  if (level <= 1) return [
+    { priority: 'P1', action: 'Define core problem & why us', supportFrom: 'Discovery Coach', byWhen: 'Week 1' },
+    { priority: 'P2', action: 'Conduct 10+ stakeholder discovery interviews', supportFrom: 'Lead Mentor', byWhen: 'Week 2-3' },
+    { priority: 'P1', action: 'Synthesize key insights into value prop', supportFrom: 'Incubation Team', byWhen: 'Week 4' },
+  ]
+  if (level === 2) return [
+    { priority: 'P1', action: 'Identify critical TRL gap & tech risk', supportFrom: 'Tech Mentor', byWhen: 'Week 1-2' },
+    { priority: 'P2', action: 'Competitor deep dive & differentiation audit', supportFrom: 'Incubation Lead', byWhen: 'Week 3' },
+    { priority: 'P1', action: 'Validate solution w/ 5 potential users', supportFrom: 'Market Expert', byWhen: 'Week 4' },
+  ]
+  if (level === 3) return [
+    { priority: 'P1', action: 'Build GTM strategy for initial ICP', supportFrom: 'Strategy Lead', byWhen: 'Week 1-2' },
+    { priority: 'P2', action: 'Draft Business Model Canvas V1', supportFrom: 'Finance Mentor', byWhen: 'Week 3' },
+    { priority: 'P1', action: 'Scope MVP feature lock set', supportFrom: 'Tech Lead', byWhen: 'Week 4' },
+  ]
+  if (level >= 4) return [
+    { priority: 'P0', action: 'Define core retention loop & NORTH STAR', supportFrom: 'Ops Lead', byWhen: 'Week 1' },
+    { priority: 'P1', action: 'Test pricing & unit economic model', supportFrom: 'Strategic Finance', byWhen: 'Week 2-3' },
+    { priority: 'P2', action: 'Build defensibility & switching cost map', supportFrom: 'Advisory Board', byWhen: 'Week 4' },
+  ]
+  return []
+}

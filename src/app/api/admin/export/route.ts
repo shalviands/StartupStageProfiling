@@ -23,11 +23,11 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // Fetch finalised teams
+    // Fetch released teams (Blueprint v2.0 logic)
     const { data: teams, error } = await supabase
       .from('teams')
       .select('*')
-      .eq('submission_status', 'finalised')
+      .eq('diagnosis_released', true)
       .order('created_at', { ascending: false })
 
     if (error) throw error
@@ -37,7 +37,7 @@ export async function GET() {
       const mapped = mapDbToFrontend(t)
       if (!mapped) return null
       
-      const scores = calculateOverallScore(mapped)
+      const { overall, averages } = calculateOverallScore(mapped)
       
       return {
         'Submission ID': t.id.slice(0, 8),
@@ -46,17 +46,17 @@ export async function GET() {
         'Institution': t.institution,
         'Date Submitted': t.created_at ? new Date(t.created_at).toLocaleDateString() : 'N/A',
         'Submitted By (Form)': t.interviewer,
-        'Overall Score': scores.overall.toFixed(2),
+        'Overall Score': overall.toFixed(2),
         'Detected Stage': t.detected_stage,
-        'P1 (Character)': scores.p1.toFixed(1),
-        'P2 (Customer)': scores.p2.toFixed(1),
-        'P3 (Product)': scores.p3.toFixed(1),
-        'P4 (Differentiation)': scores.p4.toFixed(1),
-        'P5 (Market)': scores.p5.toFixed(1),
-        'P6 (Business)': scores.p6.toFixed(1),
-        'P7 (Traction)': scores.p7.toFixed(1),
-        'P8 (Team)': scores.p8.toFixed(1),
-        'P9 (Moats)': scores.p9.toFixed(1),
+        'P1 (Character)': averages.p1.toFixed(1),
+        'P2 (Customer)': averages.p2.toFixed(1),
+        'P3 (Product)': averages.p3.toFixed(1),
+        'P4 (Differentiation)': averages.p4.toFixed(1),
+        'P5 (Market)': averages.p5.toFixed(1),
+        'P6 (Business)': averages.p6.toFixed(1),
+        'P7 (Traction)': averages.p7.toFixed(1),
+        'P8 (Team)': averages.p8.toFixed(1),
+        'P9 (Moats)': averages.p9.toFixed(1),
       }
     }).filter(Boolean)
 

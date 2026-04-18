@@ -89,23 +89,23 @@ export default function AdminStartupDetailPage() {
 
   // Visibility toggle removed as per schema restructuring (dropped from DB)
 
-  async function markFinalised() {
+  async function toggleRelease() {
     if (!localTeam) return
-    const nextStatus = localTeam.submission_status === 'finalised' ? 'submitted' : 'finalised'
+    const nextState = !localTeam.diagnosis_released
     try {
       setSaving(true)
-      const res = await fetch('/api/admin/finalise', {
+      const res = await fetch('/api/programme/release-diagnosis', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ teamId: localTeam.id, status: nextStatus })
+        body: JSON.stringify({ teamId: localTeam.id, release: nextState })
       })
       
-      if (!res.ok) throw new Error('Failed to update status')
+      if (!res.ok) throw new Error('Failed to update release state')
       
-      setLocalTeam({ ...localTeam, submission_status: nextStatus })
+      setLocalTeam({ ...localTeam, diagnosis_released: nextState })
     } catch (err) {
-      console.error('[AdminDetail] Finalise failed:', err)
-      alert('Failed to update status. Please try again.')
+      console.error('[AdminDetail] Release toggle failed:', err)
+      alert('Failed to update release state. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -118,7 +118,7 @@ export default function AdminStartupDetailPage() {
     </div>
   )
 
-  const isFinalised = localTeam.submission_status === 'finalised'
+  const isReleased = localTeam.diagnosis_released
 
   return (
     <div className="flex flex-col h-full bg-[#F4F6F9]">
@@ -138,14 +138,14 @@ export default function AdminStartupDetailPage() {
           <div className="h-6 w-px bg-slate-200" />
           
           <div className="flex flex-col">
-            <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none">{localTeam.startupName || 'Profiling Session'}</h1>
+            <h1 className="text-xl font-black text-navy tracking-tight leading-none">{localTeam.startupName || 'Profiling Session'}</h1>
             <div className="flex items-center gap-2 mt-1.5">
-               <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">{localTeam.id.slice(0, 8)}</span>
+               <span className="text-[9px] font-black text-silver uppercase tracking-[0.2em]">{localTeam.id.slice(0, 8)}</span>
                <div className={cn(
                  "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest",
-                 isFinalised ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-amber-50 text-amber-600 border border-amber-100"
+                 isReleased ? "bg-teal-lt text-teal border border-teal/10" : "bg-gold-lt text-gold border border-gold/10"
                )}>
-                 {localTeam.submission_status}
+                 {isReleased ? 'DIAGNOSIS RELEASED' : 'UNDER EVALUATION'}
                </div>
             </div>
           </div>
@@ -158,20 +158,18 @@ export default function AdminStartupDetailPage() {
              </div>
            )}
 
-           <div className="flex items-center gap-2 p-1.5 bg-slate-100 rounded-2xl border border-slate-200">
-              {/* Visibility toggle removed */}
-              
+           <div className="flex items-center gap-2 p-1.5 bg-smoke rounded-2xl border border-rule">
               <button 
-                onClick={markFinalised}
+                onClick={toggleRelease}
                 className={cn(
-                  "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
-                  isFinalised 
-                    ? "bg-emerald-600 text-white shadow-xl shadow-emerald-100" 
-                    : "bg-amber-100/50 text-amber-700 hover:bg-amber-100 hover:text-amber-900 border border-amber-200"
+                  "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-sm",
+                  isReleased 
+                    ? "bg-teal text-white" 
+                    : "bg-gold text-navy"
                 )}
               >
-                {isFinalised ? <CheckCircle2 size={14} /> : <AlertTriangle size={14} />}
-                {isFinalised ? 'Approved & Finalised' : 'Approve & Finalise Profile'}
+                {isReleased ? <CheckCircle2 size={14} /> : <Sparkles size={14} />}
+                {isReleased ? 'Diagnosis Released' : 'Release Diagnosis'}
               </button>
            </div>
 

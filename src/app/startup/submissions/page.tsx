@@ -117,7 +117,7 @@ export default function SubmissionsPage() {
                 </td>
                 <td className="px-8 py-6 text-right">
                    <div className="flex items-center justify-end gap-3">
-                      {sub.submission_status === 'finalised' ? (
+                      {sub.diagnosis_released ? (
                         <PDFDownloadButton team={sub} />
                       ) : (
                         <Link 
@@ -129,7 +129,7 @@ export default function SubmissionsPage() {
                         </Link>
                       )}
                       
-                      {sub.submission_status !== 'finalised' && (
+                      {sub.submission_status === 'draft' && (
                         <button 
                           onClick={() => handleDelete(sub.id)}
                           className="p-2.5 text-silver hover:text-coral hover:bg-coral-lt rounded-xl transition-all"
