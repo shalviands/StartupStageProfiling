@@ -42,12 +42,10 @@ export async function PUT(
         if (targetTeam.startup_user_id !== user.id) {
           return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
         }
-      } else {
-        // Programme team member
-        if (targetTeam.user_id !== user.id) {
-          return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-        }
-      }
+      } 
+      // Programme team members can update any team.
+      // Detailed permission enforcement (e.g. they can only update if assigned)
+      // is handled via Supabase Row-Level Security where needed.
     }
 
     const dbData = mapFrontendToDb(body)

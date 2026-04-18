@@ -44,6 +44,8 @@ export async function GET(
       if (!team.diagnosis_released) {
         return NextResponse.json({ error: 'Diagnosis not yet released' }, { status: 403 })
       }
+      // Ensure admin_notes are completely removed before passing to the PDF renderer
+      delete team.admin_notes
     }
 
     // Generate PDF buffer

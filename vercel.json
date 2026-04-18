@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "src/app/api/teams/[id]/analyse/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/teams/[id]/roadmap/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}

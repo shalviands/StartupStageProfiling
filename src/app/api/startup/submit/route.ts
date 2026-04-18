@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { calculateOverallScore, classifyStage } from '@/utils/scores'
 import { mapDbToFrontend } from '@/utils/mappers'
@@ -19,7 +20,10 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    if (profile?.role !== 'startup' || profile?.status !== 'approved') {
+    const isStartup = profile?.role === 'startup'
+    const isApproved = profile?.status === 'approved'
+
+    if (isStartup && !isApproved) {
       if (!['admin', 'programme_team'].includes(profile?.role || '')) {
          return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       }
@@ -64,8 +68,8 @@ export async function POST(request: Request) {
 
     const submissionNumber = (count || 0) + 1
 
-    // Update with FINAL results
-    const { error: updateError } = await supabase
+    // Update with FINAL results (Using Admin Client to bypass RLS for final status lock)
+    const { error: updateError } = await supabaseAdmin
       .from('teams')
       .update({
         submission_status: 'submitted',

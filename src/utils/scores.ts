@@ -58,6 +58,10 @@ export function calculateParameterAverage(team: any, prefix: string): number {
   // Iterate through all fields starting with prefix and ending with _score
   Object.keys(team).forEach(key => {
     if (key.startsWith(`${prefix}_`) && key.endsWith('_score')) {
+      // Skip trl_score/crl_score when prefix is p3/p7 (handled above)
+      if (prefix === 'p3' && key === 'p3_trl_score') return
+      if (prefix === 'p7' && key === 'p7_crl_score') return
+
       const val = team[key]
       if (typeof val === 'number' && val > 0 && val <= 5) {
         scores.push(val)
