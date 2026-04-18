@@ -40,19 +40,27 @@ function LoginForm() {
 
     // Role-aware redirection logic
     if (authData.user) {
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role, status')
         .eq('id', authData.user.id)
         .single()
+
+      if (profileError) {
+        console.error('[Login] Error fetching profile:', profileError)
+        setError(`Database Error: ${profileError.message}`)
+        setLoading(false)
+        return
+      }
 
       if (profile) {
         const route = getHomeRouteForRole(profile.role, profile.status)
         router.push(route)
         router.refresh()
       } else {
-        router.push('/')
-        router.refresh()
+        setError('Your account exists but has no profile record. Please register again or contact support.')
+        setLoading(false)
+        return
       }
     }
   }
