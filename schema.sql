@@ -162,7 +162,8 @@ CREATE TABLE IF NOT EXISTS teams (
   -- 3-Role Extensions
   startup_user_id             UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   submission_status           TEXT DEFAULT 'draft',
-  diagnosis_visible           BOOLEAN DEFAULT FALSE,
+  submission_number           INT DEFAULT 1,
+  diagnosis_released          BOOLEAN DEFAULT FALSE,
   admin_notes                 TEXT DEFAULT '',
   roadmap                     JSONB DEFAULT '[]'::jsonb
 );
@@ -302,8 +303,13 @@ ALTER TABLE teams ADD COLUMN IF NOT EXISTS p9_bonus_active            BOOLEAN DE
 -- New 3-Role Columns
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS startup_user_id             UUID REFERENCES auth.users(id) ON DELETE SET NULL;
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS submission_status           TEXT DEFAULT 'draft';
-ALTER TABLE teams ADD COLUMN IF NOT EXISTS diagnosis_visible           BOOLEAN DEFAULT FALSE;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS submission_number           INT DEFAULT 1;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS diagnosis_released          BOOLEAN DEFAULT FALSE;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS deleted_at                  TIMESTAMPTZ;
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS admin_notes                 TEXT DEFAULT '';
+
+-- Drop legacy diagnosis schema field if it was created
+ALTER TABLE teams DROP COLUMN IF EXISTS diagnosis_visible;
 
 -- Cleanup legacy columns (optional, but requested for source-of-truth purity)
 ALTER TABLE teams DROP COLUMN IF EXISTS problem_statement;

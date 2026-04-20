@@ -49,9 +49,9 @@ export async function POST(request: Request) {
       )
     }
 
-    // Get team_id from request body
+    // Get team_id & team_data from request body
     const body = await request.json()
-    const { team_id } = body
+    const { team_id, team_data } = body
 
     if (!team_id) {
       console.error('[Submit] No team_id provided')
@@ -98,8 +98,20 @@ export async function POST(request: Request) {
       throw new Error('Mapping failed')
     }
 
-    const { stage } = classifyStage(mappedTeam)
-    const { overall, isBonusActive } = calculateOverallScore(mappedTeam)
+    // Combine existing team object with requested changes (if any frontend sync data)
+    let finalFrontendTeam = { ...mappedTeam }
+    
+    if (team_data) {
+      // Clean protected fields from frontend payload
+      delete team_data.submission_status
+      delete team_data.diagnosis_released
+      delete team_data.submission_number
+      
+      finalFrontendTeam = { ...finalFrontendTeam, ...team_data }
+    }
+
+    const { stage } = classifyStage(finalFrontendTeam)
+    const { overall, isBonusActive } = calculateOverallScore(finalFrontendTeam)
 
     // Count existing submissions for this user
     const { count, error: countError } = await supabase
@@ -114,17 +126,21 @@ export async function POST(request: Request) {
 
     const submissionNumber = (count || 0) + 1
 
+    // Convert merged frontend state back to DB schema format
+    const dbUpdateData = {
+      ...mapFrontendToDb(finalFrontendTeam),
+      submission_status: 'submitted',
+      submission_number: submissionNumber,
+      detected_stage: stage,
+      overall_weighted_score: overall,
+      p9_bonus_active: isBonusActive,
+      updated_at: new Date().toISOString()
+    }
+
     // Commit final submission — Admin client bypasses RLS status-lock
     const { data: updated, error: updateError } = await supabaseAdmin
       .from('teams')
-      .update({
-        submission_status: 'submitted',
-        submission_number: submissionNumber,
-        detected_stage: stage,
-        overall_weighted_score: overall,
-        p9_bonus_active: isBonusActive,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbUpdateData)
       .eq('id', team_id)
       .select()
       .single()
