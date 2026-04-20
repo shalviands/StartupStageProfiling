@@ -227,9 +227,9 @@ export default function AdminStartupDetailPage() {
 
              <SectionTabs activeTab={activeSection} setActiveTab={setActiveSection} />
 
-             <div className="bg-white rounded-[32px] border border-slate-200 p-10 shadow-sm">
+              <div className="bg-white rounded-[32px] border border-slate-200 p-10 shadow-sm">
                 {activeSection === 0 ? (
-                  <Section1BasicInfo team={localTeam} onChange={scheduleUpdate} />
+                  <Section1BasicInfo team={localTeam} onChange={scheduleUpdate} isReadOnly={true} />
                 ) : (
                   <ParameterSection
                     parameterId={PARAMETERS_CONFIG[activeSection - 1].id}
@@ -240,6 +240,8 @@ export default function AdminStartupDetailPage() {
                     deepDiveQs={PARAMETERS_CONFIG[activeSection - 1].deepDiveQs}
                     data={localTeam}
                     onChange={scheduleUpdate}
+                    isAdmin={true}
+                    isReadOnlyAnswers={true}
                   />
                 )}
              </div>

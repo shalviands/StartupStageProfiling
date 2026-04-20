@@ -24,6 +24,8 @@ interface ParameterSectionProps {
   data: TeamProfile
   onChange: (field: string, value: any) => void
   hideObservation?: boolean
+  isAdmin?: boolean
+  isReadOnlyAnswers?: boolean
 }
 
 export default function ParameterSection({
@@ -35,10 +37,12 @@ export default function ParameterSection({
   deepDiveQs,
   data,
   onChange,
-  hideObservation = false
+  hideObservation = false,
+  isAdmin = false,
+  isReadOnlyAnswers = false
 }: ParameterSectionProps) {
   const { level } = classifyStage(data)
-  const isDeepDiveUnlocked = level >= 3
+  const isDeepDiveUnlocked = isAdmin || level >= 3
   const avg = calculateParameterAverage(data, parameterId)
 
   const renderField = (q: Question) => {
@@ -79,7 +83,11 @@ export default function ParameterSection({
             value={val}
             onChange={(e) => onChange(fieldName, e.target.value)}
             placeholder={q.placeholder}
-            className="w-full bg-slate-50/50 border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-slate-900 min-h-[100px] resize-none"
+            readOnly={isReadOnlyAnswers}
+            className={cn(
+              "w-full bg-slate-50/50 border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-slate-900 min-h-[100px] resize-none",
+              isReadOnlyAnswers && "cursor-default text-slate-600"
+            )}
           />
         )}
 
@@ -88,7 +96,11 @@ export default function ParameterSection({
             type="number"
             value={val}
             onChange={(e) => onChange(fieldName, Number(e.target.value))}
-            className="w-full bg-slate-50/50 border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-slate-900"
+            readOnly={isReadOnlyAnswers}
+            className={cn(
+              "w-full bg-slate-50/50 border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-slate-900",
+              isReadOnlyAnswers && "cursor-default text-slate-600"
+            )}
           />
         )}
 
@@ -96,7 +108,11 @@ export default function ParameterSection({
           <select
             value={val}
             onChange={(e) => onChange(fieldName, q.id === 'trl' || q.id === 'crl' ? Number(e.target.value) : e.target.value)}
-            className="w-full bg-slate-50/50 border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-slate-900 appearance-none"
+            disabled={isReadOnlyAnswers}
+            className={cn(
+              "w-full bg-slate-50/50 border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-slate-900 appearance-none",
+              isReadOnlyAnswers && "cursor-default text-slate-600 opacity-80"
+            )}
           >
             <option value="">Select Option...</option>
             {q.options?.map(opt => (
@@ -116,22 +132,25 @@ export default function ParameterSection({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {members.map((m: any, idx: number) => (
             <div key={idx} className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm relative group overflow-hidden">
-               <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                  onClick={() => {
-                    const newMembers = [...members]
-                    newMembers.splice(idx, 1)
-                    onChange('p8_team_members', newMembers)
-                  }}
-                  className="text-rose-400 hover:text-rose-600 transition-colors"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
+               {!isReadOnlyAnswers && (
+                 <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    onClick={() => {
+                      const newMembers = [...members]
+                      newMembers.splice(idx, 1)
+                      onChange('p8_team_members', newMembers)
+                    }}
+                    className="text-rose-400 hover:text-rose-600 transition-colors"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+               )}
               <input 
-                className="w-full font-bold text-slate-800 text-sm mb-2 focus:outline-none" 
+                className="w-full font-bold text-slate-800 text-sm mb-2 focus:outline-none disabled:bg-transparent" 
                 placeholder="Name" 
                 value={m.name} 
+                readOnly={isReadOnlyAnswers}
                 onChange={(e) => {
                   const items = [...members]
                   items[idx].name = e.target.value
@@ -140,9 +159,10 @@ export default function ParameterSection({
               />
               <div className="flex gap-4">
                 <input 
-                  className="flex-1 text-xs text-slate-700 font-semibold focus:outline-none" 
+                  className="flex-1 text-xs text-slate-700 font-semibold focus:outline-none disabled:bg-transparent" 
                   placeholder="Role (e.g. CEO)" 
                   value={m.role}
+                  readOnly={isReadOnlyAnswers}
                   onChange={(e) => {
                     const items = [...members]
                     items[idx].role = e.target.value
@@ -150,9 +170,10 @@ export default function ParameterSection({
                   }}
                 />
                 <input 
-                  className="flex-1 text-xs text-slate-500 focus:outline-none italic" 
+                  className="flex-1 text-xs text-slate-500 focus:outline-none italic disabled:bg-transparent" 
                   placeholder="Prior Experience/Skill" 
                   value={m.skill}
+                  readOnly={isReadOnlyAnswers}
                   onChange={(e) => {
                     const items = [...members]
                     items[idx].skill = e.target.value
@@ -162,13 +183,15 @@ export default function ParameterSection({
               </div>
             </div>
           ))}
-          <button 
-            onClick={() => onChange('p8_team_members', [...members, { name: '', role: '', skill: '' }])}
-            className="border-2 border-dashed border-slate-300 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 text-slate-600 hover:border-slate-500 hover:text-slate-900 transition-all font-bold"
-          >
-            <Plus size={20} />
-            <span className="text-[10px] font-black uppercase tracking-widest">Add Founder/Core Member</span>
-          </button>
+          {!isReadOnlyAnswers && (
+            <button 
+              onClick={() => onChange('p8_team_members', [...members, { name: '', role: '', skill: '' }])}
+              className="border-2 border-dashed border-slate-300 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 text-slate-600 hover:border-slate-500 hover:text-slate-900 transition-all font-bold"
+            >
+              <Plus size={20} />
+              <span className="text-[10px] font-black uppercase tracking-widest">Add Founder/Core Member</span>
+            </button>
+          )}
         </div>
       </div>
     )

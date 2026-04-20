@@ -1,14 +1,16 @@
 'use client'
 
 import React from 'react'
+import { cn } from '@/utils/cn'
 import type { TeamProfile } from '@/types/team.types'
 
 interface Props {
   team: TeamProfile
   onChange: (field: string, value: any) => void
+  isReadOnly?: boolean
 }
 
-export default function Section1BasicInfo({ team, onChange }: Props) {
+export default function Section1BasicInfo({ team, onChange, isReadOnly = false }: Props) {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Session Hero */}
@@ -25,7 +27,11 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
               <input 
                 type="text" value={team.startupName}
                 onChange={(e) => onChange('startupName', e.target.value)}
-                className="w-full bg-white/10 border border-white/30 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/40 outline-none transition-all placeholder:text-silver/70 font-medium"
+                readOnly={isReadOnly}
+                className={cn(
+                  "w-full bg-white/10 border border-white/30 rounded-2xl p-4 text-sm text-white focus:bg-white/20 focus:ring-1 focus:ring-white/40 outline-none transition-all placeholder:text-silver/70 font-medium",
+                  isReadOnly && "cursor-default opacity-80"
+                )}
                 placeholder="e.g. AgriFlow Systems"
               />
             </div>
@@ -43,7 +49,11 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
             <select 
               value={team.sector}
               onChange={(e) => onChange('sector', e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm appearance-none transition-all"
+              disabled={isReadOnly}
+              className={cn(
+                "w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm appearance-none transition-all",
+                isReadOnly && "cursor-default opacity-60"
+              )}
             >
               <option value="">Select Sector...</option>
               {['Agriculture', 'Healthcare', 'EdTech', 'FinTech', 'Sustainability', 'Hardware', 'SaaS', 'E-Commerce', 'CleanTech', 'Other'].map(s => (
@@ -63,7 +73,11 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
           <input 
             type="text" value={team.institution}
             onChange={(e) => onChange('institution', e.target.value)}
-            className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm transition-all placeholder:text-silver"
+            readOnly={isReadOnly}
+            className={cn(
+              "w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm transition-all placeholder:text-silver",
+              isReadOnly && "cursor-default opacity-60"
+            )}
             placeholder="e.g. NIT Karnataka"
           />
         </div>
@@ -75,7 +89,11 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
           <input 
             type="text" value={team.teamSize}
             onChange={(e) => onChange('teamSize', e.target.value)}
-            className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm transition-all placeholder:text-silver"
+            readOnly={isReadOnly}
+            className={cn(
+              "w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none shadow-sm transition-all placeholder:text-silver",
+              isReadOnly && "cursor-default opacity-60"
+            )}
             placeholder="e.g. 3 Cofounders"
           />
         </div>
@@ -89,7 +107,11 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
              <input 
               type="date" value={team.interviewDate}
               onChange={(e) => onChange('interviewDate', e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none transition-all"
+              readOnly={isReadOnly}
+              className={cn(
+                "w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none transition-all",
+                isReadOnly && "cursor-default opacity-60"
+              )}
             />
           </div>
           <div className="space-y-3">
@@ -97,7 +119,11 @@ export default function Section1BasicInfo({ team, onChange }: Props) {
             <input 
               type="text" value={team.interviewer}
               onChange={(e) => onChange('interviewer', e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none transition-all placeholder:text-silver"
+              readOnly={isReadOnly}
+              className={cn(
+                "w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm text-slate-900 focus:ring-2 focus:ring-slate-900/10 outline-none transition-all placeholder:text-silver",
+                isReadOnly && "cursor-default opacity-60"
+              )}
               placeholder="Your Full Name"
             />
           </div>
