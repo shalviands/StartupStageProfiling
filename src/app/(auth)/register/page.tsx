@@ -14,7 +14,6 @@ export default function RegisterPage() {
     startupName: '',
     email: '',
     password: '',
-    password: '',
     confirmPassword: '',
     cohortId: '',
   })
