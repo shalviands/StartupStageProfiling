@@ -3,7 +3,7 @@ import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { calculateOverallScore, classifyStage } from '@/utils/scores'
-import { mapDbToFrontend } from '@/utils/mappers'
+import { mapDbToFrontend, mapFrontendToDb } from '@/utils/mappers'
 
 export async function POST(request: Request) {
   try {
