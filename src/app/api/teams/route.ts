@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 
 export async function GET() {
   try {
@@ -24,7 +25,13 @@ export async function GET() {
     // Avoid joins on columns without explicit FKs like startup_user_id
     // to prevent PGRST200 crashes.
     
-    let query = supabase.from('teams').select(selectFields).order('created_at', { ascending: false })
+    // For startups, use the admin client to bypass RLS since the app level
+    // properly limits to their own data via the .or() filter. This prevents 
+    // situations where a startup re-logs in and their data is blocked because
+    // the user_id mismatch with RLS's auth.uid() check.
+    const client = role === 'startup' ? supabaseAdmin : supabase
+    
+    let query = client.from('teams').select(selectFields).order('created_at', { ascending: false })
  
     if (role === 'startup') {
       query = query.or(`startup_user_id.eq.${user.id},user_id.eq.${user.id}`).is('deleted_at', null)

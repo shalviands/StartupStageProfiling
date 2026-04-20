@@ -133,6 +133,21 @@ export default function StartupProfilePage() {
     try {
       if (saveTimer.current) clearTimeout(saveTimer.current)
 
+      // FIX 1: Flush the full current localTeam state to the database before submission
+      // This ensures any pending debounced changes are saved before locking.
+      const syncRes = await fetch(`/api/teams/${localTeam.id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        // Send the entire localTeam object minus any top-level meta properties if needed,
+        // although mapFrontendToDb handles the full Partial<TeamProfile>.
+        body: JSON.stringify(localTeam)
+      })
+      
+      if (!syncRes.ok) {
+        throw new Error('Pre-submission sync failed')
+      }
+
       const res = await fetch('/api/startup/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
