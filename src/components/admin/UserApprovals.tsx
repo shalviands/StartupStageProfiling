@@ -14,7 +14,7 @@ interface UserProfile {
   created_at: string
 }
 
-export default function UserApprovals() {
+export default function UserApprovals({ cohortId }: { cohortId?: string }) {
   const [users, setUsers] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState<string | null>(null)
@@ -22,11 +22,13 @@ export default function UserApprovals() {
 
   useEffect(() => {
     fetchPendingUsers()
-  }, [])
+  }, [cohortId])
 
   async function fetchPendingUsers() {
+    setLoading(true)
     try {
-      const res = await fetch('/api/admin/pending-users')
+      const url = cohortId ? `/api/admin/pending-users?cohortId=${cohortId}` : '/api/admin/pending-users'
+      const res = await fetch(url)
       const data = await res.json()
       setUsers(data)
       

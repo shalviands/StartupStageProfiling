@@ -32,6 +32,19 @@ export async function POST(req: Request) {
   const updateData: any = { status }
   if (role) updateData.role = role
 
+  if (status === 'approved') {
+    // Fetch the requested cohort
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('requested_cohort_id')
+      .eq('id', userId)
+      .single()
+    
+    if (profile?.requested_cohort_id) {
+       updateData.cohort_id = profile.requested_cohort_id
+    }
+  }
+
   const { error } = await supabase
     .from('profiles')
     .update(updateData)

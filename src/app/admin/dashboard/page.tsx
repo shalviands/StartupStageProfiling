@@ -16,17 +16,39 @@ import {
   LayoutGrid
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
-import Link from 'next/link'
 import UserApprovals from '@/components/admin/UserApprovals'
 import CohortInsights from '@/components/admin/CohortInsights'
+import CohortSelector from '@/components/admin/CohortSelector'
+import { getUserFromRequest } from '@/lib/supabase/getUser'
 
-export default async function AdminDashboardPage() {
+export default async function AdminDashboardPage({ searchParams }: { searchParams: { cohortId?: string } }) {
+  const user = await getUserFromRequest()
   const supabase = await createServerSupabaseClient()
 
-  // Fetch all necessary stats
-  const { count: totalStartups } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'startup')
-  const { count: pendingApprovals } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'startup').eq('status', 'pending')
-  const { data: teams } = await supabaseAdmin.from('teams').select('*')
+  // 1. Fetch Admin's Cohorts
+  const { data: adminCohorts } = await supabase
+    .from('cohorts')
+    .select('id, name')
+    .eq('admin_id', user?.id)
+  
+  const activeCohortId = searchParams.cohortId || adminCohorts?.[0]?.id
+
+  // 2. Fetch Stats filtered by cohort if needed
+  let startupQuery = supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'startup')
+  let pendingQuery = supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'startup').eq('status', 'pending')
+  let teamsQuery = supabaseAdmin.from('teams').select('*')
+
+  if (activeCohortId) {
+    startupQuery = startupQuery.eq('cohort_id', activeCohortId)
+    pendingQuery = pendingQuery.eq('requested_cohort_id', activeCohortId)
+    teamsQuery = teamsQuery.eq('cohort_id', activeCohortId)
+  }
+
+  const [{ count: totalStartups }, { count: pendingApprovals }, { data: teams }] = await Promise.all([
+    startupQuery,
+    pendingQuery,
+    teamsQuery
+  ])
   
   const submittedCount = teams?.filter(t => t.submission_status === 'submitted').length || 0
   const releasedCount = teams?.filter(t => t.diagnosis_released).length || 0
@@ -62,8 +84,11 @@ export default async function AdminDashboardPage() {
           <p className="text-sm text-slate font-semibold">Profiler performance and cohort integrity monitoring.</p>
         </div>
         <div className="flex items-center gap-4">
+           {adminCohorts && adminCohorts.length > 0 && (
+             <CohortSelector cohorts={adminCohorts} activeCohortId={activeCohortId || null} />
+           )}
            <a 
-             href="/api/admin/export"
+             href={`/api/admin/export${activeCohortId ? `?cohortId=${activeCohortId}` : ''}`}
              className="px-6 py-3.5 bg-navy text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl shadow-navy/20 active:scale-95 flex items-center gap-3"
            >
               <FileCheck size={16} className="text-gold" />
@@ -73,7 +98,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* AI Strategic Insights */}
-      <CohortInsights />
+      <CohortInsights cohortId={activeCohortId} />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
@@ -102,7 +127,7 @@ export default async function AdminDashboardPage() {
               </div>
            </div>
            
-           <UserApprovals />
+           <UserApprovals cohortId={activeCohortId} />
 
            {/* Stage Distribution (Moved below approvals or side-by-side) */}
            <div className="bg-white rounded-[40px] border border-rule p-10 shadow-sm mt-10">

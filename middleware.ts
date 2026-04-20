@@ -119,26 +119,25 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // 2. Programme Team Role
+    // 2. Programme Team Role (Super Admin)
     if (role === 'programme_team') {
       if (pathname === '/' || pathname.startsWith('/login')) {
-        return NextResponse.redirect(new URL('/programme/dashboard', request.url))
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url)) 
       }
-      // Restrict access to other areas
-      if ((pathname.startsWith('/admin') || pathname.startsWith('/startup')) && !pathname.startsWith('/api/')) {
-        return NextResponse.redirect(new URL('/programme/dashboard', request.url))
-      }
-      // Redirect from old /profiler to new /programme/dashboard or similar?
-      // Actually /profiler was specifically for them before.
-      if (pathname === '/profiler') {
-        return NextResponse.redirect(new URL('/programme/dashboard', request.url))
+      // Programme team has full access to /programme and /admin
+      if (pathname.startsWith('/startup') && !pathname.startsWith('/api/')) {
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url))
       }
       return response
     }
 
-    // 3. Admin Role
+    // 3. Admin Role (Cohort Lead)
     if (role === 'admin') {
       if (pathname === '/' || pathname.startsWith('/login')) {
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+      }
+      // Restricted from /programme (management area)
+      if (pathname.startsWith('/programme') && !pathname.startsWith('/api/')) {
         return NextResponse.redirect(new URL('/admin/dashboard', request.url))
       }
       return response

@@ -14,14 +14,31 @@ export default function RegisterPage() {
     startupName: '',
     email: '',
     password: '',
+    password: '',
     confirmPassword: '',
+    cohortId: '',
   })
+  const [cohorts, setCohorts] = useState<{id: string, name: string}[]>([])
+  const [loadingCohorts, setLoadingCohorts] = useState(true)
   const [error, setError]   = useState('')
   const [loading, setLoading] = useState(false)
 
   function update(key: string, value: string) {
     setForm(prev => ({ ...prev, [key]: value }))
   }
+
+  useState(() => {
+    fetch('/api/cohorts?mode=public')
+      .then(res => res.json())
+      .then(data => {
+        setCohorts(data || [])
+        setLoadingCohorts(false)
+      })
+      .catch(err => {
+        console.error('Failed to load cohorts', err)
+        setLoadingCohorts(false)
+      })
+  })
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault()
@@ -33,6 +50,10 @@ export default function RegisterPage() {
     }
     if (form.password.length < 8) {
       setError('Password must be at least 8 characters')
+      return
+    }
+    if (!form.cohortId) {
+      setError('Please select a cohort to join')
       return
     }
 
@@ -50,7 +71,8 @@ export default function RegisterPage() {
         data: {
           full_name: form.fullName.trim(),
           startup_name: form.startupName.trim(),
-          role: 'startup', // Default role for common signup
+          role: 'startup', 
+          requested_cohort_id: form.cohortId,
         },
       },
     })
@@ -66,7 +88,11 @@ export default function RegisterPage() {
       await fetch('/api/auth/sync-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName: form.fullName.trim(), startupName: form.startupName.trim() })
+        body: JSON.stringify({ 
+          fullName: form.fullName.trim(), 
+          startupName: form.startupName.trim(),
+          requestedCohortId: form.cohortId
+        })
       })
     } catch (e) {
       console.error('[Registration] Profile sync check failed', e)
@@ -128,6 +154,33 @@ export default function RegisterPage() {
              required
              className="w-full border border-rule rounded-xl px-4 py-3 text-sm text-navy bg-white outline-none focus:border-navy focus:ring-4 focus:ring-navy/5 placeholder:text-silver/60 transition-all font-medium"
            />
+        </div>
+
+        <div className="space-y-2">
+           <label className="text-[10px] font-extrabold text-navy uppercase tracking-widest block pl-1">
+             Select Cohort
+           </label>
+           <div className="relative">
+             <select
+               value={form.cohortId}
+               onChange={e => update('cohortId', e.target.value)}
+               required
+               disabled={loadingCohorts}
+               className="w-full border border-rule rounded-xl px-4 py-3 text-sm text-navy bg-white outline-none focus:border-navy focus:ring-4 focus:ring-navy/5 appearance-none font-medium transition-all"
+             >
+               <option value="">Select a cohort...</option>
+               {cohorts.map(c => (
+                 <option key={c.id} value={c.id}>{c.name}</option>
+               ))}
+             </select>
+             {loadingCohorts ? (
+               <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 animate-spin text-silver" size={14} />
+             ) : (
+               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-silver">
+                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+               </div>
+             )}
+           </div>
         </div>
 
         <div className="space-y-2">

@@ -10,7 +10,7 @@ export async function GET() {
 
     const supabase = await createServerSupabaseClient()
     const { data: profile } = await supabase
-      .from('profiles').select('role').eq('id', user.id).single()
+      .from('profiles').select('role, cohort_id').eq('id', user.id).single()
 
     const role = profile?.role ?? 'startup'
     const isPowerUser = role === 'admin' || role === 'programme_team'
@@ -34,6 +34,14 @@ export async function GET() {
       query = query.or(`startup_user_id.eq.${user.id},user_id.eq.${user.id}`).is('deleted_at', null)
     } else if (role === 'programme_team') {
       query = query.is('deleted_at', null)
+    } else if (role === 'admin') {
+      // Admins only see startups in their approved cohort
+      if (profile?.cohort_id) {
+        query = query.eq('cohort_id', profile.cohort_id).is('deleted_at', null)
+      } else {
+        // If no cohort assigned to admin, show nothing unless Super Admin
+        query = query.eq('id', '00000000-0000-0000-0000-000000000000') 
+      }
     }
  
     const { data, error } = await query
@@ -54,7 +62,7 @@ export async function POST(request: Request) {
     const supabase = await createServerSupabaseClient()
 
     const { data: profile } = await supabase
-      .from('profiles').select('role').eq('id', user.id).single()
+      .from('profiles').select('role, cohort_id').eq('id', user.id).single()
 
     const role = profile?.role ?? 'startup'
 
@@ -79,7 +87,7 @@ export async function POST(request: Request) {
       submission_status: 'draft',
       submission_number,
       p8_team_members: body.p8_team_members ?? [],
-      // defaults for other fields
+      cohort_id: profile?.cohort_id, // Link to the user's cohort
     }
 
     if (role === 'startup') {

@@ -6,7 +6,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import { calculateOverallScore } from '@/utils/scores'
 
 export async function POST(
-  _req: NextRequest
+  req: NextRequest
 ) {
   const user = await getUserFromRequest()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -24,8 +24,15 @@ export async function POST(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  // 2. Fetch all teams for cohort analysis (bypass RLS)
-  const { data: teams, error } = await supabaseAdmin.from('teams').select('*')
+  const { cohortId } = await req.json()
+
+  // 2. Fetch teams for cohort analysis (bypass RLS)
+  let query = supabaseAdmin.from('teams').select('*')
+  if (cohortId) {
+    query = query.eq('cohort_id', cohortId)
+  }
+
+  const { data: teams, error } = await query
   if (error || !teams) return NextResponse.json({ error: 'Failed to fetch teams' }, { status: 500 })
 
   // 3. Aggregate Cohort Stats for the AI

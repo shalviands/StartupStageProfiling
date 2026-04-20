@@ -17,15 +17,32 @@ import { cn } from '@/utils/cn'
 import Link from 'next/link'
 import { mapDbToFrontend } from '@/utils/mappers'
 
-export default async function AllStartupsPage() {
+import CohortSelector from '@/components/admin/CohortSelector'
+import { getUserFromRequest } from '@/lib/supabase/getUser'
+
+export default async function AllStartupsPage({ searchParams }: { searchParams: { cohortId?: string } }) {
+  const user = await getUserFromRequest()
   const supabase = await createServerSupabaseClient()
+
+  // 1. Fetch Admin's Cohorts
+  const { data: adminCohorts } = await supabase
+    .from('cohorts')
+    .select('id, name')
+    .eq('admin_id', user?.id)
   
-  // Fetch ALL non-deleted records
-  const { data, error } = await supabase
+  const activeCohortId = searchParams.cohortId || adminCohorts?.[0]?.id
+
+  // 2. Fetch non-deleted records filtered by cohort
+  let query = supabase
     .from('teams')
     .select('*')
     .is('deleted_at', null)
-    .order('created_at', { ascending: false })
+  
+  if (activeCohortId) {
+    query = query.eq('cohort_id', activeCohortId)
+  }
+
+  const { data, error } = await query.order('created_at', { ascending: false })
 
   if (error) {
     return <div className="p-20 text-rose-500 font-bold">Error loading database: {error.message}</div>
@@ -46,14 +63,17 @@ export default async function AllStartupsPage() {
              <p className="text-slate-500 font-medium tracking-tight">Monitoring {mapped.length} venture profiles</p>
            </div>
         </div>
-        <div className="flex items-center gap-3">
-           <a 
-             href="/api/admin/export"
-             className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
-           >
-              <Download size={14} /> Export Dataset
-           </a>
-        </div>
+         <div className="flex items-center gap-3">
+            {adminCohorts && adminCohorts.length > 0 && (
+              <CohortSelector cohorts={adminCohorts} activeCohortId={activeCohortId || null} />
+            )}
+            <a 
+              href={`/api/admin/export${activeCohortId ? `?cohortId=${activeCohortId}` : ''}`}
+              className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+            >
+               <Download size={14} /> Export Dataset
+            </a>
+         </div>
       </div>
 
       {/* Table Content */}
