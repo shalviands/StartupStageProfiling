@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+// Build sync touch: 2026-04-20T17:54:35.000Z [/]
 import { getUserProfile } from '@/lib/roles'
 import ProgrammeSidebar from '@/components/programme/ProgrammeSidebar'
 import ProgrammeTopBar from '@/components/programme/ProgrammeTopBar'
