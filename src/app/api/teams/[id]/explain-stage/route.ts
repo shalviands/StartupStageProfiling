@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { runStageExplanation } from '@/lib/ai/openrouter'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { classifyStage } from '@/utils/scores'
 
 export async function POST(
@@ -14,8 +15,8 @@ export async function POST(
 
   const supabase = await createServerSupabaseClient()
   
-  // 1. Fetch team with ownership check
-  const { data: team, error } = await supabase
+  // 1. Fetch team with ownership check (bypassed RLS via admin client)
+  const { data: team, error } = await supabaseAdmin
     .from('teams')
     .select('*')
     .eq('id', id)

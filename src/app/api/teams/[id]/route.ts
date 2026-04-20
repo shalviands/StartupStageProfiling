@@ -96,6 +96,12 @@ export async function PUT(
       // Programme team members can update any team.
     }
 
+    // Protection against client-side injection of locked attributes
+    if (role !== 'admin' && role !== 'programme_team') {
+      delete body.submission_status
+      delete body.diagnosis_released
+    }
+
     const dbData = mapFrontendToDb(body)
 
     // 4. Perform the update via admin client to bypass RLS on writes

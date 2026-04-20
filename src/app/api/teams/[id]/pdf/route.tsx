@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { renderToBuffer } from '@react-pdf/renderer'
 import React from 'react'
 import DiagnosisPDF from '@/components/pdf/DiagnosisPDF'
@@ -28,7 +29,7 @@ export async function POST(
     // Startups can only download if diagnosis is released
     const isPowerUser = ['programme_team', 'admin'].includes(profile?.role ?? '')
 
-    const { data: team } = await supabase
+    const { data: team } = await supabaseAdmin
       .from('teams')
       .select('*')
       .eq('id', params.id)

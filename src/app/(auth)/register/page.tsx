@@ -61,6 +61,17 @@ export default function RegisterPage() {
       return
     }
 
+    // Fallback: Manually trigger profile sync incase DB trigger failed
+    try {
+      await fetch('/api/auth/sync-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullName: form.fullName.trim(), startupName: form.startupName.trim() })
+      })
+    } catch (e) {
+      console.error('[Registration] Profile sync check failed', e)
+    }
+
     // Success - either they are logged in or they need to confirm email
     router.push('/pending')
   }

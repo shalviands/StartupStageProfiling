@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import * as XLSX from 'xlsx'
 import { mapDbToFrontend } from '@/utils/mappers'
 import { calculateOverallScore, classifyStage } from '@/utils/scores'
@@ -18,7 +19,7 @@ export async function GET(
 
     const supabase = await createServerSupabaseClient()
     
-    const { data: teamRow } = await supabase
+    const { data: teamRow } = await supabaseAdmin
       .from('teams')
       .select('*')
       .eq('id', params.id)

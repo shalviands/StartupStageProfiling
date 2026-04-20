@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { runAIAnalysis } from '@/lib/ai/openrouter'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-
-
+import { supabaseAdmin } from '@/lib/supabase/admin'
 
 export async function POST(
   _req: NextRequest,
@@ -24,8 +23,8 @@ export async function POST(
 
   const role = profile?.role
 
-  // 2. Fetch team with ownership check
-  let query = supabase.from('teams').select('*').eq('id', id)
+  // 2. Fetch team with ownership check (bypassed RLS via admin client)
+  let query = supabaseAdmin.from('teams').select('*').eq('id', id)
 
   if (role === 'startup') {
     query = query.or(`user_id.eq.${user.id},startup_user_id.eq.${user.id}`)

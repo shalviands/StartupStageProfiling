@@ -1,5 +1,6 @@
 // src/app/api/programme/release-diagnosis/route.ts
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { NextResponse } from 'next/server'
 
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
     // Update the team record
     // Note: Do not mutate submission_status arbitrarily to 'verified' to prevent constraint failure.
     // The UI handles 'diagnosis_released = true' as 'verified' visually.
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('teams')
       .update({ 
         diagnosis_released: !!release 

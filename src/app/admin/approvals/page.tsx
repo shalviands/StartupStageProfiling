@@ -44,12 +44,17 @@ export default function ApprovalsPage() {
   async function updateStatus(id: string, status: 'approved' | 'rejected') {
     setActioningId(id)
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ status })
-        .eq('id', id)
+      const res = await fetch('/api/admin/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: id, status })
+      })
       
-      if (error) throw error
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to update')
+      }
+      
       setProfiles(prev => prev.filter(p => p.id !== id))
     } catch (err) {
       console.error('[Approvals] Update failed:', err)

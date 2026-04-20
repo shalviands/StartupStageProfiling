@@ -1,5 +1,6 @@
 import React from 'react'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { calculateOverallScore } from '@/utils/scores'
 import { 
   Users, 
@@ -25,7 +26,7 @@ export default async function AdminDashboardPage() {
   // Fetch all necessary stats
   const { count: totalStartups } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'startup')
   const { count: pendingApprovals } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'startup').eq('status', 'pending')
-  const { data: teams } = await supabase.from('teams').select('*')
+  const { data: teams } = await supabaseAdmin.from('teams').select('*')
   
   const submittedCount = teams?.filter(t => t.submission_status === 'submitted').length || 0
   const releasedCount = teams?.filter(t => t.diagnosis_released).length || 0
@@ -164,10 +165,10 @@ export default async function AdminDashboardPage() {
                   <p className="text-white/60 text-xs font-semibold leading-relaxed">System is verified and currently reconciling profiling patterns for {totalStartups} startup nodes.</p>
                 </div>
                 <Link 
-                  href="/admin/activity"
+                  href="/admin/startups"
                   className="inline-flex items-center gap-3 bg-white text-navy px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gold transition-all group shadow-xl shadow-black/20 active:scale-95"
                 >
-                  View System Logs
+                  View Startup Portfolio
                   <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </Link>
               </div>

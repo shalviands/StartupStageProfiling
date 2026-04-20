@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import * as XLSX from 'xlsx'
 import { mapDbToFrontend } from '@/utils/mappers'
@@ -23,8 +24,8 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // Fetch released teams (Blueprint v2.0 logic)
-    const { data: teams, error } = await supabase
+    // Fetch released teams (Blueprint v2.0 logic) with admin client to bypass RLS
+    const { data: teams, error } = await supabaseAdmin
       .from('teams')
       .select('*')
       .eq('diagnosis_released', true)

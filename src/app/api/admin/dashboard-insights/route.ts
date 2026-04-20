@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import { runDashboardInsights } from '@/lib/ai/openrouter'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { calculateOverallScore } from '@/utils/scores'
 
 export async function POST(
@@ -23,8 +24,8 @@ export async function POST(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  // 2. Fetch all teams for cohort analysis
-  const { data: teams, error } = await supabase.from('teams').select('*')
+  // 2. Fetch all teams for cohort analysis (bypass RLS)
+  const { data: teams, error } = await supabaseAdmin.from('teams').select('*')
   if (error || !teams) return NextResponse.json({ error: 'Failed to fetch teams' }, { status: 500 })
 
   // 3. Aggregate Cohort Stats for the AI
