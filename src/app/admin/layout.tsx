@@ -7,7 +7,7 @@ export default async function AdminLayout({
   children,
 }: { children: React.ReactNode }) {
   const profile = await getUserProfile()
-  if (!profile || !['admin', 'programme_team'].includes(profile.role)) redirect('/login')
+  if (!profile || profile.role !== 'admin') redirect('/login')
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>

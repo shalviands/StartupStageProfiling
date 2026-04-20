@@ -17,7 +17,6 @@ import { cn } from '@/utils/cn'
 const NAV_ITEMS = [
   { label: 'Intelligence', href: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Portfolio Engine', href: '/admin/startups', icon: Rocket },
-  { label: 'System Users', href: '/admin/users', icon: Users },
 ]
 
 export default function AdminSidebar({ profile }: { profile?: any }) {

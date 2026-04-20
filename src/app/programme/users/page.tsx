@@ -38,6 +38,21 @@ export default function UsersManagementPage() {
   }
 
   useEffect(() => {
+    async function checkRole() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+        
+      if (profile?.role !== 'programme_team') {
+        window.location.href = '/login'
+      }
+    }
+    checkRole()
     fetchUsers()
   }, [])
 

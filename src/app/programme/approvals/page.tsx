@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
-export default function ApprovalsPage() {
+export default function ProgrammeApprovalsPage() {
   const [profiles, setProfiles] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [actioningId, setActioningId] = useState<string | null>(null)
@@ -54,7 +54,7 @@ export default function ApprovalsPage() {
         .single()
         
       if (profile?.role !== 'programme_team') {
-        window.location.href = '/admin/dashboard'
+        window.location.href = '/login'
       }
     }
     checkRole()
