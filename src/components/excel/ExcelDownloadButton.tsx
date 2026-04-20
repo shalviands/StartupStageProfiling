@@ -33,7 +33,6 @@ export default function ExcelDownloadButton({ team }: { team: TeamProfile }) {
       ['CLASSIFICATION TIER', `Level ${level}`],
       ['OVERALL WEIGHTED SCORE', overall.toFixed(2), 'out of 5.0'],
       ['WEAKEST LINK OVERRIDE', override || 'None (Growth Uncapped)'],
-      ['ASSIGNED MENTOR TYPE', team.assigned_mentor_type || 'Discovery Coach'],
       [''],
       ['PARAMETER AVERAGES (1-5)'],
       ['P1: Founder & Problem', p1.toFixed(1)],

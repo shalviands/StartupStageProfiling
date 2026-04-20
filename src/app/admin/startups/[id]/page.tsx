@@ -221,7 +221,7 @@ export default function AdminStartupDetailPage() {
                <div className="flex flex-col items-end gap-3 text-right">
                   <div className="space-y-1">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Assigned Support</span>
-                    <span className="text-xs font-bold text-slate-700 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">{localTeam.assigned_mentor_type || 'General Mentor'}</span>
+                    <span className="text-xs font-bold text-slate-700 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">General Mentor</span>
                   </div>
                </div>
              </div>

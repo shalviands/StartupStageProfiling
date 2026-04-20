@@ -172,7 +172,6 @@ export const TeamBaseSchema = z.object({
   // Diagnosis Outputs
   detected_stage:            z.string().default(''),
   stage_override_flag:       z.string().default(''),
-  assigned_mentor_type:      z.string().default(''),
   overall_weighted_score:    z.number().nullable().default(null),
   p9_bonus_active:           z.boolean().default(false),
 

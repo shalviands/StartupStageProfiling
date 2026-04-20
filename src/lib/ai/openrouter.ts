@@ -260,7 +260,6 @@ KEY CONTEXT:
   Built so far: ${team.p3_built || 'Not provided'}
   Active users: ${team.p7_active_users || 0}
   P0 need: ${team.p0_need || 'Not specified'}
-  Mentor type: ${team.assigned_mentor_type || 'Not assigned'}
 
 Return ONLY this JSON:
 {

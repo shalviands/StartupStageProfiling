@@ -69,13 +69,13 @@ export default function LivePreview({ team }: { team: TeamProfile }) {
          </div>
       </div>
       
-      {/* Mentor Type */}
+      {/* Programme Status */}
       <div className="bg-indigo-50/50 border border-indigo-100 p-5 rounded-3xl space-y-2">
          <div className="flex items-center gap-2 text-indigo-900">
             <Zap size={14} className="text-indigo-600" />
-            <span className="text-[9px] font-black uppercase tracking-wider">Assigned Mentor</span>
+            <span className="text-[9px] font-black uppercase tracking-wider">Programme Status</span>
          </div>
-         <p className="text-xs font-bold text-slate-700">{team.assigned_mentor_type || 'Discovery Coach'}</p>
+         <p className="text-xs font-bold text-slate-700">Under Evaluation</p>
       </div>
     </div>
   )

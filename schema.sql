@@ -296,7 +296,6 @@ ALTER TABLE teams ADD COLUMN IF NOT EXISTS p9_observation             TEXT DEFAU
 
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS detected_stage             TEXT DEFAULT '';
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS stage_override_flag        TEXT DEFAULT '';
-ALTER TABLE teams ADD COLUMN IF NOT EXISTS assigned_mentor_type        TEXT DEFAULT '';
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS overall_weighted_score     FLOAT DEFAULT 0;
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS p9_bonus_active            BOOLEAN DEFAULT FALSE;
 
