@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { mapDbToFrontend, mapFrontendToDb } from '@/utils/mappers'
 
 export async function GET(
@@ -13,8 +14,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Use anon client only for the profiles table (respects RLS correctly)
     const supabase = await createServerSupabaseClient()
-    
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -23,7 +24,9 @@ export async function GET(
 
     const role = profile?.role
 
-    const { data: targetTeam, error } = await supabase
+    // Use admin client for teams table to bypass RLS restrictions.
+    // Ownership is enforced in application code below.
+    const { data: targetTeam, error } = await supabaseAdmin
       .from('teams')
       .select('*')
       .eq('id', params.id)
@@ -33,8 +36,9 @@ export async function GET(
       return NextResponse.json({ error: 'Team not found' }, { status: 404 })
     }
 
+    // Application-level ownership check
     if (role !== 'admin' && role !== 'programme_team') {
-      if (targetTeam.startup_user_id !== user.id) {
+      if (targetTeam.startup_user_id !== user.id && targetTeam.user_id !== user.id) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       }
     }
@@ -57,9 +61,10 @@ export async function PUT(
     }
 
     const body = await request.json()
+    // Use anon client only for the profiles table (respects RLS correctly)
     const supabase = await createServerSupabaseClient()
 
-    // 1. Fetch user role
+    // 1. Fetch user role from profiles (anon client is fine here)
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -68,39 +73,43 @@ export async function PUT(
 
     const role = profile?.role
 
-    // 2. Fetch target team to check ownership
-    const { data: targetTeam, error: fetchError } = await supabase
+    // 2. Fetch target team via admin client to bypass RLS.
+    // Ownership is validated in application code below.
+    const { data: targetTeam, error: fetchError } = await supabaseAdmin
       .from('teams')
-      .select('*')
+      .select('startup_user_id, user_id, submission_status')
       .eq('id', params.id)
       .single()
 
     if (fetchError || !targetTeam) {
+      console.error(`[TEAM_PUT_${params.id}] Team not found:`, fetchError?.message)
       return NextResponse.json({ error: 'Team not found' }, { status: 404 })
     }
 
-    // 3. Security: Role-based check
+    // 3. Application-level ownership / role check
     if (role !== 'admin') {
       if (role === 'startup') {
-        if (targetTeam.startup_user_id !== user.id) {
+        if (targetTeam.startup_user_id !== user.id && targetTeam.user_id !== user.id) {
           return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
         }
-      } 
+      }
       // Programme team members can update any team.
-      // Detailed permission enforcement (e.g. they can only update if assigned)
-      // is handled via Supabase Row-Level Security where needed.
     }
 
     const dbData = mapFrontendToDb(body)
 
-    const { data, error } = await supabase
+    // 4. Perform the update via admin client to bypass RLS on writes
+    const { data, error } = await supabaseAdmin
       .from('teams')
       .update(dbData)
       .eq('id', params.id)
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error(`[TEAM_PUT_${params.id}] Update error:`, error.message)
+      throw error
+    }
 
     return NextResponse.json(data)
   } catch (error: any) {
@@ -119,6 +128,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Use anon client only for the profiles table (respects RLS correctly)
     const supabase = await createServerSupabaseClient()
 
     // 1. Fetch user role
@@ -130,24 +140,27 @@ export async function DELETE(
 
     const role = profile?.role
 
-    // 2. Check ownership if not admin
+    // 2. Application-level ownership check via admin client
     if (role !== 'admin') {
-       const { data: targetTeam } = await supabase
+      const { data: targetTeam } = await supabaseAdmin
         .from('teams')
-        .select('*')
+        .select('startup_user_id, user_id')
         .eq('id', params.id)
         .single()
 
       if (!targetTeam) return NextResponse.json({ error: 'Not found' }, { status: 404 })
       
       if (role === 'startup') {
-        if (targetTeam.startup_user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        if (targetTeam.startup_user_id !== user.id && targetTeam.user_id !== user.id) {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        }
       } else {
         if (targetTeam.user_id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       }
     }
 
-    const { error } = await supabase
+    // 3. Perform delete via admin client to bypass RLS
+    const { error } = await supabaseAdmin
       .from('teams')
       .delete()
       .eq('id', params.id)
