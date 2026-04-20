@@ -50,12 +50,16 @@ export async function POST(
   const { error: updateError } = await supabaseAdmin
     .from('teams')
     .update({ 
+      detected_stage: roadmapData.ai_determined_stage,
       roadmap: [
-        { priority: 'W1', action: roadmapData.week1.title + ':\n• ' + roadmapData.week1.actions.join('\n• '), supportFrom: roadmapData.week1.focus, byWhen: 'Week 1' },
-        { priority: 'W2', action: roadmapData.week2.title + ':\n• ' + roadmapData.week2.actions.join('\n• '), supportFrom: roadmapData.week2.focus, byWhen: 'Week 2' },
-        { priority: 'W3', action: roadmapData.week3.title + ':\n• ' + roadmapData.week3.actions.join('\n• '), supportFrom: roadmapData.week3.focus, byWhen: 'Week 3' },
-        { priority: 'W4', action: roadmapData.week4.title + ':\n• ' + roadmapData.week4.actions.join('\n• '), supportFrom: roadmapData.week4.focus, byWhen: 'Week 4' }
-      ]
+        { priority: 'P1', action: `${roadmapData.week1.title}: ${roadmapData.week1.actions.join('. ')}`, supportFrom: roadmapData.week1.focus, byWhen: 'Week 1' },
+        { priority: 'P1', action: `${roadmapData.week2.title}: ${roadmapData.week2.actions.join('. ')}`, supportFrom: roadmapData.week2.focus, byWhen: 'Week 2' },
+        { priority: 'P2', action: `${roadmapData.week3.title}: ${roadmapData.week3.actions.join('. ')}`, supportFrom: roadmapData.week3.focus, byWhen: 'Week 3' },
+        { priority: 'P2', action: `${roadmapData.week4.title}: ${roadmapData.week4.actions.join('. ')}`, supportFrom: roadmapData.week4.focus, byWhen: 'Week 4' }
+      ],
+      p0_need: roadmapData.p0_need,
+      p1_need: roadmapData.p1_need,
+      p2_need: roadmapData.p2_need
     })
     .eq('id', id)
 

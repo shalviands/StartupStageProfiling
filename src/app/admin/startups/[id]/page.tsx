@@ -38,6 +38,7 @@ export default function AdminStartupDetailPage() {
   const [activeSection, setActiveSection] = useState(0)
   const [localTeam, setLocalTeam] = useState<TeamProfile | null>(null)
   const [saving, setSaving] = useState(false)
+  const [runningAI, setRunningAI] = useState(false)
 
   useEffect(() => {
     // Only update localTeam if it was null OR if the ID of the startup changed
@@ -109,6 +110,37 @@ export default function AdminStartupDetailPage() {
       alert('Failed to update release state. Please try again.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleAIAudit() {
+    if (!localTeam) return
+    setRunningAI(true)
+    try {
+      const res = await fetch(`/api/teams/${localTeam.id}/roadmap`, {
+        method: 'POST'
+      })
+      if (!res.ok) throw new Error('AI Analysis failed')
+      
+      const data = await res.json()
+      // The API returns the AI data AND persists it to DB.
+      // We should refetch or update local state.
+      setLocalTeam({
+        ...localTeam,
+        detected_stage: data.ai_determined_stage,
+        roadmap: [
+          { priority: 'P1', action: `${data.week1.title}: ${data.week1.actions.join('. ')}`, supportFrom: data.week1.focus, byWhen: 'Week 1' },
+          { priority: 'P1', action: `${data.week2.title}: ${data.week2.actions.join('. ')}`, supportFrom: data.week2.focus, byWhen: 'Week 2' },
+          { priority: 'P2', action: `${data.week3.title}: ${data.week3.actions.join('. ')}`, supportFrom: data.week3.focus, byWhen: 'Week 3' },
+          { priority: 'P2', action: `${data.week4.title}: ${data.week4.actions.join('. ')}`, supportFrom: data.week4.focus, byWhen: 'Week 4' }
+        ]
+      })
+      alert('AI Deep Dive Analysis completed successfully!')
+    } catch (err) {
+      console.error('[AdminDetail] AI Audit failed:', err)
+      alert('AI Analysis failed. Please check OpenRouter configuration.')
+    } finally {
+      setRunningAI(false)
     }
   }
 
@@ -279,10 +311,20 @@ export default function AdminStartupDetailPage() {
                     </div>
                     <div>
                        <h4 className="text-sm font-black tracking-tight">AI Strategy Insight</h4>
-                       <p className="text-[#8A9BB0] text-[11px] leading-relaxed mt-1">Based on the current weights, this venture is trending toward a Tier 3 Validation stage.</p>
+                       <p className="text-[#8A9BB0] text-[11px] leading-relaxed mt-1">
+                         {localTeam.detected_stage 
+                           ? `AI has identified this venture as being in the ${localTeam.detected_stage}.`
+                           : "Based on the current weights, this venture is trending toward a specific stage."
+                         }
+                       </p>
                     </div>
-                    <button className="w-full py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
-                       Regenerate AI Audit
+                    <button 
+                      onClick={handleAIAudit}
+                      disabled={runningAI}
+                      className="w-full py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                    >
+                       {runningAI ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                       {runningAI ? 'Analyzing...' : 'Regenerate AI Audit'}
                     </button>
                  </div>
               </div>
