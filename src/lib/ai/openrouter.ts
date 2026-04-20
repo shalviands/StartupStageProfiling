@@ -1,3 +1,5 @@
+import { classifyStage } from '../../utils/scores'
+
 const INUNITY_SYSTEM_MESSAGE = `
 You are the InUnity Startup Diagnosis AI — an expert startup coach,
 incubation specialist, and programme evaluator.
