@@ -29,9 +29,11 @@ export async function GET(req: Request) {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') {
+  if (!['admin', 'programme_team'].includes(profile?.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
+
+  const isProgrammeTeam = profile?.role === 'programme_team'
 
   // 2. Fetch Pending Users for Admin's Cohorts
   // First, get cohorts managed by this admin
@@ -45,23 +47,29 @@ export async function GET(req: Request) {
   // If a specific cohort was requested, verify the admin manages it
   let targetCohortIds = managedCohortIds
   if (cohortId) {
-    if (!managedCohortIds.includes(cohortId)) {
+    if (!isProgrammeTeam && !managedCohortIds.includes(cohortId)) {
       return NextResponse.json({ error: 'Forbidden: You do not manage this cohort' }, { status: 403 })
     }
     targetCohortIds = [cohortId]
   }
 
-  if (targetCohortIds.length === 0) {
+  if (!isProgrammeTeam && targetCohortIds.length === 0) {
     return NextResponse.json([]) // No assigned cohorts, no pending users
   }
 
-  const { data: users, error } = await supabase
+  let query = supabase
     .from('profiles')
-    .select('*')
+    .select('*, requested_cohort:cohorts(name)')
     .eq('status', 'pending')
-    .in('requested_cohort_id', targetCohortIds) // Only users requesting my cohorts
     .neq('role', 'admin') 
-    .order('created_at', { ascending: false })
+
+  if (!isProgrammeTeam) {
+    query = query.in('requested_cohort_id', targetCohortIds)
+  } else if (cohortId) {
+    query = query.eq('requested_cohort_id', cohortId)
+  }
+
+  const { data: users, error } = await query.order('created_at', { ascending: false })
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

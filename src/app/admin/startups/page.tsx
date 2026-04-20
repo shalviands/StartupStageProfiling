@@ -89,6 +89,7 @@ export default async function AllStartupsPage({ searchParams }: { searchParams: 
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">P3</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">P4</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">P5</th>
+                <th className="p-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Cohort</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Overall</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
                 <th className="p-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
@@ -132,6 +133,11 @@ export default async function AllStartupsPage({ searchParams }: { searchParams: 
                          </div>
                       </td>
                     ))}
+                    <td className="p-6">
+                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                         {team.cohort_name || 'Unassigned'}
+                       </span>
+                    </td>
                     <td className="p-6 text-center">
                        <span className={cn(
                          "text-base font-black tabular-nums tracking-tighter hover:scale-110 transition-transform block",

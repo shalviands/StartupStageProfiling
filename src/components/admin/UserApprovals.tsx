@@ -12,6 +12,7 @@ interface UserProfile {
   startup_name?: string
   status: 'pending' | 'approved' | 'rejected'
   created_at: string
+  requested_cohort?: { name: string }
 }
 
 export default function UserApprovals({ cohortId }: { cohortId?: string }) {
@@ -119,9 +120,14 @@ export default function UserApprovals({ cohortId }: { cohortId?: string }) {
                   </button>
                 </div>
                 <div className="text-[11px] text-slate font-bold">{user.email}</div>
-                {user.startup_name && (
-                  <div className="text-[10px] text-silver font-medium mt-1">Venture: <span className="text-navy">{user.startup_name}</span></div>
-                )}
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
+                  {user.startup_name && (
+                    <div className="text-[10px] text-silver font-medium">Venture: <span className="text-navy">{user.startup_name}</span></div>
+                  )}
+                  {user.requested_cohort?.name && (
+                    <div className="text-[10px] text-silver font-medium">Cohort: <span className="text-gold font-black underline decoration-gold/20">{user.requested_cohort.name}</span></div>
+                  )}
+                </div>
               </div>
             </div>
 

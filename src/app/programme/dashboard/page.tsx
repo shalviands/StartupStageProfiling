@@ -8,6 +8,12 @@ export default async function ProgrammeDashboard() {
   const user = await getUserFromRequest()
   const supabase = await createServerSupabaseClient()
   
+  // Fetch cohorts for management summary
+  const { data: cohorts } = await supabase
+    .from('cohorts')
+    .select('*, profiles(count)')
+    .order('name')
+
   // Fetch stats for dashboard
   const { data: dbTeams } = await supabase
     .from('teams')
@@ -65,11 +71,28 @@ export default async function ProgrammeDashboard() {
         
         <div className="space-y-8">
           <div className="bg-navy p-8 rounded-[40px] shadow-xl shadow-navy/20 min-h-[400px] text-white">
-            <h2 className="text-lg font-black mb-6 tracking-tight">AI Cohort Insights</h2>
-            <p className="text-silver text-[10px] font-black uppercase tracking-widest mb-4">Strategic Overview</p>
-             <div className="space-y-4 opacity-70 text-sm font-medium">
-               Waiting for analysis results...
-             </div>
+            <h2 className="text-lg font-black mb-6 tracking-tight">System Distribution</h2>
+            <div className="space-y-6">
+              {cohorts?.map(c => (
+                <div key={c.id} className="p-5 bg-white/5 rounded-2xl border border-white/10 group hover:bg-white/10 transition-all">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gold">{c.name}</span>
+                    <span className="text-white font-black">{c.profiles?.[0]?.count || 0}</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gold transition-all duration-1000" 
+                      style={{ width: `${Math.min(((c.profiles?.[0]?.count || 0) / 20) * 100, 100)}%` }} 
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            {(!cohorts || cohorts.length === 0) && (
+              <div className="py-12 text-center text-white/30 text-[10px] font-black uppercase tracking-widest">
+                No active cohorts found
+              </div>
+            )}
           </div>
         </div>
       </div>

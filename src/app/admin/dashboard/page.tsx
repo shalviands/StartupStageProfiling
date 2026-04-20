@@ -99,6 +99,25 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
       </div>
 
       {/* AI Strategic Insights */}
+      {(!adminCohorts || adminCohorts.length === 0) ? (
+        <div className="bg-white rounded-[40px] border border-coral/20 p-20 flex flex-col items-center text-center space-y-4 shadow-xl shadow-coral/5">
+           <div className="w-20 h-20 bg-coral-lt text-coral rounded-3xl flex items-center justify-center mb-4">
+              <AlertTriangle size={40} />
+           </div>
+           <h2 className="text-2xl font-black text-navy tracking-tight">Assignment Required</h2>
+           <p className="max-w-md text-slate font-medium leading-relaxed">
+             Your account is currently active, but you have not been assigned to any cohorts. 
+             Please contact the <strong>Program Team</strong> to be mapped to a specific batch.
+           </p>
+           <Link 
+             href="/login" 
+             className="px-8 py-4 bg-navy text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all"
+           >
+             Re-verify Identity
+           </Link>
+        </div>
+      ) : (
+        <>
       <CohortInsights cohortId={activeCohortId} />
 
       {/* Stats Grid */}
@@ -227,6 +246,8 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
            </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   )
 }

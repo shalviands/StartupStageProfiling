@@ -7,13 +7,18 @@ import {
   BarChart3, 
   Rocket, 
   MessageSquare,
-  ChevronRight
+  ChevronRight,
+  LayoutGrid,
+  ShieldCheck,
+  Users
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/programme/dashboard', icon: BarChart3 },
+  { label: 'Cohort Governance', href: '/programme/cohorts', icon: LayoutGrid },
   { label: 'All Submissions', href: '/programme/startups', icon: Rocket },
+  { label: 'System Users', href: '/admin/users', icon: Users },
 ]
 
 export default function ProgrammeSidebar() {

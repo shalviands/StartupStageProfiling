@@ -15,10 +15,10 @@ import {
 import { cn } from '@/utils/cn'
 
 const NAV_ITEMS = [
-  { label: 'Overview', href: '/admin/dashboard', icon: LayoutDashboard },
-  { label: 'All Startups', href: '/admin/startups', icon: Rocket },
-  { label: 'Approvals', href: '/admin/approvals', icon: Clock, badge: true },
-  { label: 'Users', href: '/admin/users', icon: Users },
+  { label: 'Intelligence', href: '/admin/dashboard', icon: LayoutDashboard },
+  { label: 'Portfolio Engine', href: '/admin/startups', icon: Rocket },
+  { label: 'Access Control', href: '/admin/approvals', icon: Clock },
+  { label: 'System Users', href: '/admin/users', icon: Users },
 ]
 
 export default function AdminSidebar() {
