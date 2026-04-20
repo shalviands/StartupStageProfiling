@@ -7,11 +7,11 @@ export default async function AdminLayout({
   children,
 }: { children: React.ReactNode }) {
   const profile = await getUserProfile()
-  if (!profile || profile.role !== 'admin') redirect('/login')
+  if (!profile || !['admin', 'programme_team'].includes(profile.role)) redirect('/login')
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <AdminSidebar />
+      <AdminSidebar profile={profile} />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <AdminTopBar profile={profile} />
         <main style={{ flex: 1, overflowY: 'auto', background: '#F4F6F9' }}>

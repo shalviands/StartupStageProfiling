@@ -29,11 +29,11 @@ export async function GET(req: Request) {
     .eq('id', user.id)
     .single()
 
-  if (!['admin', 'programme_team'].includes(profile?.role)) {
+  if (profile?.role !== 'programme_team') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  const isProgrammeTeam = profile?.role === 'programme_team'
+  const isProgrammeTeam = true // Always true now for this endpoint
 
   // 2. Fetch Pending Users for Admin's Cohorts
   // First, get cohorts managed by this admin

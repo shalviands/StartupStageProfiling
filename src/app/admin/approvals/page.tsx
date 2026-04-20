@@ -24,20 +24,22 @@ export default function ApprovalsPage() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  async function fetchPending() {
-    setLoading(true)
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('role', 'startup')
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false })
-    
-    setProfiles(data || [])
-    setLoading(false)
-  }
-
   useEffect(() => {
+    async function checkRole() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+        
+      if (profile?.role !== 'programme_team') {
+        window.location.href = '/admin/dashboard'
+      }
+    }
+    checkRole()
     fetchPending()
   }, [])
 

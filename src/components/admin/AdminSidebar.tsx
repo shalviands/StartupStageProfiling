@@ -1,5 +1,5 @@
 'use client'
-
+// Sidebar integrity touch [/]
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -17,12 +17,20 @@ import { cn } from '@/utils/cn'
 const NAV_ITEMS = [
   { label: 'Intelligence', href: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Portfolio Engine', href: '/admin/startups', icon: Rocket },
-  { label: 'Access Control', href: '/admin/approvals', icon: Clock },
   { label: 'System Users', href: '/admin/users', icon: Users },
 ]
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ profile }: { profile?: any }) {
   const pathname = usePathname()
+  const isSuperAdmin = profile?.role === 'programme_team'
+
+  const filteredItems = NAV_ITEMS.filter(item => {
+    // Hide these from normal Admins
+    if (['Access Control', 'System Users'].includes(item.label) && !isSuperAdmin) {
+      return false
+    }
+    return true
+  })
 
   return (
     <aside className="w-[280px] bg-[#0F172A] flex flex-col h-full border-r border-slate-800">
@@ -41,7 +49,7 @@ export default function AdminSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 py-8 space-y-1">
-        {NAV_ITEMS.map((item) => {
+        {filteredItems.map((item) => {
           const Icon = item.icon
           const isActive = pathname.startsWith(item.href)
           

@@ -17,6 +17,7 @@ import { cn } from '@/utils/cn'
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/programme/dashboard', icon: BarChart3 },
   { label: 'Cohort Governance', href: '/programme/cohorts', icon: LayoutGrid },
+  { label: 'Access Control', href: '/admin/approvals', icon: ShieldCheck },
   { label: 'All Submissions', href: '/programme/startups', icon: Rocket },
   { label: 'System Users', href: '/admin/users', icon: Users },
 ]
