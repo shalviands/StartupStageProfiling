@@ -81,39 +81,49 @@ export async function middleware(request: NextRequest) {
     const role = profile?.role
     const status = profile?.status
 
+    // Function to create a redirect that carries over the cookies
+    const redirectWithCookies = (url: string) => {
+      const redirectResponse = NextResponse.redirect(new URL(url, request.url))
+      // Copy cookies from the 'response' object (which has the refreshed session) to the redirect
+      response.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie.name, cookie.value, {
+          path: '/',
+          secure: true,
+          sameSite: 'lax',
+        })
+      })
+      return redirectResponse
+    }
+
     // 1. Startup Roles
     if (role === 'startup') {
       if (status === 'pending') {
         if (!pathname.startsWith('/pending') && !pathname.startsWith('/api/')) {
-          return NextResponse.redirect(new URL('/pending', request.url))
+          return redirectWithCookies('/pending')
         }
         return response
       }
 
       if (status === 'rejected') {
         if (!pathname.startsWith('/rejected') && !pathname.startsWith('/login')) {
-          return NextResponse.redirect(new URL('/rejected', request.url))
+          return redirectWithCookies('/rejected')
         }
         return response
       }
 
-      // Approved Startup — land on dashboard/submissions, NOT profiler
+      // Approved Startup
       if (status === 'approved') {
-        // Home/Login -> /startup (submissions list)
         if (pathname === '/' || pathname.startsWith('/login')) {
-           return NextResponse.redirect(new URL('/startup', request.url))
+           return redirectWithCookies('/startup')
         }
-        // Redirect from old /startup/profile to new /startup/profiler
         if (pathname === '/startup/profile') {
-           return NextResponse.redirect(new URL('/startup/profiler', request.url))
+           return redirectWithCookies('/startup/profiler')
         }
-        // Restrict access to other areas
         if ((pathname.startsWith('/programme') || pathname.startsWith('/admin')) && !pathname.startsWith('/api/')) {
-          return NextResponse.redirect(new URL('/startup', request.url))
+          return redirectWithCookies('/startup')
         }
-        // Must stay in /startup
         if (!pathname.startsWith('/startup') && !pathname.startsWith('/api/') && !pathname.startsWith('/pending')) {
-          return NextResponse.redirect(new URL('/startup', request.url))
+          return redirectWithCookies('/startup')
         }
         return response
       }
@@ -122,11 +132,10 @@ export async function middleware(request: NextRequest) {
     // 2. Programme Team Role (Super Admin)
     if (role === 'programme_team') {
       if (pathname === '/' || pathname.startsWith('/login')) {
-        return NextResponse.redirect(new URL('/programme/dashboard', request.url)) 
+        return redirectWithCookies('/programme/dashboard')
       }
-      // Programme team has full access to /programme and /admin
       if (pathname.startsWith('/startup') && !pathname.startsWith('/api/')) {
-        return NextResponse.redirect(new URL('/programme/dashboard', request.url))
+        return redirectWithCookies('/programme/dashboard')
       }
       return response
     }
@@ -134,14 +143,18 @@ export async function middleware(request: NextRequest) {
     // 3. Admin Role (Cohort Lead)
     if (role === 'admin') {
       if (pathname === '/' || pathname.startsWith('/login')) {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+        return redirectWithCookies('/admin/dashboard')
       }
-      // Restricted from /programme (management area)
       if (pathname.startsWith('/programme') && !pathname.startsWith('/api/')) {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+        return redirectWithCookies('/admin/dashboard')
       }
       return response
     }
+
+    // 4. Default Fallback for Logged-in users with unresolved roles
+    // If we've reached here, they are logged in but profile lookup failed or is slow.
+    // DO NOT allow them to fall back to /login as it creates a redirect loop.
+    return response
   }
 
   return response
