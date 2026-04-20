@@ -16,6 +16,7 @@ import {
   LayoutGrid
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
+import Link from 'next/link'
 import UserApprovals from '@/components/admin/UserApprovals'
 import CohortInsights from '@/components/admin/CohortInsights'
 import CohortSelector from '@/components/admin/CohortSelector'
