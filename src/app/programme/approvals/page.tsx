@@ -44,21 +44,32 @@ export default function ProgrammeApprovalsPage() {
 
   useEffect(() => {
     async function checkRole() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+          window.location.href = '/login'
+          return
+        }
         
-      if (profile?.role !== 'programme_team') {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+          
+        if (error || profile?.role !== 'programme_team') {
+          console.warn('[Approvals] Unauthorized or error:', error?.message)
+          window.location.href = '/programme/dashboard'
+          return
+        }
+        
+        fetchPending()
+      } catch (err) {
+        console.error('[Approvals] Initialization failed:', err)
         window.location.href = '/login'
       }
     }
     checkRole()
-    fetchPending()
   }, [])
 
   async function updateStatus(id: string, status: 'approved' | 'rejected') {

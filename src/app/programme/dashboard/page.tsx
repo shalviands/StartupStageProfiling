@@ -1,5 +1,5 @@
 import React from 'react'
-// Force re-build for dashboard integrity [/]
+// Final build sync [/]
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import RecentSubmissionsTable from '@/components/programme/RecentSubmissionsTable'

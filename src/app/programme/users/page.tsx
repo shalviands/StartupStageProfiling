@@ -39,21 +39,32 @@ export default function UsersManagementPage() {
 
   useEffect(() => {
     async function checkRole() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+          window.location.href = '/login'
+          return
+        }
         
-      if (profile?.role !== 'programme_team') {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+          
+        if (error || profile?.role !== 'programme_team') {
+          console.warn('[Users] Unauthorized or error:', error?.message)
+          window.location.href = '/programme/dashboard'
+          return
+        }
+        
+        fetchUsers()
+      } catch (err) {
+        console.error('[Users] Initialization failed:', err)
         window.location.href = '/login'
       }
     }
     checkRole()
-    fetchUsers()
   }, [])
 
   async function handleRoleChange(userId: string, newRole: string) {

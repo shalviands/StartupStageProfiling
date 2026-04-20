@@ -122,11 +122,11 @@ export async function middleware(request: NextRequest) {
     // 2. Programme Team Role (Super Admin)
     if (role === 'programme_team') {
       if (pathname === '/' || pathname.startsWith('/login')) {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url)) 
+        return NextResponse.redirect(new URL('/programme/dashboard', request.url)) 
       }
       // Programme team has full access to /programme and /admin
       if (pathname.startsWith('/startup') && !pathname.startsWith('/api/')) {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+        return NextResponse.redirect(new URL('/programme/dashboard', request.url))
       }
       return response
     }
