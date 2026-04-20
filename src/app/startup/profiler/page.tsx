@@ -97,8 +97,7 @@ export default function StartupProfilePage() {
     const updated = { 
       ...nextTeam, 
       detected_stage: stage,
-      overall_weighted_score: overall,
-      p9_bonus_active: isBonusActive,
+      overall_weighted_score: overall
     }
     
     setLocalTeam(updated)
@@ -113,8 +112,7 @@ export default function StartupProfilePage() {
           updates: { 
             [field]: value,
             detected_stage: stage,
-            overall_weighted_score: overall,
-            p9_bonus_active: isBonusActive
+            overall_weighted_score: overall
           } 
         })
       } catch (err) {

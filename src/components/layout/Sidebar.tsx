@@ -56,8 +56,7 @@ export default function Sidebar() {
         startupName: '',
         p8_team_members: [],
         detected_stage: 'IDEA / CONCEPTION',
-        overall_weighted_score: 0,
-        p9_bonus_active: false
+        overall_weighted_score: 0
       })
       setActiveTeamId(newTeam.id)
     } catch (err) {

@@ -61,7 +61,7 @@ export async function POST(
     avg_p8: (scores.reduce((a, b) => a + b.averages.p8, 0) / scores.length).toFixed(1),
     avg_p9: (scores.reduce((a, b) => a + b.averages.p9, 0) / scores.length).toFixed(1),
     sectors,
-    override_flags: Array.from(new Set(teams.map(t => t.stage_override_flag).filter(Boolean)))
+    override_flags: []
   }
 
   // 4. Run AI Insights

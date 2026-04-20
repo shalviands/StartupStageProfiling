@@ -154,10 +154,7 @@ CREATE TABLE IF NOT EXISTS teams (
 
   -- Output Columns
   detected_stage              TEXT DEFAULT '',
-  stage_override_flag         TEXT DEFAULT '',
-  assigned_mentor_type        TEXT DEFAULT '',
   overall_weighted_score      FLOAT DEFAULT 0,
-  p9_bonus_active             BOOLEAN DEFAULT FALSE,
 
   -- 3-Role Extensions
   startup_user_id             UUID REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -295,9 +292,7 @@ ALTER TABLE teams ADD COLUMN IF NOT EXISTS p9_switching_costs_score    INT DEFAU
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS p9_observation             TEXT DEFAULT '';
 
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS detected_stage             TEXT DEFAULT '';
-ALTER TABLE teams ADD COLUMN IF NOT EXISTS stage_override_flag        TEXT DEFAULT '';
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS overall_weighted_score     FLOAT DEFAULT 0;
-ALTER TABLE teams ADD COLUMN IF NOT EXISTS p9_bonus_active            BOOLEAN DEFAULT FALSE;
 
 -- New 3-Role Columns
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS startup_user_id             UUID REFERENCES auth.users(id) ON DELETE SET NULL;
@@ -306,6 +301,11 @@ ALTER TABLE teams ADD COLUMN IF NOT EXISTS submission_number           INT DEFAU
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS diagnosis_released          BOOLEAN DEFAULT FALSE;
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS deleted_at                  TIMESTAMPTZ;
 ALTER TABLE teams ADD COLUMN IF NOT EXISTS admin_notes                 TEXT DEFAULT '';
+
+-- Drop legacy/volatile columns (Decoupled to runtime logic for resilience)
+ALTER TABLE teams DROP COLUMN IF EXISTS assigned_mentor_type;
+ALTER TABLE teams DROP COLUMN IF EXISTS stage_override_flag;
+ALTER TABLE teams DROP COLUMN IF EXISTS p9_bonus_active;
 
 -- Drop legacy diagnosis schema field if it was created
 ALTER TABLE teams DROP COLUMN IF EXISTS diagnosis_visible;

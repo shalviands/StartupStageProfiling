@@ -126,14 +126,12 @@ export async function POST(request: Request) {
 
     const submissionNumber = (count || 0) + 1
 
-    // Convert merged frontend state back to DB schema format
     const dbUpdateData = {
       ...mapFrontendToDb(finalFrontendTeam),
       submission_status: 'submitted',
       submission_number: submissionNumber,
       detected_stage: stage,
       overall_weighted_score: overall,
-      p9_bonus_active: isBonusActive,
       updated_at: new Date().toISOString()
     }
 

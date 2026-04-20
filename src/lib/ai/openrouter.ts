@@ -114,7 +114,8 @@ export async function runAIAnalysis(
 ): Promise<AnalysisResult> {
   // Pre-calculate dimension averages for the prompt
   const dims = calculateDimensionAverages(team)
-  const teamWithAvgs = { ...team, ...dims }
+  const { override } = classifyStage(team as any)
+  const teamWithAvgs = { ...team, ...dims, stage_override_flag: override }
 
   const prompt = buildAnalysisPrompt(teamWithAvgs)
   const result = await callOpenRouter(prompt, 1000)
@@ -161,7 +162,7 @@ KEY ANSWERS:
   Main competitor: ${team.p9_competitor_awareness || 'Not provided'}
 
 P0 NEED: ${team.p0_need || 'Not specified'}
-STAGE OVERRIDE FLAG: ${team.stage_override_flag || 'None'}
+STAGE OVERRIDE: ${team.stage_override_flag || 'None'}
 
 Return ONLY this JSON:
 {
@@ -241,25 +242,28 @@ export async function runRoadmapGeneration(
   stageNumber: number,
   weakestParameters: string[]
 ): Promise<RoadmapResult> {
+  const { stage: calculatedStage, override } = classifyStage(team as any)
+
   const prompt = `
 Generate a personalised 4-week pre-event sprint roadmap for this startup.
-
+ 
 STARTUP CONTEXT:
   Startup: ${team.startup_name || 'Unknown'}
   Sector: ${team.sector || 'Unknown'}
-  Stage: ${stage} (Stage ${stageNumber} of 6)
+  Stage: ${calculatedStage} (Stage ${stageNumber} of 6)
   Product Type: ${team.p3_product_type || 'Unknown'}
   Revenue Stage: ${team.p6_revenue_stage || 'Unknown'}
   Team Size: ${team.team_size || 'Unknown'}
-
+ 
 WEAKEST PARAMETERS (address these):
   ${weakestParameters.map((p, i) => `${i + 1}. ${p}`).join('\n  ')}
-
+ 
 KEY CONTEXT:
   Problem: ${team.p1_problem_statement || 'Not provided'}
   Built so far: ${team.p3_built || 'Not provided'}
   Active users: ${team.p7_active_users || 0}
   P0 need: ${team.p0_need || 'Not specified'}
+  Override Active: ${override || 'None'}
 
 Return ONLY this JSON:
 {

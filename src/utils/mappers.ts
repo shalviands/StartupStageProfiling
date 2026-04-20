@@ -150,9 +150,7 @@ export function mapDbToFrontend(row: any): TeamProfile | null {
 
     // Diagnosis Outputs
     detected_stage:             row.detected_stage                   ?? '',
-    stage_override_flag:        row.stage_override_flag              ?? '',
     overall_weighted_score:     row.overall_weighted_score ? Number(row.overall_weighted_score) : null,
-    p9_bonus_active:            !!row.p9_bonus_active,
     
     // 3-Role Extensions
     startup_user_id:           row.startup_user_id                  ?? null,
@@ -187,7 +185,7 @@ export function mapFrontendToDb(team: Partial<TeamProfile>): any {
     if (key.startsWith('p1_') || key.startsWith('p2_') || key.startsWith('p3_') || 
         key.startsWith('p4_') || key.startsWith('p5_') || key.startsWith('p6_') || 
         key.startsWith('p7_') || key.startsWith('p8_') || key.startsWith('p9_') ||
-        ['detected_stage', 'stage_override_flag', 'overall_weighted_score', 'p9_bonus_active', 'startup_user_id', 'submission_status', 'submission_number', 'admin_notes', 'diagnosis_released', 'deleted_at'].includes(key)) {
+        ['detected_stage', 'overall_weighted_score', 'startup_user_id', 'submission_status', 'submission_number', 'admin_notes', 'diagnosis_released', 'deleted_at'].includes(key)) {
       db[key] = (team as any)[key]
     }
   })
