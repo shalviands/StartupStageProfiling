@@ -29,13 +29,10 @@ export async function getUserProfile(): Promise<UserProfile | null> {
       id: user.id,
       email: user.email ?? '',
       full_name: user.user_metadata?.full_name ?? '',
-      startup_name: user.user_metadata?.startup_name ?? '',
+      startup_name: user.user_metadata?.startup_name,
       role: metaRole as any,
       // Non-startup roles are always approved; startup status defaults to pending
       status: (metaRole === 'startup' ? 'pending' : 'approved') as any,
-      avatar_url: null,
-      requested_cohort_id: user.user_metadata?.requested_cohort_id ?? null,
-      cohort_id: null,
     }
   } catch (err) {
     console.error('[getUserProfile] Unexpected error:', err)
