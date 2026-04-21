@@ -2,7 +2,10 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request })
+  // Create initial response — we'll mutate and return this
+  let response = NextResponse.next({
+    request: { headers: request.headers },
+  })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,23 +15,12 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
+        // Canonical @supabase/ssr pattern: set on both request and response in one pass
         setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
-          cookiesToSet.forEach(({ name, value }) =>
+          cookiesToSet.forEach(({ name, value, options }) => {
             request.cookies.set(name, value)
-          )
-          
-          // Sync headers for downstream request
-          const requestHeaders = new Headers(request.headers)
-          requestHeaders.set('Cookie', request.cookies.getAll().map(c => `${c.name}=${c.value}`).join('; '))
-
-          response = NextResponse.next({
-            request: {
-              headers: requestHeaders,
-            },
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
-          )
+          })
         },
       },
     }
@@ -81,19 +73,18 @@ export async function middleware(request: NextRequest) {
     const role = profile?.role
     const status = profile?.status
 
-    // Function to create a redirect that carries over the cookies
+    // Function to create a redirect that carries over the refreshed session cookies
     const redirectWithCookies = (url: string) => {
       const redirectResponse = NextResponse.redirect(new URL(url, request.url))
-      const isProd = process.env.NODE_ENV === 'production'
-      
-      // Copy cookies from the 'response' object (which has the refreshed session) to the redirect
+      // Copy all cookies from the response (which holds the refreshed session)
       response.cookies.getAll().forEach((cookie) => {
-        // Use the cookie's existing options if they exist, otherwise use defaults
         redirectResponse.cookies.set(cookie.name, cookie.value, {
-          path: '/',
-          ...cookie, // Spread existing options (maxAge, expires, etc.)
-          secure: isProd, // Only secure in production
-          sameSite: 'lax',
+          path: cookie.path ?? '/',
+          sameSite: (cookie.sameSite as any) ?? 'lax',
+          httpOnly: cookie.httpOnly ?? true,
+          secure: cookie.secure,
+          maxAge: cookie.maxAge,
+          expires: cookie.expires,
         })
       })
       return redirectResponse
