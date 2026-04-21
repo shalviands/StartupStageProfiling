@@ -14,7 +14,8 @@ export async function getUserProfile(): Promise<UserProfile | null> {
       .single()
 
     return profile ?? null
-  } catch {
+  } catch (err) {
+    console.error('[roles] Error in getUserProfile:', err)
     return null
   }
 }

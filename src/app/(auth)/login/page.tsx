@@ -55,8 +55,8 @@ function LoginForm() {
 
       if (profile) {
         const route = getHomeRouteForRole(profile.role, profile.status)
-        router.push(route)
         router.refresh()
+        router.push(route)
       } else {
         setError('Your account exists but has no profile record. Please register again or contact support.')
         setLoading(false)

@@ -84,11 +84,15 @@ export async function middleware(request: NextRequest) {
     // Function to create a redirect that carries over the cookies
     const redirectWithCookies = (url: string) => {
       const redirectResponse = NextResponse.redirect(new URL(url, request.url))
+      const isProd = process.env.NODE_ENV === 'production'
+      
       // Copy cookies from the 'response' object (which has the refreshed session) to the redirect
       response.cookies.getAll().forEach((cookie) => {
+        // Use the cookie's existing options if they exist, otherwise use defaults
         redirectResponse.cookies.set(cookie.name, cookie.value, {
           path: '/',
-          secure: true,
+          ...cookie, // Spread existing options (maxAge, expires, etc.)
+          secure: isProd, // Only secure in production
           sameSite: 'lax',
         })
       })
