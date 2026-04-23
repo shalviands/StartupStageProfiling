@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 
 export async function middleware(request: NextRequest) {
   /**
@@ -78,19 +79,36 @@ export async function middleware(request: NextRequest) {
   // (network issue / RLS misconfiguration), fall back to the role stored
   // in the user's JWT metadata so we never lock a valid user out.
 
-  const { data: profile, error: profileErr } = await supabase
+  const { data: publicProfile, error: profileErr } = await supabase
     .from('profiles')
     .select('role, status')
     .eq('id', user.id)
     .single()
 
-  // Use DB role if available; fall back to JWT metadata role
+  // Use DB role if available; fall back to Admin Client lookup then JWT metadata
+  let profile = publicProfile
+  let status = profile?.status
+  
+  if (!profile) {
+    // If anon client failed (likely RLS), try the admin client for ground truth
+    const { data: adminProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('role, status')
+      .eq('id', user.id)
+      .single()
+    
+    if (adminProfile) {
+      profile = adminProfile
+      status = adminProfile.status
+    }
+  }
+
   const role: string =
     profile?.role ??
     (user.user_metadata?.role as string) ??
     'startup'
 
-  const status: string = profile?.status ?? 'pending'
+  const finalStatus: string = status ?? 'pending'
 
   if (profileErr) {
     console.warn(
@@ -119,11 +137,11 @@ export async function middleware(request: NextRequest) {
 
   // ── Role: startup ─────────────────────────────────────────────────
   if (role === 'startup') {
-    if (status === 'pending') {
+    if (finalStatus === 'pending') {
       if (!pathname.startsWith('/pending')) return redirectWithCookies('/pending')
       return response
     }
-    if (status === 'rejected') {
+    if (finalStatus === 'rejected') {
       if (!pathname.startsWith('/rejected') && !pathname.startsWith('/login')) {
         return redirectWithCookies('/rejected')
       }

@@ -57,7 +57,7 @@ export default function ProgrammeApprovalsPage() {
           .eq('id', user.id)
           .single()
           
-        if (error || profile?.role !== 'programme_team') {
+        if (error || !['programme_team', 'admin'].includes(profile?.role)) {
           console.warn('[Approvals] Unauthorized or error:', error?.message)
           window.location.href = '/programme/dashboard'
           return
