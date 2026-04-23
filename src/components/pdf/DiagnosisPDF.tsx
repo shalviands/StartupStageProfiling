@@ -312,14 +312,8 @@ import { PARAMETERS_CONFIG } from '@/config/parameters'
 
 export default function DiagnosisPDF({ team }: { team: TeamProfile }) {
   const { overall, averages } = calculateOverallScore(team)
-  
-  // Prioritize Database (AI) Stage over Heuristic
-  const h = classifyStage(team)
-  const stage = team.detected_stage || h.stage
-  const level = h.level // Keep heuristic level for styling mostly
-  
-  // Prioritize Database Roadmap over Heuristic
-  const roadmap = (team.roadmap && team.roadmap.length > 0) ? team.roadmap : getRoadmap(team)
+  const { stage, level } = classifyStage(team)
+  const roadmap = getRoadmap(team)
 
   const parameters = [
     { id: 'P1', name: 'Founder & Problem', score: averages.p1 },

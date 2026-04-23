@@ -1,5 +1,4 @@
 import React from 'react'
-// Final build sync [/]
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getUserFromRequest } from '@/lib/supabase/getUser'
 import RecentSubmissionsTable from '@/components/programme/RecentSubmissionsTable'
@@ -9,23 +8,6 @@ export default async function ProgrammeDashboard() {
   const user = await getUserFromRequest()
   const supabase = await createServerSupabaseClient()
   
-  // Fetch cohorts for management summary
-  const { data: rawCohorts } = await supabase
-    .from('cohorts')
-    .select('id, name')
-    .order('name')
-
-  // Fetch all startups to calculate distribution
-  const { data: allProfiles } = await supabase
-    .from('profiles')
-    .select('id, requested_cohort_id, cohort_id')
-    .eq('role', 'startup')
-
-  const cohorts = rawCohorts?.map(c => ({
-    ...c,
-    startup_count: allProfiles?.filter(p => p.cohort_id === c.id || p.requested_cohort_id === c.id).length || 0
-  })) || []
-
   // Fetch stats for dashboard
   const { data: dbTeams } = await supabase
     .from('teams')
@@ -42,7 +24,7 @@ export default async function ProgrammeDashboard() {
     released: dbTeams?.filter(t => !!t.diagnosis_released).length || 0,
     thisWeek: dbTeams?.filter(t => t.created_at && new Date(t.created_at) > oneWeekAgo).length || 0,
     avgScore: dbTeams && dbTeams.length > 0 
-      ? Number((dbTeams.reduce((acc, t) => acc + (Number(t.overall_weighted_score) || 0), 0) / dbTeams.length).toFixed(1))
+      ? dbTeams.reduce((acc, t) => acc + (Number(t.overall_weighted_score) || 0), 0) / dbTeams.length 
       : 0,
     needReview: dbTeams?.filter(t => !t.diagnosis_released && t.submission_status === 'submitted').length || 0
   }
@@ -83,28 +65,11 @@ export default async function ProgrammeDashboard() {
         
         <div className="space-y-8">
           <div className="bg-navy p-8 rounded-[40px] shadow-xl shadow-navy/20 min-h-[400px] text-white">
-            <h2 className="text-lg font-black mb-6 tracking-tight">System Distribution</h2>
-            <div className="space-y-6">
-              {cohorts.map(c => (
-                <div key={c.id} className="p-5 bg-white/5 rounded-2xl border border-white/10 group hover:bg-white/10 transition-all">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gold">{c.name}</span>
-                    <span className="text-white font-black">{c.startup_count}</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gold transition-all duration-1000" 
-                      style={{ width: `${Math.min((c.startup_count / 20) * 100, 100)}%` }} 
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-            {(!cohorts || cohorts.length === 0) && (
-              <div className="py-12 text-center text-white/30 text-[10px] font-black uppercase tracking-widest">
-                No active cohorts found
-              </div>
-            )}
+            <h2 className="text-lg font-black mb-6 tracking-tight">AI Cohort Insights</h2>
+            <p className="text-silver text-[10px] font-black uppercase tracking-widest mb-4">Strategic Overview</p>
+             <div className="space-y-4 opacity-70 text-sm font-medium">
+               Waiting for analysis results...
+             </div>
           </div>
         </div>
       </div>

@@ -1,34 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import { Clock, ShieldCheck, Mail, LogOut, Loader2 } from 'lucide-react'
 
 export default function PendingPage() {
   const router = useRouter()
-  const [profile, setProfile] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function fetchStatus() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      )
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('*, requested_cohort:cohorts!profiles_requested_cohort_id_fkey(name)')
-          .eq('id', user.id)
-          .single()
-        setProfile(data)
-      }
-      setLoading(false)
-    }
-    fetchStatus()
-  }, [])
 
   async function handleSignOut() {
     const supabase = createBrowserClient(
@@ -65,21 +42,12 @@ export default function PendingPage() {
           <span className="text-gold">Currently Pending</span>
         </h1>
         <p className="text-sm text-slate font-semibold leading-relaxed max-w-xs mx-auto">
-          Your account request is being reviewed by the {profile?.requested_cohort?.name || 'assigned'} Administrator. This usually takes 12–24 hours.
+          Your account request is being reviewed by the InUnity Programme Team. This usually takes 12–24 hours.
         </p>
       </div>
 
       {/* Info Cards */}
       <div className="space-y-3 mb-12">
-        <div className="bg-smoke rounded-2xl p-5 border border-rule/50 flex items-center gap-4 text-left">
-           <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-navy shadow-inner">
-             <ShieldCheck size={18} />
-           </div>
-           <div>
-             <p className="text-[10px] font-black text-navy uppercase tracking-widest">Selected Cohort</p>
-             <p className="text-[11px] font-bold text-silver">{profile?.requested_cohort?.name || 'Checking registry...'}</p>
-           </div>
-        </div>
         <div className="bg-smoke rounded-2xl p-5 border border-rule/50 flex items-center gap-4 text-left">
            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-navy shadow-inner">
              <Mail size={18} />

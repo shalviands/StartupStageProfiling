@@ -7,31 +7,17 @@ import {
   BarChart3, 
   Rocket, 
   MessageSquare,
-  ChevronRight,
-  LayoutGrid,
-  ShieldCheck,
-  Users
+  ChevronRight
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/programme/dashboard', icon: BarChart3 },
-  { label: 'Cohort Governance', href: '/programme/cohorts', icon: LayoutGrid },
-  { label: 'Access Control', href: '/programme/approvals', icon: ShieldCheck },
   { label: 'All Submissions', href: '/programme/startups', icon: Rocket },
-  { label: 'System Users', href: '/programme/users', icon: Users },
 ]
 
-export default function ProgrammeSidebar({ role }: { role: string }) {
+export default function ProgrammeSidebar() {
   const pathname = usePathname()
-
-  const visibleItems = NAV_ITEMS.filter(item => {
-    // Only admins see management controls
-    if (['Cohort Governance', 'Access Control', 'System Users'].includes(item.label)) {
-      return role === 'admin'
-    }
-    return true
-  })
 
   return (
     <aside className="w-[280px] bg-[#0F2647] flex flex-col h-full border-r border-white/5">
@@ -50,7 +36,7 @@ export default function ProgrammeSidebar({ role }: { role: string }) {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 py-8 space-y-1">
-        {visibleItems.map((item) => {
+        {NAV_ITEMS.map((item) => {
           const Icon = item.icon
           const isActive = pathname.startsWith(item.href)
           

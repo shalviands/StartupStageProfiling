@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import Link from 'next/link'
 import { getHomeRouteForRole } from '@/utils/navigation'
 import { Loader2, AlertCircle } from 'lucide-react'
 
 function LoginForm() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const rejectedError = searchParams.get('error') === 'rejected'
   
@@ -54,10 +55,8 @@ function LoginForm() {
 
       if (profile) {
         const route = getHomeRouteForRole(profile.role, profile.status)
-        // Use full-page navigation so the browser sends the newly set
-        // Supabase auth cookies with the next request — the middleware
-        // reads them server-side and routes correctly.
-        window.location.href = route
+        router.push(route)
+        router.refresh()
       } else {
         setError('Your account exists but has no profile record. Please register again or contact support.')
         setLoading(false)

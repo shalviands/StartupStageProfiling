@@ -17,32 +17,15 @@ import { cn } from '@/utils/cn'
 import Link from 'next/link'
 import { mapDbToFrontend } from '@/utils/mappers'
 
-import CohortSelector from '@/components/admin/CohortSelector'
-import { getUserFromRequest } from '@/lib/supabase/getUser'
-
-export default async function AllStartupsPage({ searchParams }: { searchParams: { cohortId?: string } }) {
-  const user = await getUserFromRequest()
+export default async function AllStartupsPage() {
   const supabase = await createServerSupabaseClient()
-
-  // 1. Fetch Admin's Cohorts
-  const { data: adminCohorts } = await supabase
-    .from('cohorts')
-    .select('id, name')
-    .eq('admin_id', user?.id)
   
-  const activeCohortId = searchParams.cohortId || adminCohorts?.[0]?.id
-
-  // 2. Fetch non-deleted records filtered by cohort
-  let query = supabase
+  // Fetch ALL non-deleted records
+  const { data, error } = await supabase
     .from('teams')
     .select('*')
     .is('deleted_at', null)
-  
-  if (activeCohortId) {
-    query = query.eq('cohort_id', activeCohortId)
-  }
-
-  const { data, error } = await query.order('created_at', { ascending: false })
+    .order('created_at', { ascending: false })
 
   if (error) {
     return <div className="p-20 text-rose-500 font-bold">Error loading database: {error.message}</div>
@@ -63,17 +46,14 @@ export default async function AllStartupsPage({ searchParams }: { searchParams: 
              <p className="text-slate-500 font-medium tracking-tight">Monitoring {mapped.length} venture profiles</p>
            </div>
         </div>
-         <div className="flex items-center gap-3">
-            {adminCohorts && adminCohorts.length > 0 && (
-              <CohortSelector cohorts={adminCohorts} activeCohortId={activeCohortId || null} />
-            )}
-            <a 
-              href={`/api/admin/export${activeCohortId ? `?cohortId=${activeCohortId}` : ''}`}
-              className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
-            >
-               <Download size={14} /> Export Dataset
-            </a>
-         </div>
+        <div className="flex items-center gap-3">
+           <a 
+             href="/api/admin/export"
+             className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+           >
+              <Download size={14} /> Export Dataset
+           </a>
+        </div>
       </div>
 
       {/* Table Content */}
@@ -89,7 +69,6 @@ export default async function AllStartupsPage({ searchParams }: { searchParams: 
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">P3</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">P4</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">P5</th>
-                <th className="p-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Cohort</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Overall</th>
                 <th className="p-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
                 <th className="p-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
@@ -133,11 +112,6 @@ export default async function AllStartupsPage({ searchParams }: { searchParams: 
                          </div>
                       </td>
                     ))}
-                    <td className="p-6">
-                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                         {team.cohort_name || 'Unassigned'}
-                       </span>
-                    </td>
                     <td className="p-6 text-center">
                        <span className={cn(
                          "text-base font-black tabular-nums tracking-tighter hover:scale-110 transition-transform block",

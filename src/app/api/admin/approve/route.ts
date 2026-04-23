@@ -32,10 +32,6 @@ export async function POST(req: Request) {
   const updateData: any = { status }
   if (role) updateData.role = role
 
-  if (status === 'approved') {
-    // Basic approval — no cohort locking enforced by default in v2.0
-  }
-
   const { error } = await supabase
     .from('profiles')
     .update(updateData)

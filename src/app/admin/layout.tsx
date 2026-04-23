@@ -11,7 +11,7 @@ export default async function AdminLayout({
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <AdminSidebar profile={profile} />
+      <AdminSidebar />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <AdminTopBar profile={profile} />
         <main style={{ flex: 1, overflowY: 'auto', background: '#F4F6F9' }}>

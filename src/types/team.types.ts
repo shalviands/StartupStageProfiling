@@ -180,8 +180,6 @@ export const TeamBaseSchema = z.object({
   diagnosis_released:        z.boolean().default(false),
   deleted_at:                z.string().nullable().default(null),
   admin_notes:               z.string().default(''),
-  // Roadmap
-  roadmap:                   z.array(RoadmapItemSchema).default([]),
 })
 
 export const TeamCreateSchema = TeamBaseSchema

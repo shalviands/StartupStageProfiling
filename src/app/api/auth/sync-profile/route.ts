@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, message: 'Profile already exists' })
     }
 
-    const { fullName, startupName, requestedCohortId } = await req.json()
+    const { fullName, startupName } = await req.json()
 
     // Insert missing profile with fallback details using admin client
     const { error: insertError } = await supabaseAdmin
@@ -33,8 +33,7 @@ export async function POST(req: Request) {
         full_name: fullName || user.user_metadata?.full_name || 'Venture Founder',
         startup_name: startupName || user.user_metadata?.startup_name || 'New Venture',
         role: 'startup',
-        status: 'pending', // pending by default for startups
-        requested_cohort_id: requestedCohortId || user.user_metadata?.requested_cohort_id
+        status: 'pending' // pending by default for startups
       })
 
     if (insertError) {

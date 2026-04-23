@@ -18,7 +18,6 @@ interface DiagnosticFieldProps {
   data: any
   onChange: (field: string, value: any) => void
   readOnlyScores?: boolean
-  isReadOnly?: boolean
 }
 
 export default function DiagnosticField({
@@ -26,8 +25,7 @@ export default function DiagnosticField({
   question,
   data,
   onChange,
-  readOnlyScores = false,
-  isReadOnly = false
+  readOnlyScores = false
 }: DiagnosticFieldProps) {
   const [showInfo, setShowInfo] = useState(false)
   const fieldName = `${parameterId}_${question.id}`
@@ -72,11 +70,7 @@ export default function DiagnosticField({
           value={val}
           onChange={(e) => onChange(fieldName, e.target.value)}
           placeholder={question.placeholder}
-          readOnly={isReadOnly}
-          className={cn(
-            "w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none min-h-[100px] resize-none transition-all placeholder:text-silver font-medium",
-            isReadOnly && "cursor-default text-slate-600"
-          )}
+          className="w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none min-h-[100px] resize-none transition-all placeholder:text-silver font-medium"
         />
       )}
 
@@ -86,11 +80,7 @@ export default function DiagnosticField({
           value={val}
           onChange={(e) => onChange(fieldName, e.target.value === '' ? '' : Number(e.target.value))}
           placeholder={question.placeholder}
-          readOnly={isReadOnly}
-          className={cn(
-            "w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none transition-all placeholder:text-silver font-medium",
-            isReadOnly && "cursor-default text-slate-600"
-          )}
+          className="w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none transition-all placeholder:text-silver font-medium"
         />
       )}
 
@@ -105,11 +95,7 @@ export default function DiagnosticField({
               const v = isNumericField ? parseInt(rawV, 10) : rawV
               onChange(fieldName, Number.isNaN(v) ? '' : v)
             }}
-            disabled={isReadOnly}
-            className={cn(
-              "w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none appearance-none transition-all",
-              isReadOnly && "cursor-default text-slate-600 opacity-80"
-            )}
+            className="w-full bg-smoke/50 border border-transparent rounded-xl p-4 text-sm text-navy focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/5 outline-none appearance-none transition-all"
           >
             <option value="">Select Option...</option>
             {question.options?.map(opt => (

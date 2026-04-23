@@ -16,8 +16,8 @@ import {
 import { useDashboardInsights } from '@/hooks/useDashboardInsights'
 import { cn } from '@/utils/cn'
 
-export default function CohortInsights({ cohortId }: { cohortId?: string | null }) {
-  const { mutate: runDiscovery, data, isPending, error } = useDashboardInsights(cohortId)
+export default function CohortInsights() {
+  const { mutate: runDiscovery, data, isPending, error } = useDashboardInsights()
   const [showFull, setShowFull] = useState(false)
 
   return (

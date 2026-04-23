@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/layout/Providers'
-// Build sync touch: 2026-04-20T17:54:30.000Z [/]
 
 const montserrat = Montserrat({ 
   subsets: ['latin'],

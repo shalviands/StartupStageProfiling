@@ -230,9 +230,6 @@ export interface RoadmapResult {
   week2: { title: string; focus: string; actions: string[]; success_metric: string }
   week3: { title: string; focus: string; actions: string[]; success_metric: string }
   week4: { title: string; focus: string; actions: string[]; success_metric: string }
-  ai_determined_stage: string
-  ai_determined_level: number
-  ai_stage_explanation: string
   p0_need: string
   p1_need: string
   p2_need: string
@@ -255,18 +252,12 @@ Generate a personalised 4-week pre-event sprint roadmap for this startup.
 STARTUP CONTEXT:
   Startup: ${team.startup_name || 'Unknown'}
   Sector: ${team.sector || 'Unknown'}
+  Stage: ${calculatedStage} (Stage ${stageNumber} of 6)
   Product Type: ${team.p3_product_type || 'Unknown'}
   Revenue Stage: ${team.p6_revenue_stage || 'Unknown'}
   Team Size: ${team.team_size || 'Unknown'}
-  Heuristic stage (for reference): ${calculatedStage} (Stage ${stageNumber} of 6)
  
-ASSESSMENT TASK:
-1. Thoroughly analyze the raw answers and scores provided.
-2. Accurately determine the startup's current stage (Idea, PSF, Validation, MVP, Revenue, or Growth).
-3. Do not blindly follow the heuristic stage if the raw data suggests a different maturity level.
-4. Generate a 4-week growth sprint tailored to this specific startup's context and weakest parameters.
- 
-WEAKEST PARAMETERS:
+WEAKEST PARAMETERS (address these):
   ${weakestParameters.map((p, i) => `${i + 1}. ${p}`).join('\n  ')}
  
 KEY CONTEXT:
@@ -302,9 +293,6 @@ Return ONLY this JSON:
     "actions": ["Specific action 1", "Specific action 2", "Specific action 3"],
     "success_metric": "How to know if Week 4 was successful"
   },
-  "ai_determined_stage": "Strictly one of: Idea Stage, Problem-Solution Fit, Validation Stage, MVP / Pre-Revenue, Early Revenue, Growth / Scale",
-  "ai_determined_level": 1,
-  "ai_stage_explanation": "1-2 sentences on why this stage was chosen based on data.",
   "p0_need": "Single most urgent thing before the event",
   "p1_need": "Most important thing during the programme",
   "p2_need": "Longer-term capability to build after",
@@ -436,9 +424,6 @@ function ruleBasedRoadmap(
       week2: { title: 'Validate the problem exists', focus: 'P2 — Customer Discovery', actions: ['Conduct all 5 interviews using structured questions', 'Document top 3 insights from each conversation', 'Identify patterns and surprising findings'], success_metric: 'Clear evidence of real problem from at least 4 of 5 people' },
       week3: { title: 'Sketch the solution concept', focus: 'P3 — Product/TRL', actions: ['Create a simple wireframe or mockup', 'Build a paper prototype or demo script', 'Show concept to 3 people and collect feedback'], success_metric: 'Concept tested with 3 people and feedback documented' },
       week4: { title: 'Build your Business Model Canvas', focus: 'P6 — Business Model', actions: ['Complete all 9 boxes of the BMC', 'Identify riskiest assumption in the business model', 'Prepare a 3-minute pitch of problem and solution'], success_metric: 'BMC completed and 3-minute pitch delivered to mentor' },
-      ai_determined_stage: 'Idea Stage',
-      ai_determined_level: 1,
-      ai_stage_explanation: 'Rule-based fallback: Initial idea requiring validation.',
       p0_need: 'Complete at least 10 customer interviews to validate the problem before building anything',
       p1_need: 'Build and test a basic prototype or proof of concept',
       p2_need: 'Develop a clear go-to-market strategy and initial revenue model',

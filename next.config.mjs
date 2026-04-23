@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-// Build manifest re-sync: 2026-04-20T18:15:55.000Z [/]
 const nextConfig = {
   webpack: (config, { isServer }) => {
     if (!isServer) {

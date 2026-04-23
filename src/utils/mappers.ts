@@ -160,7 +160,6 @@ export function mapDbToFrontend(row: any): TeamProfile | null {
     
     diagnosis_released:        !!row.diagnosis_released,
     deleted_at:                row.deleted_at                       ?? null,
-    roadmap:                   row.roadmap                          ?? [],
     
     // Metadata
     created_at:                row.created_at                       ?? '',
@@ -186,7 +185,7 @@ export function mapFrontendToDb(team: Partial<TeamProfile>): any {
     if (key.startsWith('p1_') || key.startsWith('p2_') || key.startsWith('p3_') || 
         key.startsWith('p4_') || key.startsWith('p5_') || key.startsWith('p6_') || 
         key.startsWith('p7_') || key.startsWith('p8_') || key.startsWith('p9_') ||
-        ['detected_stage', 'overall_weighted_score', 'startup_user_id', 'submission_status', 'submission_number', 'admin_notes', 'diagnosis_released', 'deleted_at', 'roadmap'].includes(key)) {
+        ['detected_stage', 'overall_weighted_score', 'startup_user_id', 'submission_status', 'submission_number', 'admin_notes', 'diagnosis_released', 'deleted_at'].includes(key)) {
       db[key] = (team as any)[key]
     }
   })

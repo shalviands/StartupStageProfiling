@@ -10,7 +10,7 @@ export async function GET() {
 
     const supabase = await createServerSupabaseClient()
     const { data: profile } = await supabase
-      .from('profiles').select('role, cohort_id').eq('id', user.id).single()
+      .from('profiles').select('role').eq('id', user.id).single()
 
     const role = profile?.role ?? 'startup'
     const isPowerUser = role === 'admin' || role === 'programme_team'
@@ -26,30 +26,20 @@ export async function GET() {
     // properly limits to their own data via the .or() filter. This prevents 
     // situations where a startup re-logs in and their data is blocked because
     // the user_id mismatch with RLS's auth.uid() check.
-    const client = isPowerUser ? supabase : supabaseAdmin
+    const client = role === 'startup' ? supabaseAdmin : supabase
     
-    let query = client.from('teams').select('*').order('created_at', { ascending: false })
+    let query = client.from('teams').select(selectFields).order('created_at', { ascending: false })
  
     if (role === 'startup') {
       query = query.or(`startup_user_id.eq.${user.id},user_id.eq.${user.id}`).is('deleted_at', null)
-    } else {
-      // Admins and Programme Team see all active startups globally in v2.0
+    } else if (role === 'programme_team') {
       query = query.is('deleted_at', null)
     }
  
     const { data, error } = await query
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-    // Security check: Only Power Users see internal admin_notes
-    const sanitized = (data ?? []).map((t: any) => {
-      if (!isPowerUser) {
-        const { admin_notes, ...safe } = t
-        return safe
-      }
-      return t
-    })
  
-    return NextResponse.json(sanitized)
+    return NextResponse.json(data ?? [])
   } catch (err) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -64,7 +54,7 @@ export async function POST(request: Request) {
     const supabase = await createServerSupabaseClient()
 
     const { data: profile } = await supabase
-      .from('profiles').select('role, cohort_id').eq('id', user.id).single()
+      .from('profiles').select('role').eq('id', user.id).single()
 
     const role = profile?.role ?? 'startup'
 
@@ -89,7 +79,7 @@ export async function POST(request: Request) {
       submission_status: 'draft',
       submission_number,
       p8_team_members: body.p8_team_members ?? [],
-      cohort_id: profile?.cohort_id, // Link to the user's cohort
+      // defaults for other fields
     }
 
     if (role === 'startup') {
