@@ -22,8 +22,16 @@ const NAV_ITEMS = [
   { label: 'System Users', href: '/programme/users', icon: Users },
 ]
 
-export default function ProgrammeSidebar() {
+export default function ProgrammeSidebar({ role }: { role: string }) {
   const pathname = usePathname()
+
+  const visibleItems = NAV_ITEMS.filter(item => {
+    // Only admins see management controls
+    if (['Cohort Governance', 'Access Control', 'System Users'].includes(item.label)) {
+      return role === 'admin'
+    }
+    return true
+  })
 
   return (
     <aside className="w-[280px] bg-[#0F2647] flex flex-col h-full border-r border-white/5">
@@ -42,7 +50,7 @@ export default function ProgrammeSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 py-8 space-y-1">
-        {NAV_ITEMS.map((item) => {
+        {visibleItems.map((item) => {
           const Icon = item.icon
           const isActive = pathname.startsWith(item.href)
           

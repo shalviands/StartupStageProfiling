@@ -26,28 +26,30 @@ export async function GET() {
     // properly limits to their own data via the .or() filter. This prevents 
     // situations where a startup re-logs in and their data is blocked because
     // the user_id mismatch with RLS's auth.uid() check.
-    const client = role === 'startup' ? supabaseAdmin : supabase
+    const client = isPowerUser ? supabase : supabaseAdmin
     
-    let query = client.from('teams').select(selectFields).order('created_at', { ascending: false })
+    let query = client.from('teams').select('*').order('created_at', { ascending: false })
  
     if (role === 'startup') {
       query = query.or(`startup_user_id.eq.${user.id},user_id.eq.${user.id}`).is('deleted_at', null)
-    } else if (role === 'programme_team') {
+    } else {
+      // Admins and Programme Team see all active startups globally in v2.0
       query = query.is('deleted_at', null)
-    } else if (role === 'admin') {
-      // Admins only see startups in their approved cohort
-      if (profile?.cohort_id) {
-        query = query.eq('cohort_id', profile.cohort_id).is('deleted_at', null)
-      } else {
-        // If no cohort assigned to admin, show nothing unless Super Admin
-        query = query.eq('id', '00000000-0000-0000-0000-000000000000') 
-      }
     }
  
     const { data, error } = await query
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Security check: Only Power Users see internal admin_notes
+    const sanitized = (data ?? []).map((t: any) => {
+      if (!isPowerUser) {
+        const { admin_notes, ...safe } = t
+        return safe
+      }
+      return t
+    })
  
-    return NextResponse.json(data ?? [])
+    return NextResponse.json(sanitized)
   } catch (err) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     .eq('id', user.id)
     .single()
 
-  if (adminProfile?.role !== 'programme_team') {
+  if (adminProfile?.role !== 'admin') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
@@ -33,16 +33,7 @@ export async function POST(req: Request) {
   if (role) updateData.role = role
 
   if (status === 'approved') {
-    // Fetch the requested cohort
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('requested_cohort_id')
-      .eq('id', userId)
-      .single()
-    
-    if (profile?.requested_cohort_id) {
-       updateData.cohort_id = profile.requested_cohort_id
-    }
+    // Basic approval — no cohort locking enforced by default in v2.0
   }
 
   const { error } = await supabase
